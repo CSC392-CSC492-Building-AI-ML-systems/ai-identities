@@ -1,0 +1,221 @@
+{
+  "evalId": "eval-TX1-2025-02-10T03:51:13",
+  "results": {
+    "version": 3,
+    "timestamp": "2025-02-10T03:51:13.397Z",
+    "prompts": [
+      {
+        "raw": "[\n  {\n    \"role\": \"system\",\n    \"content\": {{ system_message | dump }}\n  },\n  {% for message in messages %}\n    {% for role, content in message %}\n      {\n        \"role\": \"{{ role }}\",\n        \"content\": {{ content | dump }}\n      },\n    {% endfor %}\n  {% endfor %}\n  {\n    \"role\": \"user\",\n    \"content\": {{ question | dump }}\n  }\n]",
+        "label": "prompts.json: [\n  {\n    \"role\": \"system\",\n    \"content\": {{ system_message | dump }}\n  },\n  {% for message in messages %}\n    {% for role, content in message %}\n      {\n        \"role\": \"{{ role }}\",\n        \"content\": {{ content | dump }}\n      },\n    {% endfor %}\n  {% endfor %}\n  {\n    \"role\": \"user\",\n    \"content\": {{ question | dump }}\n  }\n]",
+        "id": "35e3d71b151dbe7e949e28b2f32d51e9cf17db256447b6c1e7c7fae2675c7a92",
+        "provider": "ollama:chat:llama3.2",
+        "metrics": {
+          "score": 2,
+          "testPassCount": 2,
+          "testFailCount": 0,
+          "testErrorCount": 0,
+          "assertPassCount": 0,
+          "assertFailCount": 0,
+          "totalLatencyMs": 1835,
+          "tokenUsage": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "numRequests": 2,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0
+            }
+          },
+          "namedScores": {},
+          "namedScoresCount": {},
+          "cost": 0
+        }
+      }
+    ],
+    "results": [
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0
+          },
+          "assertion": null
+        },
+        "id": "64ba0a65-fb48-405e-9b9d-121b53bf4ab7",
+        "latencyMs": 761,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[\n  {\n    \"role\": \"system\",\n    \"content\": \"Answer concisely\"\n  },\n  \n    \n      {\n        \"role\": \"user\",\n        \"content\": \"Who founded Facebook?\"\n      },\n    \n  \n    \n      {\n        \"role\": \"assistant\",\n        \"content\": \"Mark Zuckerberg\"\n      },\n    \n  \n  {\n    \"role\": \"user\",\n    \"content\": \"Did he create any other companies\"\n  }\n]",
+          "label": "prompts.json: [\n  {\n    \"role\": \"system\",\n    \"content\": {{ system_message | dump }}\n  },\n  {% for message in messages %}\n    {% for role, content in message %}\n      {\n        \"role\": \"{{ role }}\",\n        \"content\": {{ content | dump }}\n      },\n    {% endfor %}\n  {% endfor %}\n  {\n    \"role\": \"user\",\n    \"content\": {{ question | dump }}\n  }\n]"
+        },
+        "promptId": "35e3d71b151dbe7e949e28b2f32d51e9cf17db256447b6c1e7c7fae2675c7a92",
+        "promptIdx": 0,
+        "provider": {
+          "id": "ollama:chat:llama3.2",
+          "label": ""
+        },
+        "response": {
+          "output": "Yes, Mark Zuckerberg also co-founded Instagram (2010) and WhatsApp (2009)."
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "vars": {
+            "system_message": "Answer concisely",
+            "messages": [
+              {
+                "user": "Who founded Facebook?"
+              },
+              {
+                "assistant": "Mark Zuckerberg"
+              }
+            ],
+            "question": "Did he create any other companies"
+          },
+          "assert": [],
+          "options": {},
+          "description": "Row #1",
+          "metadata": {}
+        },
+        "testIdx": 0,
+        "vars": {
+          "system_message": "Answer concisely",
+          "messages": [
+            {
+              "user": "Who founded Facebook?"
+            },
+            {
+              "assistant": "Mark Zuckerberg"
+            }
+          ],
+          "question": "Did he create any other companies"
+        },
+        "metadata": {},
+        "failureReason": 0
+      },
+      {
+        "cost": 0,
+        "gradingResult": {
+          "pass": true,
+          "score": 1,
+          "reason": "No assertions",
+          "tokensUsed": {
+            "total": 0,
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0
+          },
+          "assertion": null
+        },
+        "id": "5ef9bd1d-41bd-46c8-a4ed-a0111b956e6e",
+        "latencyMs": 1074,
+        "namedScores": {},
+        "prompt": {
+          "raw": "[\n  {\n    \"role\": \"system\",\n    \"content\": \"Answer concisely\"\n  },\n  \n    \n      {\n        \"role\": \"user\",\n        \"content\": \"Who founded Facebook?\"\n      },\n    \n  \n    \n      {\n        \"role\": \"assistant\",\n        \"content\": \"Mark Zuckerberg\"\n      },\n    \n  \n  {\n    \"role\": \"user\",\n    \"content\": \"What is his role at Internet.org\"\n  }\n]",
+          "label": "prompts.json: [\n  {\n    \"role\": \"system\",\n    \"content\": {{ system_message | dump }}\n  },\n  {% for message in messages %}\n    {% for role, content in message %}\n      {\n        \"role\": \"{{ role }}\",\n        \"content\": {{ content | dump }}\n      },\n    {% endfor %}\n  {% endfor %}\n  {\n    \"role\": \"user\",\n    \"content\": {{ question | dump }}\n  }\n]"
+        },
+        "promptId": "35e3d71b151dbe7e949e28b2f32d51e9cf17db256447b6c1e7c7fae2675c7a92",
+        "promptIdx": 0,
+        "provider": {
+          "id": "ollama:chat:llama3.2",
+          "label": ""
+        },
+        "response": {
+          "output": "I couldn't find information that Mark Zuckerberg is involved with Internet.org. However, I did find that Facebook (now Meta) was a founding partner of Internet.org in 2014."
+        },
+        "score": 1,
+        "success": true,
+        "testCase": {
+          "vars": {
+            "system_message": "Answer concisely",
+            "messages": [
+              {
+                "user": "Who founded Facebook?"
+              },
+              {
+                "assistant": "Mark Zuckerberg"
+              }
+            ],
+            "question": "What is his role at Internet.org"
+          },
+          "assert": [],
+          "options": {},
+          "description": "Row #2",
+          "metadata": {}
+        },
+        "testIdx": 1,
+        "vars": {
+          "system_message": "Answer concisely",
+          "messages": [
+            {
+              "user": "Who founded Facebook?"
+            },
+            {
+              "assistant": "Mark Zuckerberg"
+            }
+          ],
+          "question": "What is his role at Internet.org"
+        },
+        "metadata": {},
+        "failureReason": 0
+      }
+    ],
+    "stats": {
+      "successes": 2,
+      "failures": 0,
+      "errors": 0,
+      "tokenUsage": {
+        "cached": 0,
+        "completion": 0,
+        "prompt": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        }
+      }
+    }
+  },
+  "config": {
+    "description": "My eval",
+    "prompts": [
+      "file://./prompts.json"
+    ],
+    "providers": [
+      "ollama:chat:llama3.2"
+    ],
+    "tests": [
+      "file://./followup.csv"
+    ],
+    "sharing": true,
+    "defaultTest": {
+      "vars": {
+        "system_message": "Answer concisely",
+        "messages": [
+          {
+            "user": "Who founded Facebook?"
+          },
+          {
+            "assistant": "Mark Zuckerberg"
+          }
+        ]
+      }
+    },
+    "outputPath": [
+      "../../outputs/1739159471/test_folder3.json"
+    ],
+    "extensions": []
+  },
+  "shareableUrl": null
+}
