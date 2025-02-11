@@ -1,0 +1,82 @@
+# Text matching assertions
+- type: icontains
+  value: hello
+  description: Case-insensitive check for 'hello'
+
+- type: contains
+  value: World
+  description: Case-sensitive check for 'World'
+
+- type: regex
+  value: ^[A-Z][a-z\s,]+$
+  description: Ensure output starts with capital letter and contains only letters, spaces, commas
+
+- type: not-contains
+  value: goodbye
+  description: Ensure output doesn't contain 'goodbye'
+
+# Length and structure assertions
+- type: javascript
+  value: output.length < 50
+  description: Ensure output is less than 50 characters
+
+- type: javascript
+  value: output.split(' ').length < 10
+  description: Ensure output has fewer than 10 words
+
+- type: javascript
+  value: 1 / (output.length + 1)
+  description: Prefer shorter outputs (higher score for shorter length)
+
+# Semantic and content assertions
+- type: model-graded-closedqa
+  value: ensure that the output contains a greeting
+  description: Check if output includes a greeting phrase
+
+- type: model-graded-closedqa
+  value: ensure the tone is friendly and welcoming
+  description: Verify friendly tone
+
+- type: similarity
+  value: Hello, world!
+  threshold: 0.8
+  description: Check semantic similarity to reference greeting
+
+# JSON structure assertions
+- type: json-schema
+  value:
+    type: object
+    required: ["greeting", "recipient"]
+    properties:
+      greeting:
+        type: string
+      recipient:
+        type: string
+  description: Validate JSON structure for greeting messages
+
+# Custom function assertions
+- type: javascript
+  value: |
+    const words = output.toLowerCase().split(' ');
+    const hasGreeting = ['hello', 'hi', 'greetings', 'salutations'].some(g => words.includes(g));
+    const hasRecipient = ['world', 'earth', 'planet'].some(r => words.includes(r));
+    return hasGreeting && hasRecipient;
+  description: Check for both greeting word and recipient
+
+# Combined assertions
+- type: javascript
+  value: |
+    const isProperLength = output.length < 100;
+    const startsWithCapital = /^[A-Z]/.test(output);
+    const endsWithPunctuation = /[.!?]$/.test(output);
+    return isProperLength && startsWithCapital && endsWithPunctuation;
+  description: Multiple formatting rules in single assertion
+
+# Performance scoring
+- type: javascript
+  value: |
+    const brevity = 1 / (output.length + 1);
+    const hasGreeting = /^(Hello|Hi|Greetings|Salutations)/i.test(output);
+    const properCase = /^[A-Z][a-z\s,]+[.!?]$/.test(output);
+    return (brevity * 0.3) + (hasGreeting * 0.4) + (properCase * 0.3);
+  description: Weighted scoring based on multiple criteria
