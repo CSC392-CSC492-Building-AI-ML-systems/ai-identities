@@ -9,6 +9,7 @@ prompts:
 
 providers:
  - "ollama:chat:llama3.2"
+ -  "ollama:chat:deepseek-r1:1.5b"
   
 tests:
   - file://./tests.csv
