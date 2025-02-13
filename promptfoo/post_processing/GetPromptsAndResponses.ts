@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as path from 'path';
 
 export interface LLMResult {
     evalId: string;
@@ -46,5 +47,7 @@ export function parseLLMResults(filePath: string) {
     return extractedData;
 }
 
-const filePath = '../../sample_outputs/sample_output_conversation.json'
+const filePath = path.resolve(__dirname, '../../sample_outputs/sample_output_conversation.json');
+
+console.log("Resolved file path:", filePath);
 parseLLMResults(filePath);
