@@ -1,7 +1,7 @@
 #!/bin/bash
 
 usage() {
-    echo "Usage: $0 create <source_name> <new_name>"
+    echo "Usage: $0 create <template_flag> <new_name>. -c for conversation template, -f for followup template, -s for single prompts template"
     echo "       $0 evaluate <folder_1> <folder_1> ..."
     exit 1
 }
