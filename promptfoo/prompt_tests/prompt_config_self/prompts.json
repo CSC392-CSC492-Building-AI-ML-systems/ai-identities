@@ -1,0 +1,10 @@
+[
+  {
+    "role": "system",
+    "content": "Respond naturally to the following question."
+  },
+  {
+    "role": "user",
+    "content": "{{ question }}"
+  }
+]
