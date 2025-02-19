@@ -1,0 +1,2077 @@
+2025-02-19T15:10:34.692Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834567-31fd311aa58fe.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:34.692Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834572-e0a78f7400cdf.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:34.692Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834574-06d7696d7506f.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:34.693Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834571-7f7d43ed779b8.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:34.696Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834572-e0a78f7400cdf.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.696Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834573-11cae8a1943bf.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834573-11cae8a1943bf.json'
+2025-02-19T15:10:34.697Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834572-e0a78f7400cdf.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.701Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834567-31fd311aa58fe.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.702Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834567-6ff7297077202.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834567-6ff7297077202.json'
+2025-02-19T15:10:34.702Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834567-31fd311aa58fe.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.703Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834571-7f7d43ed779b8.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.703Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834571-0280a24bb5291.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834571-0280a24bb5291.json'
+2025-02-19T15:10:34.703Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834571-7f7d43ed779b8.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.704Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834574-06d7696d7506f.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.704Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834574-aacad47faf3d6.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834574-aacad47faf3d6.json'
+2025-02-19T15:10:34.705Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834574-06d7696d7506f.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.754Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834712-e34ceaa9ec112.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:34.754Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834709-f1513190a3209.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:34.756Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834717-b7e343e9a8be3.py", line 9, in main
+2025-02-19T15:10:34.757Z [ERROR]: from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:34.762Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834709-f1513190a3209.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.762Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834709-534f5e8dd7051.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834709-534f5e8dd7051.json'
+2025-02-19T15:10:34.762Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834709-f1513190a3209.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.765Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834712-e34ceaa9ec112.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.765Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834712-f93e4140f7f6e.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834712-f93e4140f7f6e.json'
+2025-02-19T15:10:34.765Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834712-e34ceaa9ec112.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.767Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834717-b7e343e9a8be3.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.767Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834717-c9c91d126fdb9.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834717-c9c91d126fdb9.json'
+2025-02-19T15:10:34.767Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834717-b7e343e9a8be3.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.815Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834771-f86441cb40e7.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:34.815Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834769-e03367bdcfed.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:34.818Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834773-dba537ac7e2a9.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:34.822Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834769-e03367bdcfed.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.822Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834769-8ea57ffbeec57.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834769-8ea57ffbeec57.json'
+2025-02-19T15:10:34.822Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834769-e03367bdcfed.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.824Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834771-f86441cb40e7.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.824Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834771-8b31a3ebfcb5.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834771-8b31a3ebfcb5.json'
+2025-02-19T15:10:34.824Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834771-f86441cb40e7.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.827Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834773-dba537ac7e2a9.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.827Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834773-a32bd99d48862.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834773-a32bd99d48862.json'
+2025-02-19T15:10:34.827Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834773-dba537ac7e2a9.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.872Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834829-8b92e93d27438.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:34.876Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834833-545f92cfc585b.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:34.879Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834829-8b92e93d27438.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.879Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834829-4d40a5705fb49.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834829-4d40a5705fb49.json'
+2025-02-19T15:10:34.879Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834829-8b92e93d27438.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.882Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834837-23c7e942761e1.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:34.884Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834833-545f92cfc585b.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.885Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834834-cc123fad4671.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834834-cc123fad4671.json'
+2025-02-19T15:10:34.885Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834833-545f92cfc585b.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.887Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834837-23c7e942761e1.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.887Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834838-035e91747e189.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834838-035e91747e189.json'
+2025-02-19T15:10:34.887Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834837-23c7e942761e1.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.923Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834883-af99fa6cc21e1.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:34.927Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834889-2f8246346f757.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:34.928Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834883-af99fa6cc21e1.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.928Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834883-2d79b334588f3.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834883-2d79b334588f3.json'
+2025-02-19T15:10:34.928Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834883-af99fa6cc21e1.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.934Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834889-2f8246346f757.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.934Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834889-3ff42c3b2bce4.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834889-3ff42c3b2bce4.json'
+2025-02-19T15:10:34.934Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834889-2f8246346f757.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.947Z [ERROR]: API call error: TypeError: Cannot read properties of null (reading 'data')
+2025-02-19T15:10:34.975Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834930-e216aba00205.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:34.980Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834936-4b1c349d0cd97.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:34.983Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834930-e216aba00205.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.984Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834931-41e117cf1944f.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834931-41e117cf1944f.json'
+2025-02-19T15:10:34.984Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834930-e216aba00205.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.991Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834936-4b1c349d0cd97.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.991Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834936-28c85f284f28.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834936-28c85f284f28.json'
+2025-02-19T15:10:34.991Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834936-4b1c349d0cd97.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:34.997Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+2025-02-19T15:10:34.997Z [ERROR]: return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834950-daf4d80b9e929.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:35.002Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834953-00962033f80b5.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:35.005Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834950-daf4d80b9e929.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.005Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834950-a9af13873d887.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834950-a9af13873d887.json'
+2025-02-19T15:10:35.005Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834950-daf4d80b9e929.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.008Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834953-00962033f80b5.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.009Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834954-b31a4cdc5694.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834954-b31a4cdc5694.json'
+2025-02-19T15:10:35.009Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834953-00962033f80b5.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.035Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834989-216c2d7f357c.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:35.039Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834993-8a214a6c8a94f.py", line 9, in main
+2025-02-19T15:10:35.039Z [ERROR]: from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:35.041Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834989-216c2d7f357c.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.041Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834989-b445e33a10cfa.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834989-b445e33a10cfa.json'
+2025-02-19T15:10:35.041Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834989-216c2d7f357c.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.045Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834993-8a214a6c8a94f.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.045Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834994-7ba61eae31c3.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977834994-7ba61eae31c3.json'
+2025-02-19T15:10:35.045Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977834993-8a214a6c8a94f.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.055Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835011-78d0234bd3e0a.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:35.061Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835011-78d0234bd3e0a.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.062Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977835011-f09e26de41677.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977835011-f09e26de41677.json'
+2025-02-19T15:10:35.062Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835011-78d0234bd3e0a.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.088Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835043-4d4e12b57d8cc.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:35.093Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835048-22f0663d41bbf.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:35.094Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835043-4d4e12b57d8cc.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.095Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977835043-07879ce23d183.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977835043-07879ce23d183.json'
+2025-02-19T15:10:35.095Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835043-4d4e12b57d8cc.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.101Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835048-22f0663d41bbf.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.101Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977835049-0a9c665f75f96.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977835049-0a9c665f75f96.json'
+2025-02-19T15:10:35.101Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835048-22f0663d41bbf.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.110Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835064-c2fc579f6db24.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:35.117Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835064-c2fc579f6db24.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.118Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977835064-414bac10d42b7.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977835064-414bac10d42b7.json'
+2025-02-19T15:10:35.118Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835064-c2fc579f6db24.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.143Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835099-0ce98f8cff188.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:35.149Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835099-0ce98f8cff188.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.149Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977835099-4927c8d14352a.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977835099-4927c8d14352a.json'
+2025-02-19T15:10:35.149Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835099-0ce98f8cff188.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.151Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835106-459f6643aec4c.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:35.156Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835106-459f6643aec4c.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.156Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977835106-28fb1012eb3cb.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977835106-28fb1012eb3cb.json'
+2025-02-19T15:10:35.156Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835106-459f6643aec4c.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.163Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835120-a7d8cdd66406d.py", line 9, in main
+2025-02-19T15:10:35.163Z [ERROR]: from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:35.168Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835120-a7d8cdd66406d.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.168Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977835121-d9da763de7b37.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977835121-d9da763de7b37.json'
+2025-02-19T15:10:35.168Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977835120-a7d8cdd66406d.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:35.196Z [ERROR]: API call error: TypeError: Cannot read properties of null (reading 'data')
+2025-02-19T15:10:49.229Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849112-050b82b35135a.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.230Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849116-5aa1d622520aa.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.231Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849119-59dc37b9070de.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.231Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849121-080993f58fe8d.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.234Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849112-050b82b35135a.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.234Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849113-5578789d06f3d.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849113-5578789d06f3d.json'
+2025-02-19T15:10:49.234Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849112-050b82b35135a.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.238Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849116-5aa1d622520aa.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.238Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849116-b2368dbffc26.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849116-b2368dbffc26.json'
+2025-02-19T15:10:49.238Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849116-5aa1d622520aa.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.239Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849121-080993f58fe8d.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.239Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849121-49e84007746fe.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849121-49e84007746fe.json'
+2025-02-19T15:10:49.239Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849121-080993f58fe8d.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.241Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849119-59dc37b9070de.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.241Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849119-d5f17b56242c1.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849119-d5f17b56242c1.json'
+2025-02-19T15:10:49.241Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849119-59dc37b9070de.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.289Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849246-480e80877a08e.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.293Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849251-5eb1d5655bdf.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.294Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+2025-02-19T15:10:49.294Z [ERROR]: result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849253-30371ee5586f5.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.296Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849246-480e80877a08e.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.296Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849247-38f5774825044.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849247-38f5774825044.json'
+2025-02-19T15:10:49.296Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849246-480e80877a08e.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.302Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849251-5eb1d5655bdf.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.302Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849251-3fe3c83855992.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849251-3fe3c83855992.json'
+2025-02-19T15:10:49.302Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849251-5eb1d5655bdf.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.303Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849253-30371ee5586f5.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.303Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849253-3bf1870c7f005.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849253-3bf1870c7f005.json'
+2025-02-19T15:10:49.304Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849253-30371ee5586f5.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.344Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849300-1e253d505b4ca.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.349Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849305-ac8c359b2b018.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.351Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849300-1e253d505b4ca.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.351Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849300-cbf8c0fe79c5f.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849300-cbf8c0fe79c5f.json'
+2025-02-19T15:10:49.351Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849300-1e253d505b4ca.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.355Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849309-b0c52d89a2b6c.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.355Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849305-ac8c359b2b018.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.356Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849306-ac73d3b130862.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849306-ac73d3b130862.json'
+2025-02-19T15:10:49.356Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849305-ac8c359b2b018.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.363Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849309-b0c52d89a2b6c.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.363Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849309-089599318bc5c.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849309-089599318bc5c.json'
+2025-02-19T15:10:49.363Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849309-b0c52d89a2b6c.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.397Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849353-01267e524dda3.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.402Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849353-01267e524dda3.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.403Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849353-c0c718869e544.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849353-c0c718869e544.json'
+2025-02-19T15:10:49.403Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849353-01267e524dda3.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.404Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849361-44c8f60d43853.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.410Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849361-44c8f60d43853.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.410Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849361-c841afbce3de2.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849361-c841afbce3de2.json'
+2025-02-19T15:10:49.410Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849361-44c8f60d43853.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.412Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849368-38e88b44a3a87.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.417Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849368-38e88b44a3a87.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.417Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849369-bfb1d8bb60793.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849369-bfb1d8bb60793.json'
+2025-02-19T15:10:49.417Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849368-38e88b44a3a87.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.440Z [ERROR]: API call error: TypeError: Cannot read properties of null (reading 'data')
+2025-02-19T15:10:49.448Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849405-63adea0dea3cc.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.454Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849405-63adea0dea3cc.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.454Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849405-8791817efe383.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849405-8791817efe383.json'
+2025-02-19T15:10:49.454Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849405-63adea0dea3cc.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.462Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849419-12e9919c762b4.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.475Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849419-12e9919c762b4.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.476Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849419-f2c51bbc4ad61.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849419-f2c51bbc4ad61.json'
+2025-02-19T15:10:49.476Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849419-12e9919c762b4.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.500Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849443-265843d52992c.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.504Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849445-46c7147d51129.py", line 9, in main
+2025-02-19T15:10:49.504Z [ERROR]: from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.507Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849443-265843d52992c.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.508Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849443-7d16b2bc6fe6b.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849443-7d16b2bc6fe6b.json'
+2025-02-19T15:10:49.508Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849443-265843d52992c.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.517Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849456-1e598ff51e86d.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.517Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849445-46c7147d51129.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.517Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849445-0628534423f15.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849445-0628534423f15.json'
+2025-02-19T15:10:49.517Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849445-46c7147d51129.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.519Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849456-1e598ff51e86d.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.519Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849456-015827281db6e.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849456-015827281db6e.json'
+2025-02-19T15:10:49.519Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849456-1e598ff51e86d.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.532Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849482-a45a645c1a7ef.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.538Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849482-a45a645c1a7ef.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.538Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849482-21bba27f2158c.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849482-21bba27f2158c.json'
+2025-02-19T15:10:49.538Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849482-a45a645c1a7ef.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.559Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849514-2a948cc85bd13.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.565Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849514-2a948cc85bd13.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.565Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849514-3f3284e1fd361.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849514-3f3284e1fd361.json'
+2025-02-19T15:10:49.565Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849514-2a948cc85bd13.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.567Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849523-13c20893502b2.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.572Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849523-13c20893502b2.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.573Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849523-4b312eeecbdcb.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849523-4b312eeecbdcb.json'
+2025-02-19T15:10:49.573Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849523-13c20893502b2.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.585Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849540-d210676d6f5b8.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.591Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849540-d210676d6f5b8.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.591Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849540-d36c028ca559a.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849540-d36c028ca559a.json'
+2025-02-19T15:10:49.591Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849540-d210676d6f5b8.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.612Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849567-aae8687d5546b.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.620Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849567-aae8687d5546b.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.620Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849567-e155cca1e2dd9.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849567-e155cca1e2dd9.json'
+2025-02-19T15:10:49.620Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849567-aae8687d5546b.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.625Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849576-860764f83c8f5.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.628Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849576-860764f83c8f5.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.628Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849576-a60996e11a664.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849576-a60996e11a664.json'
+2025-02-19T15:10:49.628Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849576-860764f83c8f5.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.639Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849593-65864f2618118.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.645Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849593-65864f2618118.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.646Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849593-289ae56b57513.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849593-289ae56b57513.json'
+2025-02-19T15:10:49.646Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849593-65864f2618118.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.668Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849623-43450126d1804.py", line 9, in main
+    from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.675Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849623-43450126d1804.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.676Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849624-677f211cf8c22.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849624-677f211cf8c22.json'
+2025-02-19T15:10:49.676Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849623-43450126d1804.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.678Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849633-15ca15b1e6cf5.py", line 9, in main
+2025-02-19T15:10:49.678Z [ERROR]: from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.684Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849633-15ca15b1e6cf5.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.684Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849634-b4b0fee0b5f8a.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849634-b4b0fee0b5f8a.json'
+2025-02-19T15:10:49.684Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849633-15ca15b1e6cf5.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.691Z [ERROR]: Traceback (most recent call last):
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+    result = call_method(script_path, method_name, *data)
+  File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+    return method_to_call(*args)
+  File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849648-0666f2c7ec97.py", line 9, in main
+2025-02-19T15:10:49.691Z [ERROR]: from math_eval import MathEval
+ModuleNotFoundError: No module named 'math_eval'
+2025-02-19T15:10:49.696Z [ERROR]: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849648-0666f2c7ec97.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:10:49.697Z [ERROR]: Error removing /var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849648-e8d0510578f2a.json: Error: ENOENT: no such file or directory, unlink '/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/promptfoo-python-output-json-1739977849648-e8d0510578f2a.json'
+2025-02-19T15:10:49.697Z [ERROR]: Error executing Python code: Error: Error running Python script: ModuleNotFoundError: No module named 'math_eval'
+Stack Trace: Error: ModuleNotFoundError: No module named 'math_eval'
+    at PythonShell.parseError (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:303:21)
+    at terminateIfNeeded (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:193:32)
+    at ChildProcess.<anonymous> (/Users/khushi.malik/GitProjects/ai-identities/node_modules/python-shell/index.js:185:13)
+    at ChildProcess.emit (node:events:518:28)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+    --Python Traceback: --
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 39, in <module>
+      result = call_method(script_path, method_name, *data)
+    File "/Users/khushi.malik/GitProjects/ai-identities/node_modules/promptfoo/dist/src/python/wrapper.py", line 28, in call_method
+      return method_to_call(*args)
+    File "/var/folders/fz/kh18zxdx38b5qj9f1rm4mkrr0000gn/T/temp-python-code-1739977849648-0666f2c7ec97.py", line 9, in main
+      from math_eval import MathEval
+2025-02-19T15:15:13.802Z [ERROR]: API call error: TypeError: Cannot read properties of null (reading 'data')
+2025-02-19T15:17:51.195Z [ERROR]: API call error: TypeError: Cannot read properties of null (reading 'data')
