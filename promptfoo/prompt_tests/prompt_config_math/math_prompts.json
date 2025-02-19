@@ -1,15 +1,11 @@
 [
-    {
-      "prompt": "Solve the following math problem step by step:\n\n{Question}\n\nPut your final answer on its own line after 'Answer:'.",
+  {
+    "role": "system",
+    "content": "Solve the following math problem step by step:\n\n{Question}\n\nPut your final answer on its own line after 'Answer:'.",
       "expected": "{Answer}"
-    },
-    {
-      "prompt": "Differentiate the function: {Question}",
-      "expected": "{Answer}"
-    },
-    {
-      "prompt": "Integrate the function: {Question}",
-      "expected": "{Answer}"
-    }
-  ]
-  
+  },
+  {
+    "role": "user",
+    "content": "{{ Question }}"
+  }
+]

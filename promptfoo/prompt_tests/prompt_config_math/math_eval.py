@@ -4,6 +4,8 @@ import pandas as pd
 from typing import Any, Literal
 from dataclasses import dataclass, field
 import json
+import openai
+import ollama
 
 # Define message structure
 Message = dict[str, Any]  # Keys: role, content
@@ -20,13 +22,29 @@ class SamplerBase:
         """Override this method in a subclass to define a model's response behavior."""
         raise NotImplementedError
 
+class ModelSampler:
+    """A sampler that dynamically selects a model and generates responses."""
 
-class DummySampler(SamplerBase):
-    """A simple sampler that returns predefined responses for testing."""
+    def __init__(self, model_name: str):
+        self.model_name = model_name
 
     def __call__(self, message_list: MessageList) -> str:
-        return "Answer: 42"  # Dummy response for testing
+        """Generates a response using the specified model."""
+        if self.model_name.startswith("ollama:chat:"):
+            # Call Ollama for local LLMs
+            response = ollama.chat(model=self.model_name.split(":")[-1], messages=message_list)
+            return response["message"]["content"]
 
+        elif self.model_name.startswith("openai:"):
+            # Call OpenAI API
+            response = openai.ChatCompletion.create(
+                model=self.model_name.split(":")[-1],
+                messages=message_list
+            )
+            return response["choices"][0]["message"]["content"]
+
+        else:
+            raise ValueError(f"Unsupported model: {self.model_name}")
 
 @dataclass
 class EvalResult:
@@ -144,12 +162,31 @@ class MathEval(Eval):
 
 
 if __name__ == "__main__":
-    sampler = DummySampler()
-    math_eval = MathEval(equality_checker=sampler)
-    eval_result = math_eval(sampler)
+    # List of models from your promptfoo config
+    models = [
+        "ollama:chat:llama3.2",
+        "ollama:chat:deepseek-r1:1.5b",
+        "ollama:chat:qwen:1.8b",
+        "ollama:chat:gemma2:2b",
+        "ollama:chat:phi3:3.8b",
+        "ollama:chat:mistral",
+        "ollama:chat:wizardlm2",
+        "openai:gpt-4o"
+    ]
 
-    print(json.dumps({
-        "pass": eval_result.score > 0.8,
-        "score": eval_result.score,
-        "reason": "High accuracy in math problems" if eval_result.score > 0.8 else "Low accuracy in math problems"
-    }))
+    results = {}
+
+    for model in models:
+        sampler = ModelSampler(model)
+        math_eval = MathEval(equality_checker=sampler)
+        eval_result = math_eval(sampler)
+
+        results[model] = {
+            "pass": eval_result.score > 0.8,
+            "score": eval_result.score,
+            "reason": "High accuracy in math problems" if eval_result.score > 0.8 else "Low accuracy in math problems"
+        }
+
+    # Print all results
+    print(json.dumps(results, indent=4))
+

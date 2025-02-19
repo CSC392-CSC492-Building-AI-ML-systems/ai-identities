@@ -31,7 +31,7 @@ defaultTest:
 
         # Extract JSON output from the script
         try:
-            eval_result = json.loads(result.stdout)
+            eval_result = json.loads(result.stdout.strip())
         except json.JSONDecodeError:
             eval_result = {"pass": False, "score": 0, "reason": "Invalid script output"}
 
