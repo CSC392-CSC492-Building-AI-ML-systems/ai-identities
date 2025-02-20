@@ -1,0 +1,5 @@
+Question,Answer
+"What is 5 + 7?",12
+"Find the derivative of x^2 + 3x.",2x + 3
+"Integrate x dx.",0.5x^2 + C
+"Solve for x: 2x + 3 = 11.",4
