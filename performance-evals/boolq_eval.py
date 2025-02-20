@@ -70,17 +70,14 @@ def query_ollama(example):
         response_str = response.json()['response']
         cleaned_response = clean_response(response_str)
 
-        # Store results
-        results.append({
+        return {
             'question': example['question'],
             'passage': example['passage'],
             'predicted': cleaned_response,
             'actual': 'yes' if example['answer'] else 'no',
             'correct': (cleaned_response == 'yes') == example['answer']
-        })
+        }, cleaned_response
 
-        predictions.append(cleaned_response == 'yes')
-        ground_truth.append(example['answer'])
     except Exception as e:
         raise RuntimeError(f"Error querying Ollama: {e}")
 
@@ -111,6 +108,15 @@ with ThreadPoolExecutor(max_workers=config["test"]["parallel"]) as executor:
         executor.submit(query_ollama, dataset[idx]): idx
         for idx in range(len(dataset))
     }
+
+    for future in tqdm(
+        as_completed(futures), total=len(futures), smoothing=0.0, ascii=True
+    ):
+        idx = futures[future]
+        result, cleaned_response = future.result()
+        results.append(result)
+        predictions.append(cleaned_response == 'yes')
+        ground_truth.append(dataset[idx]['answer'])
 
 # Calculate metrics
 accuracy = accuracy_score(ground_truth, predictions)
