@@ -102,6 +102,7 @@ dataset = load_dataset("./boolq-data", split="validation")
 print(f"Loaded {len(dataset)} examples")
 print("Starting evaluation...")
 
+lock = threading.Lock()
 
 with ThreadPoolExecutor(max_workers=config["test"]["parallel"]) as executor:
     futures = {
@@ -114,9 +115,11 @@ with ThreadPoolExecutor(max_workers=config["test"]["parallel"]) as executor:
     ):
         idx = futures[future]
         result, cleaned_response = future.result()
-        results.append(result)
-        predictions.append(cleaned_response == 'yes')
-        ground_truth.append(dataset[idx]['answer'])
+        
+        with lock:
+            results.append(result)
+            predictions.append(cleaned_response == 'yes')
+            ground_truth.append(dataset[idx]['answer'])
 
 # Calculate metrics
 accuracy = accuracy_score(ground_truth, predictions)
