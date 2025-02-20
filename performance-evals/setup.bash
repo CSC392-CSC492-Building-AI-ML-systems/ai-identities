@@ -10,6 +10,6 @@ ollama_models=(
     mistral
 )
 
-for item in "${items[@]}"; do
+for item in "${ollama_models[@]}"; do
     ollama pull $item
 done
