@@ -13,6 +13,7 @@ import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
 import toml
+from openai import OpenAI
 
 parser = argparse.ArgumentParser(
 	prog="python3 boolq_eval.py",
@@ -40,6 +41,20 @@ if args.model:
 results = []
 predictions = []
 ground_truth = []
+idx_check = set()
+
+client = OpenAI(
+	base_url=config["server"]["url"],
+	api_key=config["server"]["api_key"],
+	timeout=config["server"]["timeout"],
+)
+
+
+print("Loading BoolQ dataset...")
+dataset = load_dataset(os.environ.get('SCRATCH')+'/ai-identities/performance-evals/boolq-data', split="validation")
+print(f"Loaded {len(dataset)} examples")
+print("Starting evaluation...")
+
 
 def format_prompt(question, passage):
     """
@@ -53,22 +68,30 @@ Question: {question}
 
 Answer:"""
 
-def query_ollama(example):
+def query_ollama(idx):
     """
     Send a query to the Ollama API and get the response
     """
+    example = dataset[idx]
 
+    if(idx in idx_check):
+         return None, None
+    
     prompt = format_prompt(example['question'], example['passage'])
     try:
-        response = requests.post('http://localhost:11434/api/generate',
-                               json={
-                                   'model': config["server"]["model"],
-                                   'prompt': prompt,
-                                   'stream': False
-                               })
-        response.raise_for_status()
-        response_str = response.json()['response']
+        response = client.chat.completions.create(
+			model=config["server"]["model"],
+			messages=[{"role":"user", "content":prompt}],
+			temperature=config["inference"]["temperature"],
+			max_tokens=config["inference"]["max_tokens"],
+			top_p=config["inference"]["top_p"],
+			frequency_penalty=0,
+			presence_penalty=0,
+			timeout=config["server"]["timeout"],
+		)
+        response_str = response.choices[0].message.content.strip()
         cleaned_response = clean_response(response_str)
+        idx_check.add(idx)
 
         return {
             'question': example['question'],
@@ -94,15 +117,7 @@ def clean_response(response):
         return 'no'
     else:
         return 'invalid'
-    
 
-
-print("Loading BoolQ dataset...")
-dataset = load_dataset("./boolq-data", split="validation")
-print(f"Loaded {len(dataset)} examples")
-print("Starting evaluation...")
-
-lock = threading.Lock()
 
 with ThreadPoolExecutor(max_workers=config["test"]["parallel"]) as executor:
     futures = {
@@ -116,10 +131,12 @@ with ThreadPoolExecutor(max_workers=config["test"]["parallel"]) as executor:
         idx = futures[future]
         result, cleaned_response = future.result()
         
-        with lock:
-            results.append(result)
-            predictions.append(cleaned_response == 'yes')
-            ground_truth.append(dataset[idx]['answer'])
+        if result == None:
+            continue
+        
+        results.append(result)
+        predictions.append(cleaned_response == 'yes')
+        ground_truth.append(dataset[idx]['answer'])
 
 # Calculate metrics
 accuracy = accuracy_score(ground_truth, predictions)
