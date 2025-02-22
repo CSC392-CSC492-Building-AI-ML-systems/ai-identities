@@ -4,11 +4,11 @@ comment = ""
 [server]
 url = "http://localhost:11434/v1"
 api_key = "api key"
-model = "llama3"
+model = "llama3.2" ##  insert your model using the model flag
 timeout = 600.0
 
 [inference]
-# Ssettings   below are from evaluate_from_local.py for VLLM  on TIGER-AI-Lab/MMLU-Pro
+# Settings below are from evaluate_from_local.py for VLLM  on TIGER-AI-Lab/MMLU-Pro
 temperature = 0.0
 top_p = 1.0 # not specified but  default for VLLM
 max_tokens = 2048
@@ -20,6 +20,7 @@ system_prompt = "The following are multiple choice questions (with answers) abou
 style = "multi_chat"
 
 [test]
+# Relevant for mmlu, can leave as is for your evals, wont affect
 categories = ['biology', 'business', 'chemistry', 'computer science', 'economics', 'engineering', 'health', 'history', 'law', 'math', 'philosophy', 'physics', 'psychology', 'other']
 subset = 1.0
 parallel = 16

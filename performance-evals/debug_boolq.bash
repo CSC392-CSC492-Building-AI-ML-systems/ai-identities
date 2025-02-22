@@ -1,17 +1,32 @@
 #!/bin/bash
-#SBATCH --ntasks=17
-#SBATCH --nodes=17
+#SBATCH --ntasks=4
+#SBATCH --nodes=4
 #SBATCH --cpus-per-task=80
-#SBATCH --time=02:00:00
+#SBATCH --time=00:20:00
 #SBATCH --account=def-engine14
-#SBATCH --job-name=boolq-debug-test
+#SBATCH --job-name=boolq-new-test
 #SBATCH --output=%x-%j.out
 #SBATCH --error=%x-%j.err
 
-# THIS SCRIPT IS FOR RUNNING WHOLE DATASET (no test flag)
-# ALSO nodes,ntasks increased to 17, time increased to 2hrs
-# APART FROM THAT THE SCRIPT IS ENTIRELY THE SAME
+# This is to test if your script runs with multiple ollama nodes
+# Since debug queue max 4 nodes as well as time restriction of 22.5mins (for 1 node, 1 hour, for 4 nodes, 22.5mins) 
+# you have 2 ways to run smth in debug queue, either
+# A) run debugjob --clean 4, to request 4 nodes,
+    # This will salloc (interactive) 4 nodes, and you can run this script in the interactive shell
+    # by running bash debug_boolq_test_ollama.bash
+    # main use, this is compute node, so if your scripts arent working, you can literally "debug" them here
+    # by sending commands to see your PATH variables, your ollama models being accessible/downloaded or not
+    # check your venv and python version/downloaded modules etc.
+# B) Else just do sbatch -p debug debug_boolq_test_ollama.bash
+    # This will submit the job to debug queue, and you can check the output and error files
+    # to see if your script ran successfully or not
+    # you can see the file name formats above, example: boolq-new-test-12345.out/err
+    # This is useful if you are sure your script will run, and you just want to see the output
+    # and error files to see if everything runs properly or not
 
+# OPTIONAL: Load modules
+# I did this before hand manually, but thats just because i was trying to figure out venv
+# Keeping this causes no harm
 module load NiaEnv/2019b # Default module, always there unless you force purged it before
 module load python/3.11.5
 module load gcc/9.4.0
@@ -21,20 +36,15 @@ export VENV=$SCRATCH/ai-identities/performance-evals/venv
 export OLLAMA_NUM_PARALLEL=16
 export OLLAMA_FLASH_ATTENTION=1
 export HOME=$SCRATCH
-
-#IMPORTANT: when u setup and install the ollama models, they are gonna be in your home node, not scratch
-# that is models are pulled into ~/.ollama/models
-# ~ represents your home directory, where you login....
-# so you must have those models copied from there to your scratch directory inside this ollama_home directory
-# You will likely get errors if you try to add the copy now, or even try to access the models
-# within the home directory, from your compute node, as they only have access to scratch
-# so you must have copied (recursively) the models with cp -r ~/.ollama/models $SCRATCH/ollama_home/
-# before running this script
-
 export OLLAMA_HOME="$SCRATCH/ollama_home"
 export OLLAMA_MODELS="$SCRATCH/ollama_home/models"
 
 # Activate virtual environment
+# IMPORTANT: This is the venv where you have installed the required modules before
+# Has to be activated so that your models are accesible
+# If transferred venv from windows, remember activation script becomes $VENV/Scripts/activate
+# If transferred venv from linux, remember activation script becomes $VENV/bin/activate
+# Rest nothing needs to be changed except your calling eval script
 source $VENV/bin/activate
 
 # Change to working directory
@@ -92,7 +102,7 @@ start_ollama_server() {
     return 0
 }
 
-# Start Ollama servers with <their_ip:port_number> and 20 CPUs for each
+# Start Ollama servers with 20 CPUs each
 start_ollama_server ${NODE_ARRAY[0]} $IP_1 11434 20 || exit 1
 start_ollama_server ${NODE_ARRAY[1]} $IP_2 11435 20 || exit 1
 start_ollama_server ${NODE_ARRAY[2]} $IP_3 11436 20 || exit 1
@@ -103,11 +113,14 @@ echo "All Ollama servers are running. Starting evaluation..."
 echo "VENV: $VENV"
 
 # Run evaluation script on the fourth node
-### THIS EXPORT IS CRUCIAL, USED IN the python eval script
-### Since each ollama/openAI model is running on a different node
-### and each node will have a uniqe IP address, that wont be the localhost
 export OLLAMA_SERVERS="$IP_1:11434,$IP_2:11435,$IP_3:11436"
 
-# Run the evaluation script
+
+# NODE_ARRAY[3], the fourth node, is the one where the python eval runs
+# Can max out cpus per task to 40 or 80, since we have 4 nodes, and 80 cpus per node
+# IMPORTANT: replace boolq_eval.py with your script name
+# IMPORTANT: For now replace llama3.2 with your model name,
+#               i'll make it a variable that you can pass through sbatch later,
+#               along with number of ollama nodes
 srun --nodes=1 --nodelist=${NODE_ARRAY[3]} --ntasks=1 --cpus-per-task=20 \
-    python boolq_eval.py --model llama3.2 --parallel 16
+    python boolq_eval.py --test --model llama3.2 --parallel 16
