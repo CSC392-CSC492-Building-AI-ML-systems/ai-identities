@@ -1,8 +1,9 @@
 datasets
 openai
 toml
-requests 
-tqdm 
-pandas 
-scikit-learn 
+requests
+tqdm
+pandas
+scikit-learn
 psutil
+logging
