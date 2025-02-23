@@ -90,38 +90,9 @@ At this point, make sure that
     - To see if <model_name> has been pulled/copied correctly, it should exist in manifests/registry.ollama.ai/library/<model_name>
 - ~/.bashrc file has the updated path for ollama/bin and your structure should be
 
->❗ **IMPORTANT**
-> Your directory structure for $SCRATCH should look something like this
-~/$SCRATCH/
-├── ai-identities/                  # Main project directory
-│   ├── ollama/                    # Ollama binary and libraries
-│   │   ├── bin/                   # Contains ollama executable
-│   │   └── lib/                   # Shared libraries
-│   │
-│   └── performance-evals/         # Evaluation scripts and data
-│       ├── venv/                  # Virtual environment
-│       ├── boolq-data/           # Dataset directory
-│       ├── requirements.txt       # Python dependencies
-│       ├── config.toml           # Configuration file
-│       ├── boolq_eval.py         # Main evaluation script
-│       ├── boolq_coding_test.bash # Production run script
-│       └── debug_boolq.bash      # Debug run script
-│       └── other files
-│
-├── ollama_home/                   # Ollama configuration directory
-│   └── models/manifests/registry.ollama.ai/lib
-│       |
-│       ├── llama3.2             # Confirm all models you need are here
-│       ├── deepseek-r1
-│       ├── qwen
-│       ├── gemma2
-│       ├── phi3
-│       └── mistral
-│
-|──── <job_name-id>.out         # Standard output logs
-|──── <job_name-id>.err         # Error logs
-|──── ollama_node_*.log         # Ollama server logs
-
+### Directory Structure
+Your $SCRATCH directory must be looking like this at this point
+![Niagara_directory_structure](https://github.com/user-attachments/assets/6559ed36-e89a-472d-8e70-f7a6dfa51621)
 
 ## Running Evaluations
 
