@@ -1,7 +1,7 @@
-description: "Measuring Model Problem Solving"
+description: "Measuring Model Multilingual Grade School Math Benchmark (MGSM)"
 
 prompts:
-  - file://./math_prompts.json
+  - file://./mgsm_prompts.json
 
 providers:
   - "ollama:chat:llama3.2"
@@ -21,7 +21,7 @@ defaultTest:
         import json
         import os
 
-        script_path = os.path.join(os.path.dirname(__file__), "math_eval.py")
+        script_path = os.path.join(os.path.dirname(__file__), "mgsm_eval.py")
 
         result = subprocess.run(
             ["python3", script_path],
@@ -36,9 +36,15 @@ defaultTest:
             eval_result = {"pass": False, "score": 0, "reason": "Invalid script output"}
 
         return eval_result
-      description: "Evaluates model's ability to solve math problems"
+      description: "Evaluates model's ability to MGSM problems"
       weight: 4.0
 
+assertions:
+  - type: includes
+    value: "{{expected}}"  # Ensures the output includes the expected answer
+
+scoring:
+  method: exact  # Use "exact" matching for multiple-choice questions
+
 tests:
-  - file://./math_tests.csv
-  # - https://openaipublic.blob.core.windows.net/simple-evals/math_500_test.csv
+  - file://./mgsm_tests.csv
