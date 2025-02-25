@@ -6,6 +6,10 @@ from dataclasses import dataclass, field
 import json
 import openai
 import ollama
+import os
+
+# results after running 20 prompts: https://app.promptfoo.dev/eval/f:07236ce9-6c97-4221-944a-93806f3c7651
+# Need to clean the answers and then just compare with the prompt responses. 
 
 # Define message structure
 Message = dict[str, Any]  # Keys: role, content
@@ -17,26 +21,21 @@ ANSWER_PATTERN = r"(?i)Answer\s*:\s*([^\n]+)"
 
 class SamplerBase:
     """Base class for defining a model sampling method."""
-
     def __call__(self, message_list: MessageList) -> str:
-        """Override this method in a subclass to define a model's response behavior."""
         raise NotImplementedError
 
-class ModelSampler:
-    """A sampler that dynamically selects a model and generates responses."""
 
+class ModelSampler(SamplerBase):
+    """A sampler that dynamically selects a model and generates responses."""
     def __init__(self, model_name: str):
         self.model_name = model_name
 
     def __call__(self, message_list: MessageList) -> str:
-        """Generates a response using the specified model."""
         if self.model_name.startswith("ollama:chat:"):
-            # Call Ollama for local LLMs
             response = ollama.chat(model=self.model_name.split(":")[-1], messages=message_list)
             return response["message"]["content"]
 
         elif self.model_name.startswith("openai:"):
-            # Call OpenAI API
             response = openai.ChatCompletion.create(
                 model=self.model_name.split(":")[-1],
                 messages=message_list
@@ -46,9 +45,9 @@ class ModelSampler:
         else:
             raise ValueError(f"Unsupported model: {self.model_name}")
 
+
 @dataclass
 class EvalResult:
-    """Stores the results of running an evaluation."""
     score: float | None
     metrics: dict[str, float] | None
     htmls: list[str]
@@ -57,7 +56,6 @@ class EvalResult:
 
 @dataclass
 class SingleEvalResult:
-    """Stores the results of a single evaluation sample."""
     score: float | None
     metrics: dict[str, float] = field(default_factory=dict)
     html: str | None = None
@@ -65,7 +63,6 @@ class SingleEvalResult:
 
 
 class Eval:
-    """Base evaluation class."""
     def __call__(self, sampler: SamplerBase) -> EvalResult:
         raise NotImplementedError
 
@@ -108,16 +105,20 @@ def check_equality(sampler: SamplerBase, expr1: str, expr2: str) -> bool:
 
 class MathEval(Eval):
     """Math evaluation class for testing model accuracy on math problems."""
-
     def __init__(
         self,
         equality_checker: SamplerBase,
+        dataset: str,
         num_examples: int | None = None,
         n_repeats: int = 16,
-        split: Literal["math_test", "math_500_test"] = "math_test",
     ):
-        # Load dataset
-        df = pd.read_csv(f"https://openaipublic.blob.core.windows.net/simple-evals/{split}.csv")
+        if dataset.startswith("http"):
+            df = pd.read_csv(dataset)  # Load from OpenAI's dataset
+        elif os.path.exists(dataset):
+            df = pd.read_csv(dataset)  # Load local dataset
+        else:
+            raise ValueError(f"Dataset {dataset} not found!")
+
         examples = df.to_dict(orient="records")
 
         if num_examples:
@@ -126,7 +127,7 @@ class MathEval(Eval):
             examples = rng.sample(examples, num_examples)
 
         self.examples = examples * n_repeats
-        self.equality_checker = equality_checker  # Must be a SamplerBase instance!
+        self.equality_checker = equality_checker
 
     def __call__(self, sampler: SamplerBase) -> EvalResult:
         results = []
@@ -138,10 +139,7 @@ class MathEval(Eval):
             match = re.search(ANSWER_PATTERN, response_text)
             extracted_answer = match.group(1) if match else None
 
-            if extracted_answer is None:
-                score = 0  # If no valid answer was extracted, it's incorrect
-            else:
-                score = float(check_equality(self.equality_checker, row["Answer"], extracted_answer))
+            score = 0 if extracted_answer is None else float(check_equality(self.equality_checker, row["Answer"], extracted_answer))
 
             results.append(
                 SingleEvalResult(
@@ -162,7 +160,6 @@ class MathEval(Eval):
 
 
 if __name__ == "__main__":
-    # List of models from your promptfoo config
     models = [
         "ollama:chat:llama3.2",
         "ollama:chat:deepseek-r1:1.5b",
@@ -174,19 +171,25 @@ if __name__ == "__main__":
         "openai:gpt-4o"
     ]
 
+    datasets = {
+        # "math_test": "https://openaipublic.blob.core.windows.net/simple-evals/math_test.csv",
+        # "math_500_test": "https://openaipublic.blob.core.windows.net/simple-evals/math_500_test.csv",
+        "math_tests.csv": "./math_tests.csv"  # Local file
+    }
+
     results = {}
 
     for model in models:
         sampler = ModelSampler(model)
-        math_eval = MathEval(equality_checker=sampler)
-        eval_result = math_eval(sampler)
 
-        results[model] = {
-            "pass": eval_result.score > 0.8,
-            "score": eval_result.score,
-            "reason": "High accuracy in math problems" if eval_result.score > 0.8 else "Low accuracy in math problems"
-        }
+        for dataset_name, dataset_path in datasets.items():
+            math_eval = MathEval(equality_checker=sampler, dataset=dataset_path)
+            eval_result = math_eval(sampler)
 
-    # Print all results
+            results[f"{model}_{dataset_name}"] = {
+                "pass": eval_result.score > 0.8,
+                "score": eval_result.score,
+                "reason": "High accuracy" if eval_result.score > 0.8 else "Low accuracy"
+            }
+
     print(json.dumps(results, indent=4))
-
