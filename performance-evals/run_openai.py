@@ -5,7 +5,7 @@ import time
 import random
 from tqdm import tqdm
 from openai import OpenAI
-from datasets import load_dataset
+from datasets import load_dataset, Dataset, DatasetDict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
 from datetime import datetime, timedelta
@@ -146,7 +146,10 @@ def get_completion(prompt):
 
 
 def load_mmlu_pro():
-	dataset = load_dataset("TIGER-Lab/MMLU-Pro")
+	dataset = DatasetDict({
+		"validation":Dataset.from_parquet(os.environ.get('SCRATCH')+'/ai-identities/performance-evals/mmlu-data/validation-00000-of-00001.parquet'),
+		"test":Dataset.from_parquet(os.environ.get('SCRATCH')+'/ai-identities/performance-evals/mmlu-data/test-00000-of-00001.parquet')
+	}) 
 	test_df, val_df = dataset["test"], dataset["validation"]
 	test_df = preprocess(test_df, subset=config["test"]["subset"])
 	val_df = preprocess(val_df)
