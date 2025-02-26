@@ -1,0 +1,50 @@
+description: "Measuring Model SimpleQA"
+
+prompts:
+  - file://./simpleqa_prompts.json
+
+providers:
+  - "ollama:chat:llama3.2"
+  - "ollama:chat:deepseek-r1:1.5b"
+  - "ollama:chat:qwen:1.8b"
+  - "ollama:chat:gemma2:2b"
+  - "ollama:chat:phi3:3.8b"
+  - "ollama:chat:mistral"
+  - "ollama:chat:wizardlm2"
+  - "openai:gpt-4"
+
+defaultTest:
+  assert:
+    - type: python
+      value: |
+        import subprocess
+        import json
+        import os
+
+        script_path = os.path.join(os.path.dirname(__file__), "simpleqa_eval.py")
+
+        result = subprocess.run(
+            ["python3", script_path],
+            capture_output=True,
+            text=True
+        )
+
+        # Extract JSON output from the script
+        try:
+            eval_result = json.loads(result.stdout.strip())
+        except json.JSONDecodeError:
+            eval_result = {"pass": False, "score": 0, "reason": "Invalid script output"}
+
+        return eval_result
+      description: "Evaluates model's ability to answer simple questions"
+      weight: 4.0
+
+assertions:
+  - type: includes
+    value: "{{expected}}"
+
+scoring:
+  method: exact
+
+tests:
+  - file://./simpleqa_tests.csv
