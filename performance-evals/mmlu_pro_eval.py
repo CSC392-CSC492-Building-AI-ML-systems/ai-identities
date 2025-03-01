@@ -75,12 +75,37 @@ if args.comment:
 	config["comment"] = args.comment
 
 
-client = OpenAI(
-	base_url=config["server"]["url"],
-	api_key=config["server"]["api_key"],
-	timeout=config["server"]["timeout"],
-)
+# Get server URLs from environment variable
+server_list = os.environ.get('OLLAMA_SERVERS', '').split(',')
 
+if not server_list[0]:
+    server_list = ['localhost:11434', 'localhost:11435', 'localhost:11436']
+
+SERVERS = [
+    {"url": f"http://{server}/v1", "port": int(server.split(':')[1])}
+    for server in server_list if server
+]
+
+# Create OpenAI clients for each server
+clients = [
+    OpenAI(
+        base_url=server["url"],
+        api_key=config["server"]["api_key"],
+        timeout=config["server"]["timeout"]
+    )
+    for server in SERVERS
+]
+
+# Thread-safe server rotation
+server_index = 0
+lock = threading.Lock()
+
+def get_next_server():
+    global server_index
+    with lock:
+        server = server_index
+        server_index = (server_index + 1) % len(SERVERS)
+    return server
 
 def log(message):
 	print(message)
@@ -89,6 +114,8 @@ def log(message):
 
 
 def get_chat_completion(messages):
+	server_idx = get_next_server()
+	client = clients[server_idx]
 	try:
 		response = client.chat.completions.create(
 			model=config["server"]["model"],
@@ -115,6 +142,8 @@ def get_chat_completion(messages):
 
 
 def get_completion(prompt):
+	server_idx = get_next_server()
+	client = clients[server_idx]
 	try:
 		response = client.completions.create(
 			model=config["server"]["model"],
