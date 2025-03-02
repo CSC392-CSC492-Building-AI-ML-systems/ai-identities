@@ -1,6 +1,15 @@
 # Multi-Node Model Evaluation Guide for Niagara
 
 This guide should help explain all steps to run your script on the Niagara supercomp
+> ❗ **IMPORTANT**
+> NEW UPDATE: Since we would like to have arbitrary number of servers,
+> Workflow for running evals has been changed, look at job_submitter_boolq.bash
+> You just run 'bash job_submitter_boolq.bash <NUM_SERVERS>', and it calls sbatch <eval_bash> from within itself configuring number of nodes. (eval_bash example is script_runner_boolq.bash, not much changed except taking number of servers from passed argument)
+> Apart from that, important changes in boolq_eval.py (that you could take in your eval file includes):
+>   - Separate directories for saving results, eval_logs, and server/error logs
+>   - Each entry into directory is timestamped, and classification report is saved both as timestamped csv as well as a json metric, to make future task of developing score dataset simpler
+>   - Isolated logic for openAI vs ollama models, even though openAI models cant be run without internet access on compute nodes, atleast not much has to be refactored when running openAI locally
+>   - (From older version of README): logic for handling multiple servers (all marked with comments starting as # --> as example)
 ## Setup Process
 
 #### SUGGESTIONS:
@@ -99,7 +108,7 @@ Your $SCRATCH directory must be looking like this at this point
 ### 1. Debug Run
 
 First, test your setup with a debug run:
-
+(Note: for debug, its better to use the format of debug bash file, without having number of nodes as argument)
 ```bash
 cd $SCRATCH/ai-identities/performance-evals
 sbatch -p debug debug_boolq.bash
@@ -114,10 +123,9 @@ bash debug_boolq.bash
 
 ### 2. Full Evaluation
 
-Once debug run meets your expectations/succeeds run the whole shit:
-
+Once debug run meets your expectations/succeeds : run with the proper bash files
 ```bash
-sbatch boolq_coding_test.bash
+bash job_submitter_{youreval}.bash NUM_OLLAMA_SERVERS # Request NUM_OLLAMA_SERVERS + 1 nodes, remember max 20 nodes can be requested on compute partition
 ```
 
 ## Required Code for Multi-Server Support
@@ -125,6 +133,8 @@ sbatch boolq_coding_test.bash
 Every evaluation script must include the following core logic for multi-server support
 (copied from boolq_eval.py, if possible have a look to make sure why this code exists/
 interacts with other components of the eval file):
+NEW UPDATE: All comments starting with # --> # contain logic for multi servers. New code
+isolates logic for openAI vs ollama models, so that running evals locally with openAI doesn't require refactoring.
 
 ```python
 # Get server URLs from environment variable
@@ -198,6 +208,9 @@ def check_server_health(client, server_url):
 
 - Check job status: `squeue -u $USER`
 - Check when job starts: `squeue --start -j JOBID`
+- Check job performance: `jobperf JOBID`
+ (important- make sure all servers have ollama running after pull for example)
+
 - Cancel a job: `scancel -i JOBID`
 - View output logs: `cat job-name-id-*.out`
 - View error logs: `cat job-name-id-*.err`
