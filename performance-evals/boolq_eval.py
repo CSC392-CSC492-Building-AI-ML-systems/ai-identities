@@ -14,18 +14,31 @@ import toml
 from openai import OpenAI
 import logging
 import sys
+import datetime
+
+# Create timestamp for file naming
+timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+
+# Create necessary directories
+
+# --> DONT FORGET TO CHANGE THIS TO YOUR EVALUATION NAME
+os.makedirs("boolq_eval_logs", exist_ok=True)
+os.makedirs("boolq_eval_results", exist_ok=True)
+os.makedirs("server_logs", exist_ok=True)
 
 # Set up logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('boolq_eval.log'),
+        # --> DONT FORGET TO CHANGE THIS TO YOUR EVALUATION NAME
+        logging.FileHandler(f'boolq_eval_logs/log_{timestamp}.txt'),
         logging.StreamHandler(sys.stdout)
     ]
 )
 
 parser = argparse.ArgumentParser(
+    # --> DONT FORGET TO CHANGE THIS TO YOUR EVALUATION NAME
     prog="python3 boolq_eval.py",
     description="Run Boolq test on multiple ollama models with load balancing",
 )
@@ -54,22 +67,19 @@ if args.parallel:
 if args.model:
     config["server"]["model"] = args.model
 
-# Initialize clients dictionary to store both Ollama and OpenAI clients
-# IMPORTANT: separated previous logic of ollama and openai models being run on same client
-# is helpful for debugging, especially when all models will be run automatically (iteratively) on multiple nodes
-# instead of being each time calling the eval script with a particular model name
-
-clients_dict = {}
-
 # Determine if we're using an OpenAI model
 model_name = config["server"]["model"]
 using_openai_model = model_name.startswith("openai:") or model_name.startswith("gpt-")
 
-# ____      THIS SNIPPET IS CRUCIAL FOR EVERY EVAL     ____________
-# ____ IF GOING MULTI-NODE, THIS IS THE PART TO ADD    ____
-# TODO: Run the complete dataset and check whats the max amount of nodes we can scale it to
-# TODO:     - or set a threshold for max nodes, if not (smth like 25)
-# TODO: Clean logging file outputs for individual nodes, can merge all ollama/openAI server node logs into a single file
+model_results_dir = f"boolq_eval_results/{model_name.replace(':', '_')}"
+os.makedirs(model_results_dir, exist_ok=True)
+
+
+# Initialize clients dictionary to store both Ollama and OpenAI clients
+# IMPORTANT: separated previous logic of ollama and openai models being run on same client
+# is helpful for debugging, especially when all models will be run automatically (iteratively) on multiple nodes
+# instead of being each time calling the eval script with a particular model name
+clients_dict = {}
 
 # Initialize OpenAI clients if using an OpenAI model
 openai_clients = []
@@ -111,8 +121,8 @@ else:
     logging.info(f"OLLAMA_SERVERS environment variable: {os.environ.get('OLLAMA_SERVERS', 'Not set')}")
 
     if not server_list[0]:
-        server_list = ['localhost:11434']
-        logging.warning("Using singular default server list as OLLAMA_SERVERS not set")
+        server_list = ['localhost:11434', 'localhost:11435', 'localhost:11436']
+        logging.warning("Using default server list as OLLAMA_SERVERS not set")
 
     SERVERS = [
         {"url": f"http://{server}/v1", "port": int(server.split(':')[1])}
@@ -371,22 +381,64 @@ if predictions and ground_truth:
         report = classification_report(ground_truth, predictions)
         logging.info(f"\nClassification Report:\n{report}")
         
-        # Calculate server distribution (this should be almost equal for all servers
-        # if load balancing is working properly / all clients were functional the whole time
+        # Save classification report as its own csv file in results directory
+        report_dict = classification_report(ground_truth, predictions, output_dict=True)
+        report_df = pd.DataFrame(report_dict).transpose()
+        report_df.to_csv(f"{model_results_dir}/classification_report_{timestamp}.csv")
+        logging.info(f"\nClassification Report saved to {model_results_dir}/classification_report_{timestamp}.csv")
+
+        # Calculate server distribution
         server_distribution = results_df['server'].value_counts()
         logging.info(f"\nServer Distribution:\n{server_distribution}")
         
-        # Save results
-        output_file = f"{config['server']['model'].replace(':', '_')}_boolq_results.csv"
+        # Save results to model-specific directory with timestamp
+        output_file = f"{model_results_dir}/results_{timestamp}.csv"
         results_df.to_csv(output_file, index=False)
         logging.info(f"\nResults saved to {output_file}")
+        
+        if 'True' in report_dict:
+            # Binary classification
+            class_metrics = {
+                "precision": {
+                    "class_true": report_dict['True']['precision'],
+                    "class_false": report_dict['False']['precision']
+                },
+                "recall": {
+                    "class_true": report_dict['True']['recall'],
+                    "class_false": report_dict['False']['recall']
+                },
+                "f1-score": {
+                    "class_true": report_dict['True']['f1-score'],
+                    "class_false": report_dict['False']['f1-score']
+                },
+                "support": {
+                    "class_true": int(report_dict['True']['support']),
+                    "class_false": int(report_dict['False']['support'])
+                },
+                "macro_avg": report_dict['macro avg'],
+                "weighted_avg": report_dict['weighted avg']
+            }
+        else:
+            # Fallback if keys are different
+            class_metrics = report_dict
+        
+        # Save metrics summary
+        metrics_summary = {
+            "timestamp": timestamp,
+            "model": model_name,
+            "accuracy": float(accuracy),
+            "classification_report": class_metrics,
+            "processed_examples": len(idx_check),
+            "total_examples": len(dataset_list),
+            "server_distribution": server_distribution.to_dict()
+        }
+        
+        with open(f"{model_results_dir}/metrics_{timestamp}.json", "w") as f:
+            json.dump(metrics_summary, f, indent=2)
         
     except Exception as e:
         logging.error(f"Error calculating/saving metrics: {e}")
 else:
     logging.error("No predictions or ground truth available to calculate metrics")
 
-# TODO: Separate results from logging into its own thing
-# TODO: Look at directory structure for storing results 
-# TODO:     - eventually wanna extract scores from multiple runs for all models      to pass it to the final analysis script to train a model on identifying based on scores
 logging.info(f"\nProcessed {len(idx_check)} out of {len(dataset_list)} examples")
