@@ -9,7 +9,7 @@ timeout = 600.0
 
 [inference]
 # Settings below are from evaluate_from_local.py for VLLM  on TIGER-AI-Lab/MMLU-Pro
-temperature = 0.0
+temperature = 1.2
 top_p = 1.0 # not specified but  default for VLLM
 max_tokens = 2048
 # The variable {subject} will be replaced with appropriate value in  runtime.

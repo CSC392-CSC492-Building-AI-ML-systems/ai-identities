@@ -116,6 +116,7 @@ def log(message):
 def get_chat_completion(messages):
 	server_idx = get_next_server()
 	client = clients[server_idx]
+	print(config["inference"]["temperature"])
 	try:
 		response = client.chat.completions.create(
 			model=config["server"]["model"],
