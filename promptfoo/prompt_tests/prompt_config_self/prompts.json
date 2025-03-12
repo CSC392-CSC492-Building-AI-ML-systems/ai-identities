@@ -1,7 +1,8 @@
 [
   {
     "role": "system",
-    "content": "Respond naturally to the following question."
+    "content": "Respond to the given question with only one word and put your final answer on a separate line starting with Answer:",
+    "expected": "{Answer}"
   },
   {
     "role": "user",

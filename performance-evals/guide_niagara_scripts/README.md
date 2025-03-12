@@ -37,7 +37,7 @@ cp -r ~/ai-identities $SCRATCH/
 ```bash
 cd $SCRATCH/ai-identities
 wget https://github.com/ollama/releases/download/v0.5.11/ollama-linux-amd64.tgz
-tar -xvzf ollama-linux-amd64.tgz
+tar -xvzf ollama-linux-amd64.tgzwget https://github.com/ollama/releases/download/v0.5.11/ollama-linux-amd64.tgz
 mkdir ollama
 mv bin ollama
 mv lib ollama
