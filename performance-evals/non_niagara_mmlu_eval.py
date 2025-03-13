@@ -88,19 +88,50 @@ client = OpenAI(
 server_index = 0
 lock = threading.Lock()
 
-# Rate limiting variables: maximum 1 request per second.
+# Replace the existing rate_limit_lock and throttle_request() with this:
+
+# Global rate limiter variables
 rate_limit_lock = threading.Lock()
-last_request_time = 0.0
-MIN_INTERVAL = 1.0  # seconds
+tokens = 1  # Start with 1 token available
+last_refill_time = time.time()
+# Configure these in your TOML (add [server] rate_limit_rpm = 60)
+RPM = config["server"].get("rate_limit_rpm", 60)  # Requests per minute
+REFILL_INTERVAL = 60.0 / RPM  # Seconds between tokens
+BUCKET_SIZE = 1  # Maximum burst capacity
+
+tpm_lock = threading.Lock()
+tpm_tokens = 500_000  # Initial token count set to the TPM limit
+tpm_last_refill_time = time.time()
+TPM_REFILL_PER_SECOND = 500_000 / 60  # ~8333.33 tokens per second
+TPM_BUCKET_SIZE = 500_000  # Maximum burst capacity
 
 def throttle_request():
-    global last_request_time
+    global tokens, last_refill_time
     with rate_limit_lock:
+        # Calculate how many tokens should be added since last refill
         current_time = time.time()
-        elapsed = current_time - last_request_time
-        if elapsed < MIN_INTERVAL:
-            time.sleep(MIN_INTERVAL - elapsed)
-        last_request_time = time.time()
+        time_since_refill = current_time - last_refill_time
+        new_tokens = time_since_refill / REFILL_INTERVAL
+
+        if new_tokens > 0:
+            tokens = min(tokens + new_tokens, BUCKET_SIZE)
+            last_refill_time = current_time
+
+        # Wait until at least 1 token is available
+        while tokens < 1:
+            time_to_wait = REFILL_INTERVAL - (current_time - last_refill_time)
+            if time_to_wait > 0:
+                time.sleep(time_to_wait)
+                current_time = time.time()
+                new_tokens = (current_time - last_refill_time) / REFILL_INTERVAL
+                tokens = min(tokens + new_tokens, BUCKET_SIZE)
+                last_refill_time = current_time
+            else:
+                last_refill_time = current_time
+                new_tokens = 0
+
+        # Take a token
+        tokens -= 1
 
 def log(message):
     print(message)
@@ -108,7 +139,8 @@ def log(message):
         file.write(message + "\n")
 
 def get_chat_completion(messages):
-    throttle_request()  # Ensure at most 1 request per second
+    global tpm_tokens, tpm_last_refill_time
+    throttle_request()  # Enforce RPM limit
     try:
         response = client.chat.completions.create(
             model=config["server"]["model"],
@@ -125,16 +157,37 @@ def get_chat_completion(messages):
             print("Received None response from API.")
             sys.exit(1)
         try:
-            usage_q.put((response.usage.prompt_tokens, response.usage.completion_tokens))
+            # Track token usage
+            prompt_tokens = response.usage.prompt_tokens
+            completion_tokens = response.usage.completion_tokens
+            usage_q.put((prompt_tokens, completion_tokens))
+            # Deduct tokens from TPM bucket
+            used_tokens = prompt_tokens + completion_tokens
+            with tpm_lock:
+                current_time = time.time()
+                time_since_refill = current_time - tpm_last_refill_time
+                refilled_tokens = time_since_refill * TPM_REFILL_PER_SECOND
+                tpm_tokens_current = min(tpm_tokens + refilled_tokens, TPM_BUCKET_SIZE)
+                tpm_last_refill_time_current = current_time
+                tpm_tokens_new = tpm_tokens_current - used_tokens
+                # Adjust for deficit
+                if tpm_tokens_new < 0:
+                    deficit = -tpm_tokens_new
+                    required_time = deficit / TPM_REFILL_PER_SECOND
+                    tpm_last_refill_time_current -= required_time
+                    tpm_tokens_new = 0
+                # Update global variables
+                tpm_tokens = tpm_tokens_new
+                tpm_last_refill_time = tpm_last_refill_time_current
         except AttributeError:
             pass
         return response.choices[0].message.content.strip()
     except Exception as e:
         print("Error in get_chat_completion:", e)
         sys.exit(1)
-
 def get_completion(prompt):
-    throttle_request()  # Ensure at most 1 request per second
+    global tpm_tokens, tpm_last_refill_time
+    throttle_request()  # Enforce RPM limit
     try:
         response = client.completions.create(
             model=config["server"]["model"],
@@ -151,7 +204,28 @@ def get_completion(prompt):
             print("Received None response from API.")
             sys.exit(1)
         try:
-            usage_q.put((response.usage.prompt_tokens, response.usage.completion_tokens))
+            # Track token usage
+            prompt_tokens = response.usage.prompt_tokens
+            completion_tokens = response.usage.completion_tokens
+            usage_q.put((prompt_tokens, completion_tokens))
+            # Deduct tokens from TPM bucket
+            used_tokens = prompt_tokens + completion_tokens
+            with tpm_lock:
+                current_time = time.time()
+                time_since_refill = current_time - tpm_last_refill_time
+                refilled_tokens = time_since_refill * TPM_REFILL_PER_SECOND
+                tpm_tokens_current = min(tpm_tokens + refilled_tokens, TPM_BUCKET_SIZE)
+                tpm_last_refill_time_current = current_time
+                tpm_tokens_new = tpm_tokens_current - used_tokens
+                # Adjust for deficit
+                if tpm_tokens_new < 0:
+                    deficit = -tpm_tokens_new
+                    required_time = deficit / TPM_REFILL_PER_SECOND
+                    tpm_last_refill_time_current -= required_time
+                    tpm_tokens_new = 0
+                # Update global variables
+                tpm_tokens = tpm_tokens_new
+                tpm_last_refill_time = tpm_last_refill_time_current
         except AttributeError:
             pass
         if response.choices:
@@ -163,7 +237,6 @@ def get_completion(prompt):
     except Exception as e:
         print("Error in get_completion:", e)
         sys.exit(1)
-
 def load_mmlu_pro():
     try:
         dataset = DatasetDict({

@@ -6,6 +6,7 @@ url = "http://localhost:11434/v1"
 api_key = ""
 model = "llama3.2" ##  insert your model using the model flag
 timeout = 600.0
+rate_limit_rpm = 60  # Or whatever your API's rate limit is
 
 [inference]
 # Settings below are from evaluate_from_local.py for VLLM  on TIGER-AI-Lab/MMLU-Pro

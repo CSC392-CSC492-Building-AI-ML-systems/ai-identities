@@ -7,6 +7,9 @@
 #              The script will terminate early if the Python program exits with an error code of 1.
 # Usage: ./mistral_mmlu_eval_loop.sh <MISTRAL_API_KEY>
 
+# Exit immediately if a command exits with a non-zero status
+set -e
+
 # Check if API key is provided
 if [ -z "$1" ]; then
     echo "Error: Mistral API key is required."
@@ -34,16 +37,13 @@ for i in {1..26}; do
 
     # Run the Python script with the Mistral API parameters
     # Replace with the desired Mistral model
-    python3 non_niagara_mmlu_eval.py --url https://api.mistral.ai/v1/ \
+    if ! python3 non_niagara_mmlu_eval.py --url https://api.mistral.ai/v1/ \
         --model open-mistral-nemo \
         --category 'computer science' \
         --verbosity 0 \
         --parallel 256 \
-        --api $MISTRAL_API_KEY
-
-    # Check the exit code of the Python script
-    if [ $? -eq 1 ]; then
-        echo "Python script exited with error code 1. Terminating early." | tee /dev/tty
+        --api $MISTRAL_API_KEY 2>&1 | tee /dev/tty; then
+        echo "Python script exited with an error. Terminating early." | tee /dev/tty
         exit 1
     fi
 
