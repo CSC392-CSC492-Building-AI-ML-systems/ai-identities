@@ -1,5 +1,6 @@
-python3 non_niagara_claude.py --url https://api.anthropic.com/ \
-    --model claude-3-5-haiku-latest \
+#!/bin/bash
+python3 non_niagara_mmlu_eval.py --url https://openrouter.ai/api/v1/ \
+    --model mistralai/mistral-nemo \
     --category 'computer science' \
     --verbosity 0 \
     --parallel 256
