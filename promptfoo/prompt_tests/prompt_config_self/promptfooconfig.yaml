@@ -4,14 +4,7 @@ prompts:
   - file://./prompts.json
 
 providers:
-  - "ollama:chat:llama3.2"
-  - "ollama:chat:deepseek-r1:1.5b"
   - "ollama:chat:qwen:1.8b"
-  - "ollama:chat:gemma2:2b"
-  - "ollama:chat:phi3:3.8b"
-  - "ollama:chat:mistral"
-  - "ollama:chat:wizardlm2"
-  - "openai:gpt-4o"
 
   
 defaultTest:

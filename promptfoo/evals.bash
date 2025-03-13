@@ -53,13 +53,13 @@ case "$COMMAND" in
                 if [ -d "$folder" ]; then
                     echo $folder
                     folder_no_trailing=$(basename $folder)
-                    (cd "$folder" && eval "npx promptfoo eval --output ../../outputs/$TIMESTAMP/$folder_no_trailing.json")
+                    (cd "$folder" && eval "npx promptfoo eval --no-cache --output ../../outputs/$TIMESTAMP/$folder_no_trailing.json")
                 fi
             done
         else
             for folder in "$@"; do
                 if [ -d "$DESTINATION/$folder/" ]; then
-                    (cd "$DESTINATION/$folder/" && eval "npx promptfoo eval --output ../../outputs/$TIMESTAMP/$folder.json")
+                    (cd "$DESTINATION/$folder/" && eval "npx promptfoo eval --no-cache  --output ../../outputs/$TIMESTAMP/$folder.json")
                 fi
             done
         fi

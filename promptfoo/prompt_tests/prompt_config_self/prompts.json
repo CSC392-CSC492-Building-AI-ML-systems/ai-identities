@@ -1,7 +1,7 @@
 [
   {
     "role": "system",
-    "content": "Respond naturally to the following question."
+    "content": "Be as precise as possible when answering each question. Do not be creative. Use only objective facts. Do not make up names."
   },
   {
     "role": "user",
