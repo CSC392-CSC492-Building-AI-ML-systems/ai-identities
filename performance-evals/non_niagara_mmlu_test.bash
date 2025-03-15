@@ -10,22 +10,14 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
-# Check if API key is provided
-if [ -z "$1" ]; then
-    echo "Error: Mistral API key is required."
-    echo "Usage: $0 <MISTRAL_API_KEY>"
-    echo "Example: $0 your_mistral_api_key_here"
-    exit 1
-fi
+
 
 # Store the Mistral API key from the first command-line argument
 MISTRAL_API_KEY=$1
 
-# Redirect all output to results.txt
-exec > results.txt 2>&1
 
 # Loop 26 times
-for i in {1..26}; do
+for i in {1..15}; do
     # Output progress to console
     echo "Starting iteration $i..." | tee /dev/tty
 
@@ -37,12 +29,13 @@ for i in {1..26}; do
 
     # Run the Python script with the Mistral API parameters
     # Replace with the desired Mistral model
-    if ! python3 non_niagara_mmlu_eval.py --url https://api.mistral.ai/v1/ \
-        --model open-mistral-nemo \
-        --category 'computer science' \
+    if ! python3 non_niagara_mmlu_eval.py --url https://api.openai.com/v1 \
+        --model gpt-4o-mini \
+        --category 'philosophy' \
         --verbosity 0 \
         --parallel 256 \
-        --api $MISTRAL_API_KEY 2>&1 | tee /dev/tty; then
+        --output 'eval_results' \
+        --max_iterations 499; then
         echo "Python script exited with an error. Terminating early." | tee /dev/tty
         exit 1
     fi
