@@ -1,0 +1,161 @@
+{
+  "category": "computer science",
+  "iterations": [
+    {
+      "iteration": 1,
+      "corr": 54,
+      "wrong": 356,
+      "acc": 13.17
+    },
+    {
+      "iteration": 2,
+      "corr": 51,
+      "wrong": 359,
+      "acc": 12.44
+    },
+    {
+      "iteration": 3,
+      "corr": 51,
+      "wrong": 359,
+      "acc": 12.44
+    },
+    {
+      "iteration": 4,
+      "corr": 52,
+      "wrong": 358,
+      "acc": 12.68
+    },
+    {
+      "iteration": 5,
+      "corr": 52,
+      "wrong": 358,
+      "acc": 12.68
+    },
+    {
+      "iteration": 6,
+      "corr": 52,
+      "wrong": 358,
+      "acc": 12.68
+    },
+    {
+      "iteration": 7,
+      "corr": 52,
+      "wrong": 358,
+      "acc": 12.68
+    },
+    {
+      "iteration": 8,
+      "corr": 51,
+      "wrong": 359,
+      "acc": 12.44
+    },
+    {
+      "iteration": 9,
+      "corr": 53,
+      "wrong": 357,
+      "acc": 12.93
+    },
+    {
+      "iteration": 10,
+      "corr": 56,
+      "wrong": 354,
+      "acc": 13.66
+    },
+    {
+      "iteration": 11,
+      "corr": 55,
+      "wrong": 355,
+      "acc": 13.41
+    },
+    {
+      "iteration": 12,
+      "corr": 52,
+      "wrong": 358,
+      "acc": 12.68
+    },
+    {
+      "iteration": 13,
+      "corr": 51,
+      "wrong": 359,
+      "acc": 12.44
+    },
+    {
+      "iteration": 14,
+      "corr": 50,
+      "wrong": 360,
+      "acc": 12.2
+    },
+    {
+      "iteration": 15,
+      "corr": 50,
+      "wrong": 360,
+      "acc": 12.2
+    },
+    {
+      "iteration": 16,
+      "corr": 53,
+      "wrong": 357,
+      "acc": 12.93
+    },
+    {
+      "iteration": 17,
+      "corr": 51,
+      "wrong": 359,
+      "acc": 12.44
+    },
+    {
+      "iteration": 18,
+      "corr": 51,
+      "wrong": 359,
+      "acc": 12.44
+    },
+    {
+      "iteration": 19,
+      "corr": 50,
+      "wrong": 360,
+      "acc": 12.2
+    },
+    {
+      "iteration": 20,
+      "corr": 55,
+      "wrong": 355,
+      "acc": 13.41
+    },
+    {
+      "iteration": 21,
+      "corr": 52,
+      "wrong": 358,
+      "acc": 12.68
+    },
+    {
+      "iteration": 22,
+      "corr": 49,
+      "wrong": 361,
+      "acc": 11.95
+    },
+    {
+      "iteration": 23,
+      "corr": 52,
+      "wrong": 358,
+      "acc": 12.68
+    },
+    {
+      "iteration": 24,
+      "corr": 53,
+      "wrong": 357,
+      "acc": 12.93
+    },
+    {
+      "iteration": 25,
+      "corr": 53,
+      "wrong": 357,
+      "acc": 12.93
+    },
+    {
+      "iteration": 26,
+      "corr": 53,
+      "wrong": 357,
+      "acc": 12.93
+    }
+  ]
+}
