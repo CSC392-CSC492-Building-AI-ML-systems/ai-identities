@@ -53,9 +53,6 @@ parser.add_argument(
     "--comment", type=str, help="Comment to be included in the final report."
 )
 parser.add_argument(
-    "--output", type=str, help="output folder"
-)
-parser.add_argument(
     "--max_iterations", type=int, help="max questions run"
 )
 args = parser.parse_args()
@@ -502,7 +499,7 @@ def final_report(assigned_subjects):
         if "random" in res:
             random_corr += res["random"]["corr"]
             random_wrong += res["random"]["wrong"]
-        with open(args.output+".txt", "a") as file:
+        with open(re.sub(r"\W", "-", config["server"]["model"])+".txt", "a") as file:
             file.write(str(total_corr / (total_corr + total_wrong))+",")
 
 
@@ -546,7 +543,7 @@ def token_report():
 
 if __name__ == "__main__":
     usage_q = queue.Queue()
-    output_dir = args.output + "/" + re.sub(r"\W", "-", config["server"]["model"])
+    output_dir = 'eval_results' + "/" + re.sub(r"\W", "-", config["server"]["model"])
     os.makedirs(output_dir, exist_ok=True)
     log_path = os.path.join(output_dir, "report.txt")
     try:

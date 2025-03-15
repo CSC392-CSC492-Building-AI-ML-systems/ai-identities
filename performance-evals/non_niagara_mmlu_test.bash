@@ -34,7 +34,6 @@ for i in {1..15}; do
         --category 'philosophy' \
         --verbosity 0 \
         --parallel 256 \
-        --output 'eval_results' \
         --max_iterations 499; then
         echo "Python script exited with an error. Terminating early." | tee /dev/tty
         exit 1
