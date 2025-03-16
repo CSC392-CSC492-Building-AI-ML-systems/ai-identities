@@ -1,8 +1,6 @@
 import argparse
-import json
 import re
 import sys
-import time
 
 from datasets import Dataset, DatasetDict
 from tqdm import tqdm
@@ -70,37 +68,27 @@ def evaluate_category(config):
         )
     )
     questions = load_mmlu(config.category)
-    all_summaries = []
-    for iteration in range(26):
-        results = []
-        for q in tqdm(questions, desc=f"Iteration {iteration + 1}"):
-            prompt = build_prompt(q["question"], q["options"])
-            response = make_api_call(client, prompt, config.model)
-            if response is None:
-                raise Exception("response is None")
-            answer = get_answer(response.choices[0].message.content)
-            results.append({
-                "question": q["question"],
-                "response": response.choices[0].message.content,
-                "predicted": answer,
-                "correct": q["answer"]
-            })
-        corr = sum(1 for res in results if res["predicted"] == res["correct"])
-        acc = (corr / len(results) * 100) if len(results) > 0 else 0.0
-        iteration_summary = {
-            "iteration": iteration + 1,
-            "corr": corr,
-            "wrong": len(results) - corr,
-            "acc": round(acc, 2)
-        }
-        all_summaries.append(iteration_summary)
-    summary = {
-        "category": config.category,
-        "iterations": all_summaries
-    }
-    with open("summary.json", "w", encoding="utf-8") as f:
-        json.dump(summary, f, indent=2)
-    print("Summary saved to summary.json")
+
+    # Open a text file for writing results
+    with open("accuracy.txt", "w", encoding="utf-8") as f:
+        for iteration in range(30):
+            correct_count = 0
+            for q in tqdm(questions, desc=f"Iteration {iteration + 1}"):
+                prompt = build_prompt(q["question"], q["options"])
+                response = make_api_call(client, prompt, config.model)
+                if response is None:
+                    raise Exception("response is None")
+                answer = get_answer(response.choices[0].message.content)
+                if answer == q["answer"]:
+                    correct_count += 1
+
+            # Calculate accuracy
+            accuracy = (correct_count / len(questions) * 100) if len(questions) > 0 else 0.0
+
+            # Write only the numeric accuracy value to file
+            f.write(f"{round(accuracy, 2)}\n")
+
+    print("Accuracy results saved to accuracy.txt")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="MMLU Evaluation for Mistral")
