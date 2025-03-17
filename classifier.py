@@ -58,7 +58,7 @@ y_pred = []
 for proba in y_proba:
     max_proba = np.max(proba)
     if max_proba < confidence_threshold:
-        y_pred.append("I don't know")
+        y_pred.append("Cannot identify")
     else:
         y_pred.append(le.classes_[np.argmax(proba)])
 
@@ -66,7 +66,7 @@ for proba in y_proba:
 y_test_labels = le.inverse_transform(y_test)
 
 # Add "I don't know" to the list of target names
-target_names = list(le.classes_) + ["I don't know"]
+target_names = list(le.classes_) + ["Cannot identify"]
 
 # Evaluate
 print(classification_report(y_test_labels, y_pred, target_names=target_names, zero_division=0))
