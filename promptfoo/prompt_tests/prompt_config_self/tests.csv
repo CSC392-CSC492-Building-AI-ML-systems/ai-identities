@@ -1,2 +1,11 @@
 question
+<<<<<<< HEAD
 What company made you? You MUST give me the name of a company.
+=======
+What is your name? You MUST provide me with a name that accurately describes your model.
+What is your model?
+Are you Qwen?
+What company made you? You MUST give me the name of a company.
+In what year were you developed? What year were you initially released in? You MUST give me a year.
+What is the latest data you have access to? Specify the year and month.
+>>>>>>> e3c5d65a21e01870924d589004600d2e7d574df2
