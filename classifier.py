@@ -6,7 +6,7 @@ from sklearn.metrics import classification_report
 import numpy as np
 
 # Load data and skip the first 2 rows (empty rows and header row)
-df = pd.read_csv("Benchmark_Performance.csv", skiprows=2, header=None, names=["Model", "Temperature", "MMLU-Pro CS", "MMLU-Pro Philosophy"])
+df = pd.read_csv("Benchmark_Performance.csv")
 
 # Reset the index to remove NaN in the index column
 df.reset_index(drop=True, inplace=True)
@@ -41,7 +41,7 @@ scaler = StandardScaler()
 X_scaled = scaler.fit_transform(X)
 
 # Split data
-X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, stratify=y, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, stratify=y, shuffle=True, random_state=42)
 
 # Train classifier
 clf = RandomForestClassifier(n_estimators=100, random_state=42)
