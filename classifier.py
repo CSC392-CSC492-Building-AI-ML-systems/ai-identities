@@ -2,7 +2,8 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import classification_report
+import numpy as np
 
 # Load data and skip the first 2 rows (empty rows and header row)
 df = pd.read_csv("Benchmark_Performance.csv", skiprows=2, header=None, names=["Model", "Temperature", "MMLU-Pro CS", "MMLU-Pro Philosophy"])
@@ -46,7 +47,26 @@ X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, stratify=y, ran
 clf = RandomForestClassifier(n_estimators=100, random_state=42)
 clf.fit(X_train, y_train)
 
-# Predict and evaluate
-y_pred = clf.predict(X_test)
-print("Accuracy:", accuracy_score(y_test, y_pred))
-print(classification_report(y_test, y_pred, target_names=le.classes_))
+# Set confidence threshold
+confidence_threshold = 0.7  # You can adjust this value
+
+# Predict probabilities
+y_proba = clf.predict_proba(X_test)
+
+# Check the threshold and make predictions
+y_pred = []
+for proba in y_proba:
+    max_proba = np.max(proba)
+    if max_proba < confidence_threshold:
+        y_pred.append("I don't know")
+    else:
+        y_pred.append(le.classes_[np.argmax(proba)])
+
+# Convert y_test back to original labels for evaluation
+y_test_labels = le.inverse_transform(y_test)
+
+# Add "I don't know" to the list of target names
+target_names = list(le.classes_) + ["I don't know"]
+
+# Evaluate
+print(classification_report(y_test_labels, y_pred, target_names=target_names, zero_division=0))
