@@ -22,7 +22,7 @@ MISTRAL_API_KEY=$1
 
     if ! python3 rand_avg_stdev.py --url  https://api.deepinfra.com/v1/openai   \
         --model Qwen/QwQ-32B \
-        --api_key 'msRhhWPq9wkipUjAguak0fRbaBM9aiKz' \
+        --api_key '' \
         --prompt 'Describe the earth using only 10 adjectives. You can only use ten words, each separated by a comma' \
         --temperature 1 \
         ; then
