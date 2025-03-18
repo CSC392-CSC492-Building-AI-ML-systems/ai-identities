@@ -10,6 +10,7 @@
 # Exit immediately if a command exits with a non-zero status
 set -e
 
+<<<<<<< HEAD
 # Check if API key is provided
 if [ -z "$1" ]; then
     echo "Error: GEMINI API key is required."
@@ -17,15 +18,16 @@ if [ -z "$1" ]; then
     echo "Example: $0 your_gemini_api_key_here"
     exit 1
 fi
+=======
+
+>>>>>>> 4a56c59775306210a6358efed1bcdad42a754ed7
 
 # Store the Gemini API key from the first command-line argument
 GEMINI_API_KEY=$1
 
-# Redirect all output to results.txt
-exec > results.txt 2>&1
 
 # Loop 26 times
-for i in {1..26}; do
+for i in {1..15}; do
     # Output progress to console
     echo "Starting iteration $i..." | tee /dev/tty
 
@@ -35,6 +37,7 @@ for i in {1..26}; do
         rm -rf eval_results
     fi
 
+<<<<<<< HEAD
     # Run the Python script with the Gemini API parameters
     if ! python3 non_niagara_mmlu_eval.py --url https://generativelanguage.googleapis.com/v1beta/models/ \
         --model gemini-2.0-flash-lite \
@@ -42,6 +45,16 @@ for i in {1..26}; do
         --verbosity 0 \
         --parallel 256 \
         --api $GEMINI_API_KEY 2>&1 | tee /dev/tty; then
+=======
+    # Run the Python script with the Mistral API parameters
+    # Replace with the desired Mistral model
+    if ! python3 non_niagara_mmlu_eval.py --url https://api.openai.com/v1 \
+        --model gpt-4o-mini \
+        --category 'philosophy' \
+        --verbosity 0 \
+        --parallel 256 \
+        --max_iterations 499; then
+>>>>>>> 4a56c59775306210a6358efed1bcdad42a754ed7
         echo "Python script exited with an error. Terminating early." | tee /dev/tty
         exit 1
     fi

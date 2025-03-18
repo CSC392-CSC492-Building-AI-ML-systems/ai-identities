@@ -94,16 +94,20 @@ lock = threading.Lock()
 rate_limit_lock = threading.Lock()
 tokens = 1  # Start with 1 token available
 last_refill_time = time.time()
+
 # Configure these in your TOML (add [server] rate_limit_rpm = 60)
 RPM = config["server"].get("rate_limit_rpm", 60)  # Requests per minute
 REFILL_INTERVAL = 60.0 / RPM  # Seconds between tokens
 BUCKET_SIZE = 1  # Maximum burst capacity
 
+# Configure TPM from config
+TPM_LIMIT = config["server"].get("tpm_limit", 500_000)
+TPM_REFILL_PER_SECOND = TPM_LIMIT / 60  # Tokens refilled per second
+TPM_BUCKET_SIZE = TPM_LIMIT  # Max burst capacity
+
 tpm_lock = threading.Lock()
-tpm_tokens = 500_000  # Initial token count set to the TPM limit
+tpm_tokens = TPM_LIMIT  # Initial token count set to the TPM limit
 tpm_last_refill_time = time.time()
-TPM_REFILL_PER_SECOND = 500_000 / 60  # ~8333.33 tokens per second
-TPM_BUCKET_SIZE = 500_000  # Maximum burst capacity
 
 def throttle_request():
     global tokens, last_refill_time
@@ -477,6 +481,22 @@ def evaluate(subjects):
                     save_res(res, output_res_path, lock)
                     save_summary(category_record, output_summary_path, lock)
                     res, category_record = update_result(output_res_path, lock)
+
+                    # Log request history
+                    log_entry = {
+                        "timestamp": datetime.now().isoformat(),
+                        "question_id": each["question_id"],
+                        "category": category,
+                        "prompt": prompt,
+                        "response": response,
+                        "predicted_answer": pred,
+                        "correct_answer": each["answer"],
+                        "correct": pred == each["answer"],
+                        "model": config["server"]["model"]
+                    }
+                    with lock:  # Use the same thread lock for safety
+                        with open(request_log_path, "a", encoding="utf-8") as f:
+                            f.write(json.dumps(log_entry, ensure_ascii=False) + "\n")
         save_res(res, output_res_path, lock)
         log(f"Finished testing {subject} in {elapsed(start_time)}.")
         save_summary(category_record, output_summary_path, lock, report=True)
@@ -617,6 +637,7 @@ if __name__ == "__main__":
     output_dir = "eval_results/" + re.sub(r"\W", "-", config["server"]["model"])
     os.makedirs(output_dir, exist_ok=True)
     log_path = os.path.join(output_dir, "report.txt")
+    request_log_path = os.path.join(output_dir, "request_history.log")
     try:
         os.remove(log_path)
     except Exception:
