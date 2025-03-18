@@ -4,6 +4,7 @@ import numpy as np
 import json
 import argparse
 import uuid
+import re
 import time
 # Parse arguments
 parser = argparse.ArgumentParser(description="Send prompts to an OpenAI-compatible LLM API and process responses.")
@@ -30,12 +31,12 @@ def get_response():
         "messages": [
                       {"role": "user", "content": args.prompt}],
         "temperature": args.temperature,
-        "max_tokens":70
+        "max_completion_tokens":2048
     }
     try:
         response = requests.post((args.url)+"/chat/completions", headers=headers, json=payload)
         response_json = response.json()
-        words = response_json["choices"][0]["message"]["content"].replace(" ","").split(",")
+        words = re.findall(r'[^,\s]+',response_json["choices"][0]["message"]["content"])
         with lock:
             for i in words:
                     word_lower = i.lower()
@@ -43,6 +44,7 @@ def get_response():
                         test_dict[word_lower] = 0
                     test_dict[word_lower] += 1
     except Exception as e:
+        print(e)
         get_response()
         time.sleep(0.5)
 
@@ -63,7 +65,7 @@ for i in range(20):
 
 # Compute statistics
 if("/" in args.model):
-    filename = f"{args.model.split('/')[1]}_results.json"
+    filename = f"{args.model.split("/")[1]}_results.json"
 else:
     filename = f"{args.model}_results.json"
 with open(filename, "w") as f:
