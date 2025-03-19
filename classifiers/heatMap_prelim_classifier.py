@@ -3,9 +3,15 @@ import json
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.neural_network import MLPClassifier
+import os
+import glob
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Constants for training
 TRAINING_WORDS_LIST = ['life-filled', 'home.', 'wondrous', 'immense', 'ever-changing.', 'massive', 
@@ -78,8 +84,26 @@ def prepare_features(heatmap_data, for_training=True):
     # Extract frequencies table
     normalized_frequencies = pd.DataFrame(heatmap_data['normalized_frequencies'])
     
+    # DEBUG: Print normalized frequencies shape and sample data
+    print(f"DEBUG: Initial normalized_frequencies shape: {normalized_frequencies.shape}")
+    print(f"DEBUG: First 5 columns: {list(normalized_frequencies.columns)[:5]}")
+    print(f"DEBUG: First 3 rows: {list(normalized_frequencies.index)[:3]}")
+    
     # Ensure proper normalization within each model (row)
-    normalized_data = normalized_frequencies.div(normalized_frequencies.sum(axis=1), axis=0)
+    row_sums = normalized_frequencies.sum(axis=1)
+    # print(f"DEBUG: Row sums before normalization: min={row_sums.min()}, max={row_sums.max()}, mean={row_sums.mean()}")
+    
+    # Check if we have any rows with zero sum
+    zero_sum_rows = row_sums[row_sums == 0].index.tolist()
+    if zero_sum_rows:
+        print(f"WARNING: Found {len(zero_sum_rows)} rows with zero sum. First few: {zero_sum_rows[:3]}")
+    
+    # Normalize avoiding division by zero
+    normalized_data = normalized_frequencies.div(normalized_frequencies.sum(axis=1).replace(0, 1), axis=0)
+    
+    # Verify normalization worked
+    new_row_sums = normalized_data.sum(axis=1)
+    # print(f"DEBUG: Row sums after normalization: min={new_row_sums.min()}, max={new_row_sums.max()}, mean={new_row_sums.mean()}")
     
     if for_training:
         # For training data, just verify we have the expected columns
@@ -93,7 +117,7 @@ def prepare_features(heatmap_data, for_training=True):
                 normalized_data[word] = 0.0
     
     # Display info about the normalized data
-    print(f"Feature matrix shape: {normalized_data.shape} (models × words)")
+    # print(f"Feature matrix shape: {normalized_data.shape} (models × words)")
     
     return normalized_data
 
@@ -104,23 +128,27 @@ def align_validation_data(validation_data):
     2. Add words from training missing in validation with 0 values
     3. Ensure columns are in the same order as training data
     """
-    # Step 1: Keep only columns that exist in the training data
+    # Kept only columns that exist in the training data
     valid_columns = [col for col in validation_data.columns if col in TRAINING_WORDS_SET]
     columns_to_remove = [col for col in validation_data.columns if col not in TRAINING_WORDS_SET]
     print(f"Removing {len(columns_to_remove)} words from validation data that don't exist in training")
     if columns_to_remove:
         print(f"Examples of removed words: {columns_to_remove[:5]}")
     
-    # Step 2: Create a new DataFrame with all training words
+    # Created a new DataFrame with all training words
     aligned_data = pd.DataFrame(index=validation_data.index, columns=TRAINING_WORDS_LIST)
     aligned_data.fillna(0.0, inplace=True)
     
-    # Step 3: Copy values from validation data for words that exist in both
+    # Copied values from validation data for words that exist in both
     for col in valid_columns:
         aligned_data[col] = validation_data[col]
     
-    # Step 4: Sort columns to match training word order
-    # This step is already done by creating the DataFrame with TRAINING_WORDS_LIST
+    # DEBUG: Check aligned data before sorting
+    # print(f"DEBUG: Aligned data before ensuring column order: {aligned_data.shape}")
+    # print(f"DEBUG: First 5 columns: {list(aligned_data.columns)[:5]}")
+    
+    # Preserving order
+    # print(f"DEBUG: Does aligned data column order match TRAINING_WORDS_LIST? {list(aligned_data.columns) == TRAINING_WORDS_LIST}")
     
     print(f"Validation data aligned:")
     print(f"- Original shape: {validation_data.shape}")
@@ -131,24 +159,34 @@ def align_validation_data(validation_data):
     return aligned_data
 
 def align_model_order(data_df):
-    """
-    Align models in the validation data to match the order in training data
-    Add missing models with zero vectors
-    """
-    # Start with all models in correct order
+    # DEBUG: Check input data
+    # print(f"DEBUG: align_model_order input data shape: {data_df.shape}")
+    # print(f"DEBUG: Input data index (first 5): {list(data_df.index)[:5]}")
+    print(f"DEBUG: Number of models in MODEL_SET: {len(MODEL_SET)}")
+
     aligned_df = pd.DataFrame(index=LIST_OF_MODELS, columns=data_df.columns)
     aligned_df.fillna(0.0, inplace=True)
-    
-    # Copy data for models that exist in both
+ 
     common_models = [model for model in data_df.index if model in MODEL_SET]
+    print(f"DEBUG: Number of common models found: {len(common_models)}")
+    
+    if len(common_models) == 0:
+        print("ERROR: No common models found between validation data and training set!")
+        print(f"DEBUG: Validation data models: {list(data_df.index)}")
+        print(f"DEBUG: First few training models: {LIST_OF_MODELS[:5]}")
+    
     for model in common_models:
         aligned_df.loc[model] = data_df.loc[model]
+        # DEBUG: Verify data was copied correctly
+        if not np.array_equal(aligned_df.loc[model].values, data_df.loc[model].values):
+            print(f"WARNING: Data mismatch after copy for model {model}")
     
     print(f"Model alignment complete:")
     print(f"- Original models: {len(data_df.index)}")
-    print(f"- Common models: {len(common_models)}")
+    # print(f"- Common models: {len(common_models)}")
     print(f"- Final aligned models: {len(aligned_df.index)}")
-    
+    print("")
+    print("")
     return aligned_df
 
 def train_and_validate(train_file_path, validation_file_path):
@@ -158,15 +196,34 @@ def train_and_validate(train_file_path, validation_file_path):
     if train_heatmap is None:
         return None, None, None, None
     
+    # DEBUG: Check training data structure
+    # print("DEBUG: Training heatmap keys:", list(train_heatmap.keys()))
+
+    if 'normalized_frequencies' not in train_heatmap:
+        print("ERROR: 'normalized_frequencies' key not found in training data!")
+        return None, None, None, None
+    
     # Prepare training features
     train_data = prepare_features(train_heatmap, for_training=True)
     
     # Ensure training data has exactly the right columns in the right order
+    if not all(word in train_data.columns for word in TRAINING_WORDS_LIST):
+        print("ERROR: Not all training words are present in the training data columns!")
+        missing = [word for word in TRAINING_WORDS_LIST if word not in train_data.columns]
+        print(f"Missing words: {missing[:10]}...")
+    
     train_data = train_data[TRAINING_WORDS_LIST]
     
     # Load validation data
     validation_heatmap = load_heatmap_data(validation_file_path)
     if validation_heatmap is None:
+        return None, None, None, None
+    
+    # DEBUG: Check validation data structure
+    # print("DEBUG: Validation heatmap keys:", list(validation_heatmap.keys()))
+
+    if 'normalized_frequencies' not in validation_heatmap:
+        print("ERROR: 'normalized_frequencies' key not found in validation data!")
         return None, None, None, None
     
     # Prepare validation features
@@ -185,19 +242,39 @@ def train_and_validate(train_file_path, validation_file_path):
     X_val = aligned_validation.values
     y_val = aligned_validation.index.tolist()
     
+    # DEBUG: Check for NaN values in training/validation data
+    # print(f"DEBUG: NaN values in X_train: {np.isnan(X_train).sum()}")
+    # print(f"DEBUG: NaN values in X_val: {np.isnan(X_val).sum()}")
+    
+    # Replace any NaN values with zeros
+    if np.isnan(X_train).sum() > 0:
+        print("WARNING: Replacing NaN values in training data with zeros")
+        X_train = np.nan_to_num(X_train)
+    
+    if np.isnan(X_val).sum() > 0:
+        print("WARNING: Replacing NaN values in validation data with zeros")
+        X_val = np.nan_to_num(X_val)
+    
     # Verify dimensions
     print(f"Training data shape: {X_train.shape}")
     print(f"Validation data shape: {X_val.shape}")
     
+    # Verify matching dimensions for classification
+    if X_train.shape[1] != X_val.shape[1]:
+        print(f"ERROR: Feature dimension mismatch! Training: {X_train.shape[1]}, Validation: {X_val.shape[1]}")
+        return None, None, None, None
+    
     # Train the classifiers
     print("Training classifiers...")
-    clf = RandomForestClassifier(max_depth=15, n_estimators=400, random_state=42)
-    clf4 = SVC(random_state=42)
-    clf5 = SVC(kernel='linear', random_state=42)
-    clf6 = SVC(kernel='poly', random_state=42)
+    print("")
+    print("-----------------------------------")
+    print("")
+    clf = RandomForestClassifier(max_depth=20, n_estimators=500, random_state=42)
+    clf2 = DecisionTreeClassifier(max_depth=45, random_state=42)
+    clf3 = LogisticRegression(random_state=42, max_iter=4000)
     
     # Neural Network classifier
-    clf7 = MLPClassifier(
+    clf4 = MLPClassifier(
         hidden_layer_sizes=(100, 50),  # Two hidden layers with 100 and 50 neurons
         activation='relu',             # ReLU activation function
         solver='adam',                 # Adam optimizer
@@ -205,23 +282,82 @@ def train_and_validate(train_file_path, validation_file_path):
         batch_size='auto',             # Automatic batch size
         learning_rate='adaptive',      # Adaptive learning rate
         max_iter=1000,                 # Maximum number of iterations
-        early_stopping=False,           # Use early stopping
+        early_stopping=False,          # Use early stopping
         validation_fraction=0.1,       # Fraction of training data for validation
         n_iter_no_change=10,           # Number of iterations with no improvement
         random_state=42                # Random state for reproducibility
     )
+
+    clf5 = MLPClassifier(
+        hidden_layer_sizes=(256, 128, 64, 64),  # Two hidden layers with 100 and 50 neurons
+        activation='relu',             # ReLU activation function
+        solver='adam',                 # Adam optimizer
+        alpha=0.0002,                  # L2 penalty parameter
+        batch_size='auto',             # Automatic batch size
+        learning_rate='adaptive',      # Adaptive learning rate
+        max_iter=1000,                 # Maximum number of iterations
+        early_stopping=False,          # Use early stopping
+        n_iter_no_change=10,           # Number of iterations with no improvement
+        random_state=42                # Random state for reproducibility
+    )
     
-    # Fit all classifiers
-    clf.fit(X_train, y_train)
-    clf4.fit(X_train, y_train)
-    clf5.fit(X_train, y_train)
-    clf6.fit(X_train, y_train)
-    clf7.fit(X_train, y_train)
+    # Fit all classifiers with try/except to catch errors
+    classifiers = []
+    try:
+        # print("DEBUG: Fitting Random Forest classifier...")
+        clf.fit(X_train, y_train)
+        classifiers.append(("Random Forest", clf))
+        print("Random Forest training complete!")
+    except Exception as e:
+        print(f"ERROR fitting Random Forest: {str(e)}")
+    
+    try:
+        # print("DEBUG: Fitting Decision Tree classifier...")
+        clf2.fit(X_train, y_train)
+        classifiers.append(("Decision Tree", clf2))
+        print("Decision Tree training complete!")
+    except Exception as e:
+        print(f"ERROR fitting Decision Tree: {str(e)}")
+    
+    try:
+        # print("DEBUG: Fitting Logistic Regression classifier...")
+        clf3.fit(X_train, y_train)
+        classifiers.append(("Logistic Regression", clf3))
+        print("Logistic Regression training complete!")
+    except Exception as e:
+        print(f"ERROR fitting Logistic Regression: {str(e)}")
+    
+    try:
+        # print("DEBUG: Fitting Neural Network classifier...")
+        clf4.fit(X_train, y_train)
+        classifiers.append(("Neural Network", clf4))
+        print("Neural Network training complete!")
+    except Exception as e:
+        print(f"ERROR fitting Neural Network: {str(e)}")
+
+    try:
+        # print("DEBUG: Fitting Neural Network classifier...")
+        clf5.fit(X_train, y_train)
+        classifiers.append(("Neural Network", clf5))
+        print("Neural Network training complete!")
+    except Exception as e:
+        print(f"ERROR fitting Neural Network: {str(e)}")
+    
+    if not classifiers:
+        print("ERROR: All classifiers failed to train!")
+        return None, None, None, None
+    
     print("Training complete!")
-    
+    print("")
+    print("-----------------------------------")
+    print("")
+
     # Find which validation models actually have data (not all zeros)
     has_data = np.sum(X_val, axis=1) > 0
     active_models = [model for model, active in zip(y_val, has_data) if active]
+    
+    print(f"DEBUG: Number of active models in validation set: {len(active_models)}")
+    print(f"DEBUG: Active models: {active_models}")
     
     if active_models:
         # Filter for active models
@@ -230,39 +366,40 @@ def train_and_validate(train_file_path, validation_file_path):
         y_val_active = [y_val[i] for i in active_indices]
         
         # Evaluate all classifiers
-        classifiers = [
-            ("Random Forest", clf),
-            ("SVC (RBF kernel)", clf4),
-            ("SVC (Linear kernel)", clf5),
-            ("SVC (Polynomial kernel)", clf6),
-            ("Neural Network", clf7)
-        ]
-        
         for name, classifier in classifiers:
-            wrong_prediction = []
-            y_pred = classifier.predict(X_val_active)
-            accuracy = accuracy_score(y_val_active, y_pred) #### FIND WHERE THEY DONT MATCH
-            # print("y active: ", y_val_active)
-            # print("y predictions", y_pred)
-
-            for i in range(len(y_val_active)):
-                if y_val_active[i] != y_pred[i]:
-                    wrong_prediction.append({y_val_active[i]:y_pred[i]})
-
-            print(f"\nValidation results for {name}:")
-            print(f"- Active models: {len(active_models)} out of {len(y_val)}")
-            print(f"- Accuracy: {accuracy}")
-            print(f"- Detailed report:")
-            print(f'- Wrong preditions: {wrong_prediction}')
-            print(classification_report(y_val_active, y_pred))
+            try:
+                print(f"DEBUG: Making predictions with {name}...")
+                y_pred = classifier.predict(X_val_active)
+                
+                # DEBUG: Check prediction shapes
+                # print(f"DEBUG: y_val_active shape: {len(y_val_active)}")
+                # print(f"DEBUG: y_pred shape: {len(y_pred)}")
+                
+                accuracy = accuracy_score(y_val_active, y_pred)
+                
+                print(f"\nValidation results for {name}:")
+                print(f"- Active models: {len(active_models)} out of {len(y_val)}")
+                print(f"- Accuracy: {accuracy:.4f}")
+                print("")
+                print(f"- Detailed report:")
+                print(classification_report(y_val_active, y_pred, zero_division=1))
+                
+                # Print confusion details
+                for i, (true, pred) in enumerate(zip(y_val_active, y_pred)):
+                    if true != pred:
+                        print(f"  - Misclassification: True={true}, Predicted={pred}")
+                print("")
+                print("-----------------------------------")
+                print("")
+            except Exception as e:
+                print(f"ERROR evaluating {name}: {str(e)}")
     else:
         print("No active models in validation data (all zeros)")
     
+    # Return all classifiers that were successfully trained
+    return [clf for name, clf in classifiers], train_data, X_val, y_val
 
-    # Return all classifiers
-    return [clf, clf7], train_data, X_val, y_val
-
-def predict_model(clf, word_frequencies, clf_name=""):
+def predict_model(clf, word_frequencies, clf_name="", json_file_path=""):
     """
     Predict the model based on word frequencies
     
@@ -277,69 +414,206 @@ def predict_model(clf, word_frequencies, clf_name=""):
     # Create a features array aligned with training data
     features = np.zeros((1, len(TRAINING_WORDS_LIST)))
     
+    # DEBUG: Print word frequencies
+    # print(f"DEBUG: Input word frequencies: {len(word_frequencies)} words")
+    # print(f"DEBUG: Sample words: {list(word_frequencies.items())[:5]}")
+    
     # Normalize the input frequencies
     total_freq = sum(word_frequencies.values())
     if total_freq == 0:
         print("Warning: Empty word frequencies provided")
         return None
-        
+    
+    # print(f"DEBUG: Total frequency: {total_freq}")
+    
     # Fill in the features array
+    words_found = 0
     for word, freq in word_frequencies.items():
         if word in TRAINING_WORDS_DICT:
             idx = TRAINING_WORDS_DICT[word]
             features[0, idx] = freq / total_freq
+            words_found += 1
+    
+    # print(f"DEBUG: Found {words_found} words in training set out of {len(word_frequencies)} input words")
+    
+    # Check if we have any non-zero features
+    if np.sum(features) == 0:
+        print("ERROR: No overlapping words between input and training set!")
+        return None
     
     # Make prediction
-    prediction = clf.predict(features)
+    try:
+        prediction = clf.predict(features)
+        print(f"DEBUG: Raw prediction: {prediction}, for model: {json_file_path}")
+    except Exception as e:
+        print(f"ERROR during prediction: {str(e)}")
+        return None
     
     # Get probabilities if the classifier supports predict_proba
     if hasattr(clf, 'predict_proba'):
-        probabilities = clf.predict_proba(features)
-        
-        # Get the top 3 most likely models
-        top_indices = np.argsort(probabilities[0])[-3:][::-1]
-        top_models = [clf.classes_[i] for i in top_indices]
-        top_probs = [probabilities[0][i] for i in top_indices]
-        
-        print(f"Predicted model using {clf_name}: {prediction[0]}")
-        print("Top 3 predictions:")
-        for model, prob in zip(top_models, top_probs):
-            print(f"- {model}: {prob:.4f}")
+        try:
+            probabilities = clf.predict_proba(features)
+            
+            # Get the top 5 most likely models
+            top_indices = np.argsort(probabilities[0])[-5:][::-1]
+            top_models = [clf.classes_[i] for i in top_indices]
+            top_probs = [probabilities[0][i] for i in top_indices]
+            
+            k = 5
+            confidence_k = top_probs[0] / np.sum(top_probs[:k])
+
+            # Normalize the top_probs to sum to 1.0
+            top_probs_normalized = [prob / sum(top_probs) for prob in top_probs]
+            print(f"Predicted model using {clf_name}: {prediction[0]}, for model: {json_file_path}")
+            print("")
+            # Set threshold about confidence, 
+            # depending on disparity in probabilities between top 2 models
+            lowConf = False
+            if confidence_k < 0.7 and top_probs[0] / top_probs[1] < 3 and top_probs[0] - top_probs[1] < 0.3:
+                lowConf = True
+
+            if lowConf:
+                print("Low confidence in prediction: Consider Manual Review")
+                print(f"Confidence percentage: ", confidence_k)
+                print("Consider the following results as top 5 closest predictions:")
+            else:
+                print("HIGH CONFIDENCE IN PREDICTION")
+                print(f"Confidence percentage: ", confidence_k)
+                print("Probabilities for Top 5 predictions:")
+            for model, prob in zip(top_models, top_probs):
+                    print(f"- {model}: {prob:.4f}")
+            print("")
+            print("")
+            
+            
+        except Exception as e:
+            print(f"ERROR getting probabilities: {str(e)}")
     else:
         # For models without probability estimates
-        print(f"Predicted model using {clf_name}: {prediction[0]}")
-    
+        print(f"Predicted model using {clf_name}: {prediction[0]}, for model: {json_file_path}")
+        print("")
+    print("-----------------------------------")
+    print("")
+    print("")
     return prediction[0]
+
+def process_single_model_json(json_file_path):
+    """
+    Process a single model's word frequency JSON and return normalized frequencies
+    
+    Args:
+        json_file_path: Path to the JSON file containing word frequencies
+    
+    Returns:
+        Dictionary with normalized word frequencies
+    """
+    try:
+        # Load word frequencies from JSON
+        with open(json_file_path, 'r', encoding='utf-8') as f:
+            word_freq = json.load(f)
+        
+        print(f"Loaded {len(word_freq)} words from {json_file_path}")
+        
+        total_freq = sum(float(freq) for freq in word_freq.values())
+        
+        if total_freq == 0:
+            print("WARNING: Total frequency is zero, cannot normalize")
+            return {}
+
+        normalized_freqs = {word: float(freq)/total_freq for word, freq in word_freq.items()}
+
+        norm_sum = sum(normalized_freqs.values())
+        print(f"Sum of normalized frequencies: {norm_sum:.6f} (should be very close to 1.0)")
+        top_words = sorted(normalized_freqs.items(), key=lambda x: x[1], reverse=True)[:20]
+
+        # print("Top 20 words by normalized frequency:")
+        # for word, freq in top_words:
+        #     print(f"  {word}: {freq:.6f}")
+        # # Create a bar chart of top words
+        # try:
+        #     model_name = os.path.basename(json_file_path).replace('_results.json', '')
+            
+        #     plt.figure(figsize=(12, 6))
+        #     words, freqs = zip(*top_words)
+        #     plt.bar(words, freqs)
+        #     plt.xticks(rotation=45, ha='right')
+        #     plt.title(f"Top 20 Words for {model_name}")
+        #     plt.tight_layout()
+        #     plt.savefig(f"{model_name}_top_words.png")
+        #     plt.close()
+            
+        #     print(f"Created visualization: {model_name}_top_words.png")
+        # except Exception as e:
+        #     print(f"Error creating visualization: {str(e)}")
+        
+        return normalized_freqs
+        
+    except Exception as e:
+        print(f"Error processing {json_file_path}: {str(e)}")
+        return {}
+
 
 def main():
     # File paths
-    train_file_path = 'classifiers/heatmap_data.json'
-    validation_file_path = 'classifiers/test/heatmap_data_3.json'
+    train_file_path = 'path/to/training_data.json' # EXAMPLE OF RELATIVE PATH classifiers/heatmap_data.json
+    validation_file_path = 'path/to/validation_data.json' # EXAMPLE OF RELATIVE PATH classifiers/heatmap_data.json
     
     # Train on one dataset and validate on another
+    print("\n=== STARTING TRAINING AND VALIDATION ===\n")
     lst_classifiers, train_data, X_val, y_val = train_and_validate(train_file_path, validation_file_path)
     
     if lst_classifiers is None:
         print("Failed to train classifier. Exiting.")
         return
     
-    # Example: Predict for a new set of word frequencies
-    print("\nExample prediction:")
-    new_word_frequencies = {
-        'turbulent': 10,
-        'mountainous': 5,
-        'majestic': 3,
-        'aquatic': 8,
-        'separated': 6,
-        'complex': 1,
-        'ancient': 1
-    }
+    # __________SINGLE JSON SHIT_________________________________________
+    # # Process a single model's JSON file
+    # print("\n=== PROCESSING SINGLE MODEL JSON ===\n")
+    # prediction_json = 'classifiers/predictionJSON_seen/DeepSeek-R1-Distill-Llama-70B_results.json'
+    # normalized_freqs = process_single_model_json(prediction_json)
     
-    classifier_names = ["Random Forest", "Decision Tree", "Logistic Regression", "Neural Network"]
+    # classifier_names = ["Random Forest", "Decision Tree", "Logistic Regression", "Neural Network mini", "Neural Network large"]
     
-    for clf, name in zip(lst_classifiers, classifier_names):
-        predicted_model = predict_model(clf, new_word_frequencies, name)
+    # if len(lst_classifiers) != len(classifier_names):
+    #     print(f"WARNING: Number of classifiers ({len(lst_classifiers)}) doesn't match number of names ({len(classifier_names)})")
+    #     classifier_names = classifier_names[:len(lst_classifiers)]
+    
+    # for clf, name in zip(lst_classifiers, classifier_names):
+    #     predicted_model = predict_model(clf, normalized_freqs, name)
 
+    # print(f"NOTE: Processing '{prediction_json}'")
+    # __________SINGLE JSON SHIT_________________________________________
+
+
+    evaluationDirectory = "path/to/evaluationDirectory" # EXAMPLE OF RELATIVE PATH: classifiers/predictionJSON_seen
+    json_files = glob.glob(os.path.join(evaluationDirectory, "*.json"))
+    
+    print("")
+    print("")
+    print(f"NOW PROCESSING ALL MODELS IN DIRECTORY: {evaluationDirectory}")
+    print("")
+    print("---------------------------------")
+    print("")
+    print("")
+    if not json_files:
+        print("No JSON files found in the directory.")
+        return
+    
+    for json_file in json_files:
+        print(f"\n=== PROCESSING MODEL JSON: {json_file} ===\n")
+        normalized_freqs = process_single_model_json(json_file)
+        
+        classifier_names = [
+            "Random Forest", "Decision Tree", "Logistic Regression",
+            "Neural Network mini", "Neural Network large"
+        ]
+        
+        if len(lst_classifiers) != len(classifier_names):
+            print(f"WARNING: Number of classifiers ({len(lst_classifiers)}) doesn't match number of names ({len(classifier_names)})")
+            classifier_names = classifier_names[:len(lst_classifiers)]
+        
+        for clf, name in zip(lst_classifiers, classifier_names):
+            predicted_model = predict_model(clf, normalized_freqs, name, json_file)
 
 if __name__ == "__main__":
     main()
