@@ -3,8 +3,6 @@ import json
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.neural_network import MLPClassifier
@@ -194,8 +192,6 @@ def train_and_validate(train_file_path, validation_file_path):
     # Train the classifiers
     print("Training classifiers...")
     clf = RandomForestClassifier(max_depth=15, n_estimators=400, random_state=42)
-    clf2 = DecisionTreeClassifier(max_depth=15, random_state=42)
-    clf3 = LogisticRegression(random_state=42)
     clf4 = SVC(random_state=42)
     clf5 = SVC(kernel='linear', random_state=42)
     clf6 = SVC(kernel='poly', random_state=42)
@@ -217,8 +213,6 @@ def train_and_validate(train_file_path, validation_file_path):
     
     # Fit all classifiers
     clf.fit(X_train, y_train)
-    clf2.fit(X_train, y_train)
-    clf3.fit(X_train, y_train)
     clf4.fit(X_train, y_train)
     clf5.fit(X_train, y_train)
     clf6.fit(X_train, y_train)
@@ -238,8 +232,6 @@ def train_and_validate(train_file_path, validation_file_path):
         # Evaluate all classifiers
         classifiers = [
             ("Random Forest", clf),
-            ("Decision Tree", clf2),
-            ("Logistic Regression", clf3),
             ("SVC (RBF kernel)", clf4),
             ("SVC (Linear kernel)", clf5),
             ("SVC (Polynomial kernel)", clf6),
@@ -247,19 +239,28 @@ def train_and_validate(train_file_path, validation_file_path):
         ]
         
         for name, classifier in classifiers:
+            wrong_prediction = []
             y_pred = classifier.predict(X_val_active)
-            accuracy = accuracy_score(y_val_active, y_pred)
-            
+            accuracy = accuracy_score(y_val_active, y_pred) #### FIND WHERE THEY DONT MATCH
+            # print("y active: ", y_val_active)
+            # print("y predictions", y_pred)
+
+            for i in range(len(y_val_active)):
+                if y_val_active[i] != y_pred[i]:
+                    wrong_prediction.append({y_val_active[i]:y_pred[i]})
+
             print(f"\nValidation results for {name}:")
             print(f"- Active models: {len(active_models)} out of {len(y_val)}")
-            print(f"- Accuracy: {accuracy:.4f}")
+            print(f"- Accuracy: {accuracy}")
             print(f"- Detailed report:")
+            print(f'- Wrong preditions: {wrong_prediction}')
             print(classification_report(y_val_active, y_pred))
     else:
         print("No active models in validation data (all zeros)")
     
+
     # Return all classifiers
-    return [clf, clf2, clf3, clf7], train_data, X_val, y_val
+    return [clf, clf7], train_data, X_val, y_val
 
 def predict_model(clf, word_frequencies, clf_name=""):
     """

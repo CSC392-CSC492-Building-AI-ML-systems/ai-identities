@@ -17,7 +17,7 @@ MISTRAL_API_KEY=$1
 
 
 # Loop 26 times
-for i in {1..15}; do
+for i in {1..30}; do
     # Output progress to console
     echo "Starting iteration $i..." | tee /dev/tty
 
@@ -29,11 +29,13 @@ for i in {1..15}; do
 
     # Run the Python script with the Mistral API parameters
     # Replace with the desired Mistral model
-    if ! python3 non_niagara_mmlu_eval.py --url https://api.openai.com/v1 \
-        --model gpt-4o-mini \
+    if ! python3 non_niagara_mmlu_eval.py --url https://api.deepinfra.com/v1/openai \
+        --model meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo \
         --category 'philosophy' \
         --verbosity 0 \
         --parallel 256 \
+        --api '965sMLW4RZdByVitIRgJSUMnCaoBXoXb' \
+        --output eval_results \
         --max_iterations 499; then
         echo "Python script exited with an error. Terminating early." | tee /dev/tty
         exit 1
