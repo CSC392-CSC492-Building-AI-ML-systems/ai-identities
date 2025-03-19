@@ -1,0 +1,744 @@
+{
+  "normalized_frequencies": {
+    "bountiful": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.015650791709971267,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "ancient": {
+      "gpt-4o-mini_results": 0.0291310620352902,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.01675177157148812,
+      "phi-4_results": 0.08950296509139818,
+      "Mistral-Small-24B-Instruct-2501_results": 0.04612564572571238,
+      "gemma-3-27b-it_results": 0.10550470814760109,
+      "WizardLM-2-8x22B_results": 0.006759122121987343
+    },
+    "teeming": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.011922032020678923,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "nurturing": {
+      "gpt-4o-mini_results": 0.00632560204194873,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.029864889649691265,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.04577891477043221
+    },
+    "finite": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.006224777780708464,
+      "WizardLM-2-8x22B_results": 0.01314124141645348
+    },
+    "evolving.": {
+      "gpt-4o-mini_results": 0.01811674619909,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "temperate": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0037776156731971653,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "enigmatic": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.010087424344317418,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "aquatic": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.004402876198416007,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "revolving": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.005547327319240608
+    },
+    "home.": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.005439612225663121
+    },
+    "verdant": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.004793321664198196
+    },
+    "vast": {
+      "gpt-4o-mini_results": 0.030435023859727,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0781054606085869,
+      "phi-4_results": 0.06174726416824601,
+      "Mistral-Small-24B-Instruct-2501_results": 0.11281453091151475,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.09171940218123065
+    },
+    "changing": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.012431261456423929,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "\"beautiful.": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.023580302270988843,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "fragile.": {
+      "gpt-4o-mini_results": 0.0097103540117634,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.010393103869902795,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.018500067321933485
+    },
+    "life-sustaining": {
+      "gpt-4o-mini_results": 0.004439018976806126,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.06452894785107294,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.10343341860778242
+    },
+    "complex": {
+      "gpt-4o-mini_results": 0.06858284319165464,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.05101083784910379,
+      "phi-4_results": 0.02769456501803509,
+      "Mistral-Small-24B-Instruct-2501_results": 0.027995334110981502,
+      "gemma-3-27b-it_results": 0.02141745575396302,
+      "WizardLM-2-8x22B_results": 0.030860374309950183
+    },
+    "unique.": {
+      "gpt-4o-mini_results": 0.006824991676839419,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.004532577903682719,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "alive.": {
+      "gpt-4o-mini_results": 0.004133836422150705,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.007432094650891518,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "andenigmatic.": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0052657890351608064,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "watery": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.02766777824093372,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.006932177970338277,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "living": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.005232461256457257,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "\"precious.": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.022947274022103236,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "atmospheric": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0154491454772822,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "enigmatic.": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0064498379898514395,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "wondrous": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.020894122551062943,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "interconnected": {
+      "gpt-4o-mini_results": 0.08475751858839196,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0071834688512563425,
+      "Mistral-Small-24B-Instruct-2501_results": 0.010564905849025162,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "beautiful.": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.006303906311819165,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "inhabited": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.014642049275539524,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "habitable": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.021813098409516524,
+      "WizardLM-2-8x22B_results": 0.0035815268614514608
+    },
+    "dynamic": {
+      "gpt-4o-mini_results": 0.11111419376317834,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.09873905794080867,
+      "phi-4_results": 0.12211897047135784,
+      "Mistral-Small-24B-Instruct-2501_results": 0.1298450258290285,
+      "gemma-3-27b-it_results": 0.10550470814760109,
+      "WizardLM-2-8x22B_results": 0.09193483236838562
+    },
+    "green": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.00901417257190496,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.024529844644317254,
+      "WizardLM-2-8x22B_results": 0.05606570620708227
+    },
+    "inhabited.": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0067555175154368164,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "mountainous": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.00826713343207217
+    },
+    "rotating": {
+      "gpt-4o-mini_results": 0.008212185107091333,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0175460047686006,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.09352992377284837,
+      "WizardLM-2-8x22B_results": 0.009721287195368251
+    },
+    "complex.": {
+      "gpt-4o-mini_results": 0.0045222505826212405,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "beautiful": {
+      "gpt-4o-mini_results": 0.10048829208744868,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.10212588578574407,
+      "phi-4_results": 0.01354160298343217,
+      "Mistral-Small-24B-Instruct-2501_results": 0.04002666222296284,
+      "gemma-3-27b-it_results": 0.01577295386806636,
+      "WizardLM-2-8x22B_results": 0.011740945199946142
+    },
+    "intricate": {
+      "gpt-4o-mini_results": 0.014787481966485407,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.006265622396267289,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "magnificent": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.008050229262192581,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.004577891477043221
+    },
+    "resource-rich": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.018067681270276685,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "evolving": {
+      "gpt-4o-mini_results": 0.03689934524470092,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.005165805699050158,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.005735828733001212
+    },
+    "turbulent": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0038036681950812837,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "majestic": {
+      "gpt-4o-mini_results": 0.015453334813006326,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.029673822426010837,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.005532411264789202,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.046021273730981554
+    },
+    "old": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.008831861356440594,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "breathtaking": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.03853167986661109,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.004565905682386269,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "essential.": {
+      "gpt-4o-mini_results": 0.007685051603595605,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "spherical": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.020190704460191746,
+      "phi-4_results": 0.06844164577856575,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "lush": {
+      "gpt-4o-mini_results": 0.009099988902452559,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.004565905682386269,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "massive": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.03173197165485619,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "fertile": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.008834138289417376,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.06085902787128046
+    },
+    "stunning": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.014276781992496873,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "\"evolving.": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.005934639833302561,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "hospitable": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.008986978052210062,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "mysterious.": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.01121843858898331,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "rugged": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.00627865777407253,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "blue": {
+      "gpt-4o-mini_results": 0.02330484962823216,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.018132555231346395,
+      "phi-4_results": 0.08922785351837134,
+      "Mistral-Small-24B-Instruct-2501_results": 0.11868021996333944,
+      "gemma-3-27b-it_results": 0.08073747790995173,
+      "WizardLM-2-8x22B_results": 0.09368520263901979
+    },
+    "spinning": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.012410588738766277,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "finite.": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.011067725865086845
+    },
+    "resilient.": {
+      "gpt-4o-mini_results": 0.003939629341915437,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.005699050158306949,
+      "gemma-3-27b-it_results": 0.005565373354785958,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "\"resilient.": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.02540025848653496,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "interconnected.": {
+      "gpt-4o-mini_results": 0.00843413605593164,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.011707525829919912,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "awe-inspiring.": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.004389390063282618
+    },
+    "life-supporting": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.01121843858898331,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "layered": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.012288316928532127,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.07031888798037612,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "resilient": {
+      "gpt-4o-mini_results": 0.09688158916879369,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.03319091288036682,
+      "phi-4_results": 0.03292168490554503,
+      "Mistral-Small-24B-Instruct-2501_results": 0.07638726878853525,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.10550693415914905
+    },
+    "vibrant": {
+      "gpt-4o-mini_results": 0.1113084008434136,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.04129324718632764,
+      "phi-4_results": 0.020052576878400685,
+      "Mistral-Small-24B-Instruct-2501_results": 0.044159306782202964,
+      "gemma-3-27b-it_results": 0.08535330889140928,
+      "WizardLM-2-8x22B_results": 0.02124680220815942
+    },
+    "rocky": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.025844101709045435,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.005032494584235961,
+      "gemma-3-27b-it_results": 0.010313085221428006,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "fascinating": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.004689453939141309,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "expansive": {
+      "gpt-4o-mini_results": 0.007990234158251026,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "terrestrial": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.021962275948311797,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "fragile": {
+      "gpt-4o-mini_results": 0.04680390633669959,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.09754064193413922,
+      "phi-4_results": 0.0643455401357217,
+      "Mistral-Small-24B-Instruct-2501_results": 0.08261956340609898,
+      "gemma-3-27b-it_results": 0.10281433808983725,
+      "WizardLM-2-8x22B_results": 0.018042278174229164
+    },
+    "alive": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.009831694717547076,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "precious.": {
+      "gpt-4o-mini_results": 0.005632005326822772,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.016828000949542374,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "diverse": {
+      "gpt-4o-mini_results": 0.11103096215736322,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.10480929553980825,
+      "phi-4_results": 0.1221801063764749,
+      "Mistral-Small-24B-Instruct-2501_results": 0.12774537577070488,
+      "gemma-3-27b-it_results": 0.10468704665945718,
+      "WizardLM-2-8x22B_results": 0.10749966339033257
+    },
+    "\"": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0025584891725793264,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "round": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0077948279024270956,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "mysterious": {
+      "gpt-4o-mini_results": 0.007851514815225835,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.01255731554814506,
+      "phi-4_results": 0.02066393592957144,
+      "Mistral-Small-24B-Instruct-2501_results": 0.04579236793867689,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "volatile": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.004699216797200466,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.004685606570620708
+    },
+    "precious": {
+      "gpt-4o-mini_results": 0.006103651093108423,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.005679449770737807,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0,
+      "gemma-3-27b-it_results": 0.012370427030306228,
+      "WizardLM-2-8x22B_results": 0.0036892419550289485
+    },
+    "unique": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.05382451021258858,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0280619896683886,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.0
+    },
+    "ever-changing": {
+      "gpt-4o-mini_results": 0.0,
+      "Llama-3.3-70B-Instruct-Turbo_results": 0.0,
+      "phi-4_results": 0.0,
+      "Mistral-Small-24B-Instruct-2501_results": 0.0071654724212631225,
+      "gemma-3-27b-it_results": 0.0,
+      "WizardLM-2-8x22B_results": 0.00570889995960684
+    }
+  },
+  "highest_frequency_model": {
+    "bountiful": "phi-4_results",
+    "ancient": "gemma-3-27b-it_results",
+    "teeming": "gemma-3-27b-it_results",
+    "nurturing": "WizardLM-2-8x22B_results",
+    "finite": "WizardLM-2-8x22B_results",
+    "evolving.": "gpt-4o-mini_results",
+    "temperate": "Llama-3.3-70B-Instruct-Turbo_results",
+    "enigmatic": "phi-4_results",
+    "aquatic": "Llama-3.3-70B-Instruct-Turbo_results",
+    "revolving": "WizardLM-2-8x22B_results",
+    "home.": "WizardLM-2-8x22B_results",
+    "verdant": "WizardLM-2-8x22B_results",
+    "vast": "Mistral-Small-24B-Instruct-2501_results",
+    "changing": "Mistral-Small-24B-Instruct-2501_results",
+    "\"beautiful.": "gemma-3-27b-it_results",
+    "fragile.": "WizardLM-2-8x22B_results",
+    "life-sustaining": "WizardLM-2-8x22B_results",
+    "complex": "gpt-4o-mini_results",
+    "unique.": "gpt-4o-mini_results",
+    "alive.": "Mistral-Small-24B-Instruct-2501_results",
+    "andenigmatic.": "Mistral-Small-24B-Instruct-2501_results",
+    "watery": "Llama-3.3-70B-Instruct-Turbo_results",
+    "living": "Mistral-Small-24B-Instruct-2501_results",
+    "\"precious.": "gemma-3-27b-it_results",
+    "atmospheric": "Llama-3.3-70B-Instruct-Turbo_results",
+    "enigmatic.": "phi-4_results",
+    "wondrous": "Llama-3.3-70B-Instruct-Turbo_results",
+    "interconnected": "gpt-4o-mini_results",
+    "beautiful.": "gemma-3-27b-it_results",
+    "inhabited": "phi-4_results",
+    "habitable": "gemma-3-27b-it_results",
+    "dynamic": "Mistral-Small-24B-Instruct-2501_results",
+    "green": "WizardLM-2-8x22B_results",
+    "inhabited.": "phi-4_results",
+    "mountainous": "WizardLM-2-8x22B_results",
+    "rotating": "gemma-3-27b-it_results",
+    "complex.": "gpt-4o-mini_results",
+    "beautiful": "Llama-3.3-70B-Instruct-Turbo_results",
+    "intricate": "gpt-4o-mini_results",
+    "magnificent": "Llama-3.3-70B-Instruct-Turbo_results",
+    "resource-rich": "gemma-3-27b-it_results",
+    "evolving": "gpt-4o-mini_results",
+    "turbulent": "Llama-3.3-70B-Instruct-Turbo_results",
+    "majestic": "WizardLM-2-8x22B_results",
+    "old": "Mistral-Small-24B-Instruct-2501_results",
+    "breathtaking": "Llama-3.3-70B-Instruct-Turbo_results",
+    "essential.": "gpt-4o-mini_results",
+    "spherical": "phi-4_results",
+    "lush": "gpt-4o-mini_results",
+    "massive": "Llama-3.3-70B-Instruct-Turbo_results",
+    "fertile": "WizardLM-2-8x22B_results",
+    "stunning": "Llama-3.3-70B-Instruct-Turbo_results",
+    "\"evolving.": "gemma-3-27b-it_results",
+    "hospitable": "phi-4_results",
+    "mysterious.": "phi-4_results",
+    "rugged": "Llama-3.3-70B-Instruct-Turbo_results",
+    "blue": "Mistral-Small-24B-Instruct-2501_results",
+    "spinning": "phi-4_results",
+    "finite.": "WizardLM-2-8x22B_results",
+    "resilient.": "Mistral-Small-24B-Instruct-2501_results",
+    "\"resilient.": "gemma-3-27b-it_results",
+    "interconnected.": "phi-4_results",
+    "awe-inspiring.": "WizardLM-2-8x22B_results",
+    "life-supporting": "phi-4_results",
+    "layered": "gemma-3-27b-it_results",
+    "resilient": "WizardLM-2-8x22B_results",
+    "vibrant": "gpt-4o-mini_results",
+    "rocky": "Llama-3.3-70B-Instruct-Turbo_results",
+    "fascinating": "Llama-3.3-70B-Instruct-Turbo_results",
+    "expansive": "gpt-4o-mini_results",
+    "terrestrial": "Llama-3.3-70B-Instruct-Turbo_results",
+    "fragile": "gemma-3-27b-it_results",
+    "alive": "Mistral-Small-24B-Instruct-2501_results",
+    "precious.": "gemma-3-27b-it_results",
+    "diverse": "Mistral-Small-24B-Instruct-2501_results",
+    "\"": "gemma-3-27b-it_results",
+    "round": "phi-4_results",
+    "mysterious": "Mistral-Small-24B-Instruct-2501_results",
+    "volatile": "Mistral-Small-24B-Instruct-2501_results",
+    "precious": "gemma-3-27b-it_results",
+    "unique": "Llama-3.3-70B-Instruct-Turbo_results",
+    "ever-changing": "Mistral-Small-24B-Instruct-2501_results"
+  }
+}
