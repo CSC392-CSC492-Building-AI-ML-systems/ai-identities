@@ -1,9 +1,9 @@
 import json
 import csv
 
-json_file_path = "C://Users//User//Downloads//WizardLM-2-8x22B_results.json"
+json_file_path = "yourJSONfile.json"
 
-csv_file_path = "C://Users//User//Downloads//WizardLM-2-8x22B_results.csv"
+csv_file_path = "whereYouWantToSaveYourCSVfile.csv"
 
 with open(json_file_path, "r", encoding="utf-8") as json_file:
     data = json.load(json_file)
