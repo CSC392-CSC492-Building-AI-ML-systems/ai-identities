@@ -63,9 +63,9 @@ for i in range(20):
 
 # Compute statistics
 if("/" in args.model):
-    filename = f"{args.model.split('/')[1]}_results.json"
+    filename = f"2_{args.model.split('/')[1]}_results.json"
 else:
-    filename = f"{args.model}_results.json"
+    filename = f"2_{args.model}_results.json"
 with open(filename, "w") as f:
     f.write(json.dumps(test_dict, indent="\t"))
 print(f"Results saved to {filename}")
