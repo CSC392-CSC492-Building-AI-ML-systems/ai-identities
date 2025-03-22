@@ -5,7 +5,6 @@ from sklearn.metrics import accuracy_score, classification_report
 from sklearn.neural_network import MLPClassifier
 import os
 import glob
-import joblib  # For saving and loading the model
 
 # Constants for training
 TRAINING_WORDS_LIST = ['life-filled', 'home.', 'wondrous', 'immense', 'ever-changing.', 'massive',
@@ -153,7 +152,6 @@ def align_validation_data(validation_data):
     return aligned_data
 
 def align_model_order(data_df):
-    """Align model order to match training data"""
     # DEBUG: Check input data
     # print(f"DEBUG: align_model_order input data shape: {data_df.shape}")
     # print(f"DEBUG: Input data index (first 5): {list(data_df.index)[:5]}")
@@ -184,17 +182,21 @@ def align_model_order(data_df):
     print("")
     return aligned_df
 
-def train_and_validate(train_file_path, validation_file_path, model_save_path="trained_model.pkl"):
-    """Train on one heatmap file, validate on another, and save the model"""
+def train_and_validate(train_file_path, validation_file_path):
+    """Train on one heatmap file and validate on another"""
     # Load training data
     train_heatmap = load_heatmap_data(train_file_path)
-    if train_heatmap is None or 'normalized_frequencies' not in train_heatmap:
-        print("ERROR: Training data loading or key error.")
+    if train_heatmap is None:
         return None, None, None, None
 
     # DEBUG: Check training data structure
     # print("DEBUG: Training heatmap keys:", list(train_heatmap.keys()))
 
+    if 'normalized_frequencies' not in train_heatmap:
+        print("ERROR: 'normalized_frequencies' key not found in training data!")
+        return None, None, None, None
+
+    # Prepare training features
     train_data = prepare_features(train_heatmap, for_training=True)
 
     # Ensure training data has exactly the right columns in the right order
@@ -207,13 +209,17 @@ def train_and_validate(train_file_path, validation_file_path, model_save_path="t
 
     # Load validation data
     validation_heatmap = load_heatmap_data(validation_file_path)
-    if validation_heatmap is None or 'normalized_frequencies' not in validation_heatmap:
-        print("ERROR: Validation data loading or key error.")
+    if validation_heatmap is None:
         return None, None, None, None
 
     # DEBUG: Check validation data structure
     # print("DEBUG: Validation heatmap keys:", list(validation_heatmap.keys()))
 
+    if 'normalized_frequencies' not in validation_heatmap:
+        print("ERROR: 'normalized_frequencies' key not found in validation data!")
+        return None, None, None, None
+
+    # Prepare validation features
     validation_data = prepare_features(validation_heatmap, for_training=False)
 
     # Align validation data words with training data
@@ -273,12 +279,17 @@ def train_and_validate(train_file_path, validation_file_path, model_save_path="t
     )
 
     # Fit the MLP classifier with try/except to catch errors
+    classifiers = []
     try:
         clf.fit(X_train, y_train)
-        joblib.dump(clf, model_save_path)  # Save model
-        print(f"MLP model saved to {model_save_path}")
+        classifiers.append(("MLP", clf))
+        print("MLP training complete!")
     except Exception as e:
         print(f"ERROR fitting MLP: {str(e)}")
+
+    if not classifiers:
+        print("ERROR: All classifiers failed to train!")
+        return None, None, None, None
 
     print("Training complete!")
     print("")
@@ -298,16 +309,39 @@ def train_and_validate(train_file_path, validation_file_path, model_save_path="t
         X_val_active = X_val[active_indices]
         y_val_active = [y_val[i] for i in active_indices]
 
-        y_pred = clf.predict(X_val_active)
-        accuracy = accuracy_score(y_val_active, y_pred)
-        print(f"\nValidation results for MLP:")
-        print(f"- Active models: {len(active_models)} out of {len(y_val)}")
-        print(f"- Accuracy: {accuracy:.4f}")
-        print(classification_report(y_val_active, y_pred, zero_division=1))
+        # Evaluate all classifiers
+        for name, classifier in classifiers:
+            try:
+                print(f"DEBUG: Making predictions with {name}...")
+                y_pred = classifier.predict(X_val_active)
 
-    return clf, train_data, X_val, y_val  # Return the trained classifier
+                # DEBUG: Check prediction shapes
+                # print(f"DEBUG: y_val_active shape: {len(y_val_active)}")
+                # print(f"DEBUG: y_pred shape: {len(y_pred)}")
 
+                accuracy = accuracy_score(y_val_active, y_pred)
 
+                print(f"\nValidation results for {name}:")
+                print(f"- Active models: {len(active_models)} out of {len(y_val)}")
+                print(f"- Accuracy: {accuracy:.4f}")
+                print("")
+                print(f"- Detailed report:")
+                print(classification_report(y_val_active, y_pred, zero_division=1))
+
+                # Print confusion details
+                for i, (true, pred) in enumerate(zip(y_val_active, y_pred)):
+                    if true != pred:
+                        print(f"  - Misclassification: True={true}, Predicted={pred}")
+                print("")
+                print("-----------------------------------")
+                print("")
+            except Exception as e:
+                print(f"ERROR evaluating {name}: {str(e)}")
+    else:
+        print("No active models in validation data (all zeros)")
+
+    # Return all classifiers that were successfully trained
+    return [clf for name, clf in classifiers], train_data, X_val, y_val
 def predict_model(clf, word_frequencies, clf_name="", json_file_path=""):
     """
     Predict the model based on word frequencies
@@ -316,7 +350,6 @@ def predict_model(clf, word_frequencies, clf_name="", json_file_path=""):
         clf: Trained classifier
         word_frequencies: Dict of {word: frequency} for the new sample
         clf_name: Name of the classifier (for printing)
-        json_file_path: Path to json file
 
     Returns:
         Predicted model name
@@ -374,7 +407,6 @@ def predict_model(clf, word_frequencies, clf_name="", json_file_path=""):
 
             # Normalize the top_probs to sum to 1.0
             top_probs_normalized = [prob / sum(top_probs) for prob in top_probs]
-
             print(f"Predicted model using {clf_name}: {prediction[0]}, for model: {json_file_path}")
             print("")
             # Set threshold about confidence,
@@ -385,17 +417,17 @@ def predict_model(clf, word_frequencies, clf_name="", json_file_path=""):
 
             if lowConf:
                 print("Low confidence in prediction: Consider Manual Review")
-                print(f"Confidence percentage: {confidence_k}")
+                print(f"Confidence percentage: ", confidence_k)
                 print("Consider the following results as top 5 closest predictions:")
             else:
                 print("HIGH CONFIDENCE IN PREDICTION")
-                print(f"Confidence percentage: {confidence_k}")
+                print(f"Confidence percentage: ", confidence_k)
                 print("Probabilities for Top 5 predictions:")
+            for model, prob in zip(top_models, top_probs):
+                    print(f"- {model}: {prob:.4f}")
+            print("")
+            print("")
 
-            for model, prob in zip(top_models, top_probs_normalized):
-                print(f"- {model}: {prob:.4f}")
-            print("")
-            print("")
 
         except Exception as e:
             print(f"ERROR getting probabilities: {str(e)}")
@@ -422,47 +454,81 @@ def process_single_model_json(json_file_path):
         # Load word frequencies from JSON
         with open(json_file_path, 'r', encoding='utf-8') as f:
             word_freq = json.load(f)
-        print(f"Loaded {len(word_freq)} words from {json_file_path}")  # This was the missing print
+
+        print(f"Loaded {len(word_freq)} words from {json_file_path}")
+
         total_freq = sum(float(freq) for freq in word_freq.values())
+
         if total_freq == 0:
             print("WARNING: Total frequency is zero, cannot normalize")
             return {}
-        normalized_freqs = {word: float(freq) / total_freq for word, freq in word_freq.items()}
+
+        normalized_freqs = {word: float(freq)/total_freq for word, freq in word_freq.items()}
+
         norm_sum = sum(normalized_freqs.values())
         print(f"Sum of normalized frequencies: {norm_sum:.6f} (should be very close to 1.0)")
         top_words = sorted(normalized_freqs.items(), key=lambda x: x[1], reverse=True)[:20]
 
+        # print("Top 20 words by normalized frequency:")
+        # for word, freq in top_words:
+        #     print(f"  {word}: {freq:.6f}")
+        # # Create a bar chart of top words
+        # try:
+        #     model_name = os.path.basename(json_file_path).replace('_results.json', '')
+
+        #     plt.figure(figsize=(12, 6))
+        #     words, freqs = zip(*top_words)
+        #     plt.bar(words, freqs)
+        #     plt.xticks(rotation=45, ha='right')
+        #     plt.title(f"Top 20 Words for {model_name}")
+        #     plt.tight_layout()
+        #     plt.savefig(f"{model_name}_top_words.png")
+        #     plt.close()
+
+        #     print(f"Created visualization: {model_name}_top_words.png")
+        # except Exception as e:
+        #     print(f"Error creating visualization: {str(e)}")
+
         return normalized_freqs
+
     except Exception as e:
         print(f"Error processing {json_file_path}: {str(e)}")
         return {}
 
 
 def main():
-    train_file_path = './heatmap_data.json'
-    validation_file_path = './test/heatmap_data_3.json'
-    model_save_path = "mlp_classifier.pkl"
+    # File paths
+    train_file_path = './heatmap_data.json' # EXAMPLE OF RELATIVE PATH classifiers/heatmap_data.json
+    validation_file_path = './test/heatmap_data_3.json' # EXAMPLE OF RELATIVE PATH classifiers/heatmap_data.json
 
     # Train on one dataset and validate on another
     print("\n=== STARTING TRAINING AND VALIDATION ===\n")
-    trained_clf, _, _, _ = train_and_validate(train_file_path, validation_file_path, model_save_path)
+    lst_classifiers, train_data, X_val, y_val = train_and_validate(train_file_path, validation_file_path)
 
-    if trained_clf is None:
+    if lst_classifiers is None:
         print("Failed to train classifier. Exiting.")
         return
 
-    # Load the saved model for prediction (you can also use lst_classifiers[0] directly)
-    try:
-        loaded_clf = joblib.load(model_save_path)
-        print(f"\nLoaded trained MLP model from {model_save_path}")
-    except FileNotFoundError:
-        print(f"Error: Trained model file not found at {model_save_path}")
-        return
-    except Exception as e:
-        print(f"Error loading model: {str(e)}")
-        return
+    # __________SINGLE JSON SHIT_________________________________________
+    # # Process a single model's JSON file
+    # print("\n=== PROCESSING SINGLE MODEL JSON ===\n")
+    # prediction_json = 'classifiers/predictionJSON_seen/DeepSeek-R1-Distill-Llama-70B_results.json'
+    # normalized_freqs = process_single_model_json(prediction_json)
 
-    evaluationDirectory = "./predictionJSON_unseen"
+    # classifier_names = ["Random Forest", "Decision Tree", "Logistic Regression", "Neural Network mini", "Neural Network large"]
+
+    # if len(lst_classifiers) != len(classifier_names):
+    #     print(f"WARNING: Number of classifiers ({len(lst_classifiers)}) doesn't match number of names ({len(classifier_names)})")
+    #     classifier_names = classifier_names[:len(lst_classifiers)]
+
+    # for clf, name in zip(lst_classifiers, classifier_names):
+    #     predicted_model = predict_model(clf, normalized_freqs, name)
+
+    # print(f"NOTE: Processing '{prediction_json}'")
+    # __________SINGLE JSON SHIT_________________________________________
+
+
+    evaluationDirectory = "./predictionJSON_unseen" # EXAMPLE OF RELATIVE PATH: classifiers/predictionJSON_seen
     json_files = glob.glob(os.path.join(evaluationDirectory, "*.json"))
 
     print("")
@@ -477,13 +543,20 @@ def main():
         return
 
     for json_file in json_files:
-        print(f"\n=== PROCESSING MODEL JSON: {json_file} ===\n") # This line was crucial
+        print(f"\n=== PROCESSING MODEL JSON: {json_file} ===\n")
         normalized_freqs = process_single_model_json(json_file)
-        if normalized_freqs:  # Check if normalized_freqs is not empty
-          predict_model(loaded_clf, normalized_freqs, "MLP", json_file)
-        else:
-          print(f"Skipping prediction for {json_file} due to empty frequencies.")
 
+        classifier_names = [
+            "Random Forest", # "Decision Tree", "Logistic Regression",
+            # "Neural Network mini", "Neural Network large"
+        ]
+
+        if len(lst_classifiers) != len(classifier_names):
+            print(f"WARNING: Number of classifiers ({len(lst_classifiers)}) doesn't match number of names ({len(classifier_names)})")
+            classifier_names = classifier_names[:len(lst_classifiers)]
+
+        for clf, name in zip(lst_classifiers, classifier_names):
+            predicted_model = predict_model(clf, normalized_freqs, name, json_file)
 
 if __name__ == "__main__":
     main()
