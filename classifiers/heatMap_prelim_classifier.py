@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score, classification_report
 from sklearn.neural_network import MLPClassifier
 import os
 import glob
-import joblib  # For saving and loading the model
+import pickle  # Replaced joblib with pickle
 
 # Constants for training
 TRAINING_WORDS_LIST = ['life-filled', 'home.', 'wondrous', 'immense', 'ever-changing.', 'massive',
@@ -275,7 +275,8 @@ def train_and_validate(train_file_path, validation_file_path, model_save_path="t
     # Fit the MLP classifier with try/except to catch errors
     try:
         clf.fit(X_train, y_train)
-        joblib.dump(clf, model_save_path)  # Save model
+        with open(model_save_path, 'wb') as f:  # Use pickle for saving
+            pickle.dump(clf, f)
         print(f"MLP model saved to {model_save_path}")
     except Exception as e:
         print(f"ERROR fitting MLP: {str(e)}")
@@ -453,7 +454,8 @@ def main():
 
     # Load the saved model for prediction (you can also use lst_classifiers[0] directly)
     try:
-        loaded_clf = joblib.load(model_save_path)
+        with open(model_save_path, 'rb') as f:  # Use pickle for loading
+            loaded_clf = pickle.load(f)
         print(f"\nLoaded trained MLP model from {model_save_path}")
     except FileNotFoundError:
         print(f"Error: Trained model file not found at {model_save_path}")

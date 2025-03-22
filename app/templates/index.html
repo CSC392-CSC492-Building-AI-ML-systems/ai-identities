@@ -3,36 +3,124 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Model Benchmarking</title>
+  <title>LLM Identifier</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
 <div class="container">
-  <h1>Model Benchmarking</h1>
+  <h1>LLM Identifier Tool</h1>
+  <p>This tool identifies which LLM model is being used based on response patterns to specific prompts.</p>
 
-  <button id="toggle-visibility">Hide Input Fields</button>
+  <div class="card">
+    <h2>Configuration</h2>
+    <button id="toggle-visibility">Hide Input Fields</button>
 
-  <div class="input-section" id="input-section">
-    <div> <!-- Added div -->
-        <label for="provider">Select Provider:</label>
-        <select id="provider">
+    <div class="input-section" id="input-section">
+      <div class="form-group">
+        <label for="provider">Provider:</label>
+        <select id="provider" class="form-control">
           <option value="openai">OpenAI</option>
-          <option value="google">Google</option>
-          <option value="microsoft">Microsoft</option>
+          <option value="anthropic">Anthropic</option>
+          <!-- Add more providers as supported in app.py -->
         </select>
+      </div>
+
+      <div class="form-group">
+        <label for="api-key">API Key:</label>
+        <input type="password" id="api-key" class="form-control" placeholder="Your API Key">
+        <small class="help-text">Your API key is only used for API requests and is never stored.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="model">Model Name:</label>
+        <input type="text" id="model" class="form-control" placeholder="e.g., gpt-4o, claude-3-opus-20240229">
+      </div>
+
+      <div class="form-group">
+        <label for="num-samples">Number of Samples:</label>
+        <input type="number" id="num-samples" class="form-control" value="100" min="10" max="4000">
+        <small class="help-text">More samples = higher accuracy but higher cost (10-4000)</small>
+      </div>
     </div>
-    <div> <!-- Added div -->
-        <label for="api-key">Enter API Key:</label>
-        <input type="password" id="api-key" placeholder="Your API Key">
+
+    <div class="button-group">
+      <button id="test-connection" class="btn btn-secondary">Test Connection</button>
+      <button id="identify-model" class="btn btn-primary">Identify Model</button>
     </div>
   </div>
-    <button id="submit-btn">Submit</button>
-  <div class="results-section">
+
+  <div class="card hidden" id="testing-card">
+    <h2>Testing Connection</h2>
+    <div class="spinner"></div>
+    <p>Sending test request to the API...</p>
+  </div>
+
+  <div class="card hidden" id="progress-card">
+    <h2>Identifying Model</h2>
+    <div class="spinner"></div>
+    <p>Collecting <span id="sample-count">0</span> responses from the model...</p>
+    <div class="progress-bar">
+      <div class="progress" id="sample-progress"></div>
+    </div>
+    <button id="cancel-identification" class="btn btn-danger">Cancel</button>
+  </div>
+
+  <div class="card hidden" id="results-card">
     <h2>Results</h2>
-    <div id="accuracy-results"></div>
-    <div id="model-classification"></div>
+    <div class="result-header">
+      <div>
+        <h3>Input Model: <span id="input-model"></span></h3>
+        <p>Provider: <span id="provider-name"></span></p>
+      </div>
+      <div>
+        <h3>Predicted Model: <span id="predicted-model"></span></h3>
+        <p>Confidence: <span id="confidence"></span></p>
+      </div>
+    </div>
+
+    <div class="result-details">
+      <h3>Top Predictions</h3>
+      <div id="prediction-chart"></div>
+      <table id="top-predictions" class="data-table">
+        <thead>
+        <tr>
+          <th>Model</th>
+          <th>Probability</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="result-details">
+      <h3>Word Frequencies</h3>
+      <div class="word-cloud" id="word-cloud"></div>
+      <table id="word-frequencies" class="data-table">
+        <thead>
+        <tr>
+          <th>Word</th>
+          <th>Frequency</th>
+          <th>Percentage</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card hidden" id="error-card">
+    <h2>Error</h2>
+    <p id="error-message"></p>
+    <button id="back-to-form" class="btn btn-primary">Back</button>
+  </div>
+
+  <div class="card">
+    <h2>Models in Database</h2>
+    <p>The identifier is trained on these models:</p>
+    <div id="known-models" class="model-list"></div>
   </div>
 </div>
+
 <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>

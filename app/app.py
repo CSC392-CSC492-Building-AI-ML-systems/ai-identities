@@ -2,6 +2,10 @@ from flask import Flask, render_template, request, jsonify
 import numpy as np
 import pickle
 import os
+import re
+import requests
+import time
+from collections import Counter
 
 app = Flask(__name__)
 
@@ -53,24 +57,18 @@ LIST_OF_MODELS = ["chatgpt-4o-latest", "DeepSeek-R1-Distill-Llama-70B", "DeepSee
 # Load the trained MLPClassifier model
 def load_model():
     try:
-        model_path = os.path.join('classifiers', 'mlp_classifier.pkl')
+        # Go up one level from app.py, then into classifiers
+        model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'classifiers', 'mlp_classifier.pkl')
         with open(model_path, 'rb') as f:
             classifier = pickle.load(f)
         print("Model loaded successfully!")
         return classifier
+    except pickle.UnpicklingError as e:
+        print(f"Error unpickling model: {e}")
+        return None
     except Exception as e:
         print(f"Error loading model: {str(e)}")
-        # If model not found in primary location, try alternative locations
-        try:
-            # Try relative path from app directory
-            alt_path = os.path.join('..', 'classifiers', 'mlp_classifier.pkl')
-            with open(alt_path, 'rb') as f:
-                classifier = pickle.load(f)
-            print("Model loaded successfully from alternative path!")
-            return classifier
-        except Exception as alt_e:
-            print(f"Error loading model from alternative path: {str(alt_e)}")
-            return None
+        return None
 
 # Initialize the model
 classifier = load_model()
@@ -107,6 +105,112 @@ def prepare_features(word_frequencies):
 
     return features
 
+def query_llm(api_key, provider, model, num_samples=100, batch_size=10):
+    """
+    Query the LLM with the earth description prompt multiple times and collect responses
+
+    Args:
+        api_key: API key for the provider
+        provider: Provider name (e.g., 'openai', 'anthropic', etc.)
+        model: Model identifier to query
+        num_samples: Number of samples to collect
+        batch_size: Number of requests to send in parallel
+
+    Returns:
+        List of responses from the LLM
+    """
+    responses = []
+    prompt = "Describe the earth using only 10 adjectives. You can only use ten words, each separated by a comma."
+
+    # Implement connection to different providers
+    if provider.lower() == 'openai':
+        import openai
+        openai.api_key = api_key
+
+        for i in range(0, num_samples, batch_size):
+            batch_count = min(batch_size, num_samples - i)
+            batch_responses = []
+
+            for j in range(batch_count):
+                try:
+                    response = openai.chat.completions.create(
+                        model=model,
+                        messages=[{"role": "user", "content": prompt}],
+                        temperature=1.0,  # High temperature for variety
+                        max_tokens=100
+                    )
+                    batch_responses.append(response.choices[0].message.content)
+                except Exception as e:
+                    print(f"Error querying OpenAI: {str(e)}")
+
+            responses.extend(batch_responses)
+            print(f"Collected {len(responses)}/{num_samples} responses")
+
+            # Rate limit handling - sleep between batches
+            if i + batch_count < num_samples:
+                time.sleep(1)  # Adjust sleep time based on provider rate limits
+
+    elif provider.lower() == 'anthropic':
+        import anthropic
+        client = anthropic.Anthropic(api_key=api_key)
+
+        for i in range(0, num_samples, batch_size):
+            batch_count = min(batch_size, num_samples - i)
+            batch_responses = []
+
+            for j in range(batch_count):
+                try:
+                    response = client.messages.create(
+                        model=model,
+                        max_tokens=100,
+                        temperature=1.0,
+                        messages=[{"role": "user", "content": prompt}]
+                    )
+                    batch_responses.append(response.content[0].text)
+                except Exception as e:
+                    print(f"Error querying Anthropic: {str(e)}")
+
+            responses.extend(batch_responses)
+            print(f"Collected {len(responses)}/{num_samples} responses")
+
+            # Rate limit handling
+            if i + batch_count < num_samples:
+                time.sleep(1)
+
+    # Add more providers as needed
+
+    return responses
+
+def process_responses(responses):
+    """
+    Process the responses from the LLM to extract and count words
+
+    Args:
+        responses: List of text responses from the LLM
+
+    Returns:
+        Dictionary of {word: frequency}
+    """
+    all_words = []
+
+    for response in responses:
+        # Clean and normalize the response
+        words = response.lower().strip()
+
+        # Remove any numbering if present
+        words = re.sub(r'^\d+\.?\s*', '', words)
+        words = re.sub(r'\s*\d+\.?\s*', ',', words)
+
+        # Split by commas and clean each word
+        for word in words.split(','):
+            word = word.strip().strip('."\'\n\t')
+            if word:  # Skip empty strings
+                all_words.append(word)
+
+    # Count word frequencies
+    word_frequencies = Counter(all_words)
+    return dict(word_frequencies)
+
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -114,30 +218,45 @@ def home():
 @app.route('/api/identify-model', methods=['POST'])
 def identify_model():
     """
-    Endpoint to identify model based on word frequencies.
+    Endpoint to identify model by querying it with the earth description prompt
+    and analyzing word frequencies in responses.
 
     Expected JSON input:
     {
         "api_key": "your_api_key",
         "provider": "provider_name",
-        "word_frequencies": {"word1": freq1, "word2": freq2, ...}
+        "model": "model_name",
+        "num_samples": 4000  // Optional, default is 4000
     }
     """
     data = request.json
     api_key = data.get('api_key')
     provider = data.get('provider')
-    word_frequencies = data.get('word_frequencies', {})
+    model = data.get('model')
+    num_samples = int(data.get('num_samples', 4000))
 
-    if not api_key or not provider:
-        return jsonify({"error": "Missing API key or provider"}), 400
+    # Limit samples to reasonable range
+    num_samples = min(max(num_samples, 10), 4000)
 
-    if not word_frequencies:
-        return jsonify({"error": "Missing word frequencies data"}), 400
+    if not api_key or not provider or not model:
+        return jsonify({"error": "Missing API key, provider, or model"}), 400
 
     if classifier is None:
         return jsonify({"error": "Model not loaded. Please check server logs."}), 500
 
     try:
+        # Query the LLM and collect responses
+        responses = query_llm(api_key, provider, model, num_samples)
+
+        if not responses:
+            return jsonify({"error": "Failed to collect responses from the model"}), 500
+
+        # Process responses to get word frequencies
+        word_frequencies = process_responses(responses)
+
+        if not word_frequencies:
+            return jsonify({"error": "No valid words extracted from responses"}), 500
+
         # Prepare features for prediction
         features = prepare_features(word_frequencies)
 
@@ -155,11 +274,11 @@ def identify_model():
             top_indices = np.argsort(probabilities)[-5:][::-1]
 
             # Extract top 5 models and their probabilities
-            top_models = [classifier.classes_[i] for i in top_indices]
-            top_probs = [float(probabilities[i]) for i in top_indices]
+            top_models = [LIST_OF_MODELS[i] for i in top_indices if i < len(LIST_OF_MODELS)]
+            top_probs = [float(probabilities[i]) for i in top_indices if i < len(LIST_OF_MODELS)]
 
             # Calculate confidence level
-            confidence = top_probs[0]
+            confidence = top_probs[0] if top_probs else 0.0
 
             # Create top predictions list
             top_predictions = [
@@ -170,10 +289,14 @@ def identify_model():
         # Prepare response
         model_info = {
             "provider": provider,
+            "input_model": model,
+            "samples_collected": len(responses),
+            "unique_words": len(word_frequencies),
             "predicted_model": predicted_model,
             "confidence": f"{confidence:.2%}",
             "confidence_value": float(confidence),
-            "top_predictions": top_predictions
+            "top_predictions": top_predictions,
+            "word_frequencies": word_frequencies  # Include for debugging/analysis
         }
 
         return jsonify(model_info)
@@ -186,6 +309,48 @@ def identify_model():
 def get_models():
     """Endpoint to return the list of models the classifier knows about"""
     return jsonify({"models": LIST_OF_MODELS})
+
+@app.route('/api/test-connection', methods=['POST'])
+def test_connection():
+    """
+    Test connection to LLM provider
+
+    Expected JSON input:
+    {
+        "api_key": "your_api_key",
+        "provider": "provider_name",
+        "model": "model_name"
+    }
+    """
+    data = request.json
+    api_key = data.get('api_key')
+    provider = data.get('provider')
+    model = data.get('model')
+
+    if not api_key or not provider or not model:
+        return jsonify({"error": "Missing API key, provider, or model"}), 400
+
+    try:
+        # Just query once to test connection
+        responses = query_llm(api_key, provider, model, num_samples=1)
+
+        if responses:
+            return jsonify({
+                "status": "success",
+                "message": "Successfully connected to provider",
+                "response": responses[0]
+            })
+        else:
+            return jsonify({
+                "status": "error",
+                "message": "Connected but received no response"
+            }), 500
+
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": f"Connection error: {str(e)}"
+        }), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
