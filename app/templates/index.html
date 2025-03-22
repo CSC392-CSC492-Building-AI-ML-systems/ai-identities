@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Model Benchmarking</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+<div class="container">
+  <h1>Model Benchmarking</h1>
+
+  <button id="toggle-visibility">Hide Input Fields</button>
+
+  <div class="input-section" id="input-section">
+    <div> <!-- Added div -->
+        <label for="provider">Select Provider:</label>
+        <select id="provider">
+          <option value="openai">OpenAI</option>
+          <option value="google">Google</option>
+          <option value="microsoft">Microsoft</option>
+        </select>
+    </div>
+    <div> <!-- Added div -->
+        <label for="api-key">Enter API Key:</label>
+        <input type="password" id="api-key" placeholder="Your API Key">
+    </div>
+  </div>
+    <button id="submit-btn">Submit</button>
+  <div class="results-section">
+    <h2>Results</h2>
+    <div id="accuracy-results"></div>
+    <div id="model-classification"></div>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
