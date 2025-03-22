@@ -177,6 +177,55 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10):
             if i + batch_count < num_samples:
                 time.sleep(1)
 
+    elif provider.lower() == 'google':
+        try:
+            import google.generativeai as genai
+
+            # Configure the Google Generative AI client
+            genai.configure(api_key=api_key)
+
+            for i in range(0, num_samples, batch_size):
+                batch_count = min(batch_size, num_samples - i)
+                batch_responses = []
+
+                for j in range(batch_count):
+                    try:
+                        # Create a model instance
+                        generation_config = {
+                            "temperature": 1.0,
+                            "max_output_tokens": 100,
+                        }
+
+                        gemini_model = genai.GenerativeModel(
+                            model_name=model,
+                            generation_config=generation_config
+                        )
+
+                        # Generate content
+                        response = gemini_model.generate_content(prompt)
+
+                        # Extract the text from the response
+                        if hasattr(response, 'text'):
+                            batch_responses.append(response.text)
+                        elif hasattr(response, 'parts'):
+                            batch_responses.append(''.join(part.text for part in response.parts))
+                        else:
+                            print(f"Warning: Unexpected response format: {response}")
+
+                    except Exception as e:
+                        print(f"Error querying Google Gemini: {str(e)}")
+
+                responses.extend(batch_responses)
+                print(f"Collected {len(responses)}/{num_samples} responses")
+
+                # Rate limit handling
+                if i + batch_count < num_samples:
+                    time.sleep(1)
+
+        except ImportError:
+            print("Google Generative AI library not installed. Install with: pip install google-generativeai")
+            return []
+
     # Add more providers as needed
 
     return responses
