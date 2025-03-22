@@ -4,18 +4,14 @@ comment = ""
 [server]
 url = "http://localhost:11434/v1"
 api_key = ""
-model = "gemini-2.0-flash-lite" ##  insert your model using the model flag
+model = "llama3.2" ##  insert your model using the model flag
 timeout = 600.0
-<<<<<<< HEAD
-rate_limit_rpm = 30  # Or whatever your API's rate limit is
-=======
 rate_limit_rpm = 60  # Or whatever your API's rate limit is
 tpm_limit = 500000   # Add this line for TPM limit
->>>>>>> 4a56c59775306210a6358efed1bcdad42a754ed7
 
 [inference]
 # Settings below are from evaluate_from_local.py for VLLM  on TIGER-AI-Lab/MMLU-Pro
-temperature = 0.7
+temperature = 0.5
 top_p = 1.0 # not specified but  default for VLLM
 max_tokens = 2048
 # The variable {subject} will be replaced with appropriate value in  runtime.

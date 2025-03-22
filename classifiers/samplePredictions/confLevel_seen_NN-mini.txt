@@ -1,0 +1,397 @@
+Predicted model using Neural Network mini: chatgpt-4o-latest, for model: classifiers/predictionJSON_seen\chatgpt-4o-latest_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.9614330233504293
+Probabilities for Top 5 predictions:
+
+chatgpt-4o-latest: 0.9605
+
+gpt-4o: 0.0265
+
+WizardLM-2-8x22B: 0.0072
+
+Hermes-3-Llama-3.1-405B: 0.0036
+
+gpt-4.5-preview: 0.0011
+
+Predicted model using Neural Network mini: DeepSeek-R1-Distill-Llama-70B, for model: classifiers/predictionJSON_seen\DeepSeek-R1-Distill-Llama-70B_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.8360886421706556
+Probabilities for Top 5 predictions:
+
+DeepSeek-R1-Distill-Llama-70B: 0.8311
+
+DeepSeek-R1: 0.0819
+
+Llama-3.2-90B-Vision-Instruct: 0.0465
+
+Meta-Llama-3.1-70B-Instruct-Turbo: 0.0180
+
+DeepSeek-R1-Turbo: 0.0165
+
+Predicted model using Neural Network mini: DeepSeek-R1-Turbo, for model: classifiers/predictionJSON_seen\DeepSeek-R1-Turbo_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.9489674729878941
+Probabilities for Top 5 predictions:
+
+DeepSeek-R1-Turbo: 0.9472
+
+DeepSeek-R1: 0.0417
+
+DeepSeek-R1-Distill-Llama-70B: 0.0053
+
+phi-4: 0.0032
+
+Llama-3.1-Nemotron-70B-Instruct: 0.0007
+
+Predicted model using Neural Network mini: DeepSeek-R1, for model: classifiers/predictionJSON_seen\DeepSeek-R1_results.json
+
+Low confidence in prediction: Consider Manual Review
+Confidence percentage: 0.5070966616968149
+Consider the following results as top 5 closest predictions:
+
+DeepSeek-R1: 0.4984
+
+DeepSeek-R1-Turbo: 0.2878
+
+DeepSeek-R1-Distill-Llama-70B: 0.1729
+
+Llama-3.1-Nemotron-70B-Instruct: 0.0120
+
+Llama-3.2-90B-Vision-Instruct: 0.0118
+
+Predicted model using Neural Network mini: DeepSeek-V3, for model: classifiers/predictionJSON_seen\DeepSeek-V3_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.9799202899894022
+Probabilities for Top 5 predictions:
+
+DeepSeek-V3: 0.9744
+
+gpt-4o-mini: 0.0073
+
+gpt-4o: 0.0053
+
+gpt-4.5-preview: 0.0042
+
+Mixtral-8x7B-Instruct-v0.1: 0.0032
+
+Predicted model using Neural Network mini: gemini-1.5-flash, for model: classifiers/predictionJSON_seen\gemini-1.5-flash_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.9884974612483552
+Probabilities for Top 5 predictions:
+
+gemini-1.5-flash: 0.9858
+
+L3.1-70B-Euryale-v2.2: 0.0033
+
+gemma-3-27b-it: 0.0030
+
+DeepSeek-V3: 0.0027
+
+gpt-4.5-preview: 0.0024
+
+Predicted model using Neural Network mini: gemini-2.0-flash-001, for model: classifiers/predictionJSON_seen\gemini-2.0-flash-001_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.9850358755538798
+Probabilities for Top 5 predictions:
+
+gemini-2.0-flash-001: 0.9803
+
+gemma-2-27b-it: 0.0053
+
+Qwen2.5-7B-Instruct: 0.0040
+
+gemini-1.5-flash: 0.0034
+
+gemma-3-27b-it: 0.0021
+
+Predicted model using Neural Network mini: gemma-2-27b-it, for model: classifiers/predictionJSON_seen\gemma-2-27b-it_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.9855151339643056
+Probabilities for Top 5 predictions:
+
+gemma-2-27b-it: 0.9836
+
+gemini-2.0-flash-001: 0.0081
+
+gemma-3-27b-it: 0.0029
+
+gemini-1.5-flash: 0.0018
+
+Mixtral-8x7B-Instruct-v0.1: 0.0017
+
+Predicted model using Neural Network mini: gemma-3-27b-it, for model: classifiers/predictionJSON_seen\gemma-3-27b-it_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.9923584146058795
+Probabilities for Top 5 predictions:
+
+gemma-3-27b-it: 0.9893
+
+gemini-1.5-flash: 0.0021
+
+Phi-4-multimodal-instruct: 0.0019
+
+Llama-3.1-Nemotron-70B-Instruct: 0.0018
+
+phi-4: 0.0018
+
+Predicted model using Neural Network mini: gpt-3.5-turbo, for model: classifiers/predictionJSON_seen\gpt-3.5-turbo_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.9605769430133291
+Probabilities for Top 5 predictions:
+
+gpt-3.5-turbo: 0.9541
+
+gpt-4o-mini: 0.0132
+
+o1-mini: 0.0115
+
+Llama-3.3-70B-Instruct-Turbo: 0.0092
+
+gpt-4.5-preview: 0.0053
+
+Predicted model using Neural Network mini: gpt-4.5-preview, for model: classifiers/predictionJSON_seen\gpt-4.5-preview_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.984408761535914
+Probabilities for Top 5 predictions:
+
+gpt-4.5-preview: 0.9781
+
+L3.1-70B-Euryale-v2.2: 0.0058
+
+o1-mini: 0.0044
+
+gemini-1.5-flash: 0.0027
+
+DeepSeek-V3: 0.0026
+
+Predicted model using Neural Network mini: gpt-4o-mini, for model: classifiers/predictionJSON_seen\gpt-4o-mini_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.9596733502178071
+Probabilities for Top 5 predictions:
+
+gpt-4o-mini: 0.9543
+
+gpt-4o: 0.0162
+
+DeepSeek-V3: 0.0110
+
+gpt-3.5-turbo: 0.0067
+
+Mixtral-8x7B-Instruct-v0.1: 0.0063
+
+Predicted model using Neural Network mini: gpt-4o, for model: classifiers/predictionJSON_seen\gpt-4o_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.970798183060145
+Probabilities for Top 5 predictions:
+
+gpt-4o: 0.9671
+
+chatgpt-4o-latest: 0.0157
+
+DeepSeek-V3: 0.0066
+
+gpt-4o-mini: 0.0040
+
+Hermes-3-Llama-3.1-405B: 0.0028
+
+Predicted model using Neural Network mini: Hermes-3-Llama-3.1-405B, for model: classifiers/predictionJSON_seen\Hermes-3-Llama-3.1-405B_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.9885073044505915
+Probabilities for Top 5 predictions:
+
+Hermes-3-Llama-3.1-405B: 0.9867
+
+Llama-3.3-70B-Instruct-Turbo: 0.0048
+
+chatgpt-4o-latest: 0.0029
+
+gpt-3.5-turbo: 0.0020
+
+gpt-4o: 0.0017
+
+Predicted model using Neural Network mini: L3.1-70B-Euryale-v2.2, for model: classifiers/predictionJSON_seen\L3.1-70B-Euryale-v2.2_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.8760505818282993
+Probabilities for Top 5 predictions:
+
+L3.1-70B-Euryale-v2.2: 0.8417
+
+Llama-3.2-90B-Vision-Instruct: 0.0431
+
+L3.3-70B-Euryale-v2.3: 0.0330
+
+phi-4: 0.0302
+
+Meta-Llama-3.1-70B-Instruct-Turbo: 0.0128
+
+Predicted model using Neural Network mini: L3.3-70B-Euryale-v2.3, for model: classifiers/predictionJSON_seen\L3.3-70B-Euryale-v2.3_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.9401134169448704
+Probabilities for Top 5 predictions:
+
+L3.3-70B-Euryale-v2.3: 0.9346
+
+Llama-3.3-70B-Instruct-Turbo: 0.0370
+
+L3.1-70B-Euryale-v2.2: 0.0101
+
+Llama-3.2-90B-Vision-Instruct: 0.0071
+
+MythoMax-L2-13b: 0.0053
+
+Predicted model using Neural Network mini: Llama-3.1-Nemotron-70B-Instruct, for model: classifiers/predictionJSON_seen\Llama-3.1-Nemotron-70B-Instruct_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.8710643685135447
+Probabilities for Top 5 predictions:
+
+Llama-3.1-Nemotron-70B-Instruct: 0.8663
+
+Meta-Llama-3.1-70B-Instruct-Turbo: 0.1012
+
+DeepSeek-R1: 0.0139
+
+Llama-3.2-90B-Vision-Instruct: 0.0101
+
+gemma-3-27b-it: 0.0030
+
+Predicted model using Neural Network mini: Llama-3.2-90B-Vision-Instruct, for model: classifiers/predictionJSON_seen\Llama-3.2-90B-Vision-Instruct_results.json
+
+Low confidence in prediction: Consider Manual Review
+Confidence percentage: 0.5640268518338846
+Consider the following results as top 5 closest predictions:
+
+Llama-3.2-90B-Vision-Instruct: 0.5609
+
+Meta-Llama-3.1-70B-Instruct-Turbo: 0.4103
+
+L3.3-70B-Euryale-v2.3: 0.0164
+
+L3.1-70B-Euryale-v2.2: 0.0050
+
+Llama-3.1-Nemotron-70B-Instruct: 0.0019
+
+Predicted model using Neural Network mini: Llama-3.3-70B-Instruct-Turbo, for model: classifiers/predictionJSON_seen\Llama-3.3-70B-Instruct-Turbo_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.9133789799324228
+Probabilities for Top 5 predictions:
+
+Llama-3.3-70B-Instruct-Turbo: 0.9076
+
+L3.3-70B-Euryale-v2.3: 0.0755
+
+Hermes-3-Llama-3.1-405B: 0.0040
+
+Sky-T1-32B-Preview: 0.0038
+
+MythoMax-L2-13b: 0.0027
+
+Predicted model using Neural Network mini: Meta-Llama-3.1-70B-Instruct-Turbo, for model: classifiers/predictionJSON_seen\Meta-Llama-3.1-70B-Instruct-Turbo_results.json
+
+Low confidence in prediction: Consider Manual Review
+Confidence percentage: 0.533907759149063
+Consider the following results as top 5 closest predictions:
+
+Llama-3.2-90B-Vision-Instruct: 0.5311
+
+Meta-Llama-3.1-70B-Instruct-Turbo: 0.4430
+
+L3.3-70B-Euryale-v2.3: 0.0131
+
+L3.1-70B-Euryale-v2.2: 0.0052
+
+Llama-3.1-Nemotron-70B-Instruct: 0.0023
+
+Predicted model using Neural Network mini: Mistral-Nemo-Instruct-2407, for model: classifiers/predictionJSON_seen\Mistral-Nemo-Instruct-2407_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.9760370238742717
+Probabilities for Top 5 predictions:
+
+Mistral-Nemo-Instruct-2407: 0.9681
+
+Phi-4-multimodal-instruct: 0.0078
+
+WizardLM-2-8x22B: 0.0066
+
+L3.3-70B-Euryale-v2.3: 0.0048
+
+Qwen2.5-7B-Instruct: 0.0045
+
+Predicted model using Neural Network mini: Mixtral-8x7B-Instruct-v0.1, for model: classifiers/predictionJSON_seen\Mixtral-8x7B-Instruct-v0.1_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.9733623689685273
+Probabilities for Top 5 predictions:
+
+Mixtral-8x7B-Instruct-v0.1: 0.9629
+
+Sky-T1-32B-Preview: 0.0103
+
+DeepSeek-V3: 0.0078
+
+Llama-3.2-90B-Vision-Instruct: 0.0050
+
+Meta-Llama-3.1-70B-Instruct-Turbo: 0.0033
+
+Predicted model using Neural Network mini: MythoMax-L2-13b, for model: classifiers/predictionJSON_seen\MythoMax-L2-13b_results.json
+
+Low confidence in prediction: Consider Manual Review
+Confidence percentage: 0.691654985784129
+Consider the following results as top 5 closest predictions:
+
+MythoMax-L2-13b: 0.6576
+
+Mistral-Nemo-Instruct-2407: 0.1177
+
+L3.3-70B-Euryale-v2.3: 0.0929
+
+WizardLM-2-8x22B: 0.0455
+
+L3.1-70B-Euryale-v2.2: 0.0371
+
+Predicted model using Neural Network mini: o1-mini, for model: classifiers/predictionJSON_seen\o1-mini_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.9892341566443861
+Probabilities for Top 5 predictions:
+
+o1-mini: 0.9876
+
+gpt-3.5-turbo: 0.0043
+
+gpt-4.5-preview: 0.0043
+
+Sky-T1-32B-Preview: 0.0012
+
+gpt-4o-mini: 0.0010
+
+Predicted model using Neural Network mini: Phi-4-multimodal-instruct, for model: classifiers/predictionJSON_seen\Phi-4-multimodal-instruct_results.json
+
+HIGH CONFIDENCE IN PREDICTION
+Confidence percentage: 0.8135781842546201
+Probabilities for Top 5 predictions:
+
+Phi-4-multimodal-instruct: 0.8081
+
+phi-4: 0.1080
+
+Mistral-Nemo-Instruct-2407: 0.0656
+
+gemma-3-27b-it: 0.0084
