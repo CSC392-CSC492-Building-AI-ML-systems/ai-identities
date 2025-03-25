@@ -3,7 +3,6 @@ import numpy as np
 import pickle
 import os
 import re
-import requests
 import time
 from collections import Counter
 
@@ -410,7 +409,7 @@ def identify_model():
         return jsonify(model_info)
 
     except Exception as e:
-        print(f"Error during prediction: {str(e)}", exc_info=True)
+        print(f"Error during prediction: {str(e)}")
         return jsonify({
             "error": f"Prediction error: {str(e)}",
             "status": "error"
