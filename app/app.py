@@ -214,6 +214,14 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10):
 
                     except Exception as e:
                         print(f"Error querying Google Gemini: {str(e)}")
+                        if "429" in str(e):  # Rate limit error
+                            retry_after = 5  # Default wait time
+                            if hasattr(e, 'retry_delay') and hasattr(e.retry_delay, 'seconds'):
+                                retry_after = e.retry_delay.seconds + 1  # Add buffer
+                            print(f"Rate limited. Waiting {retry_after} seconds...")
+                            time.sleep(retry_after)
+                            continue  # Retry this request
+                        continue  # Skip this request on other errors
 
                 responses.extend(batch_responses)
                 print(f"Collected {len(responses)}/{num_samples} responses")
@@ -275,17 +283,17 @@ def identify_model():
         "api_key": "your_api_key",
         "provider": "provider_name",
         "model": "model_name",
-        "num_samples": 4000  // Optional, default is 4000
+        "num_samples": 100  // Optional, default is 100
     }
     """
     data = request.json
     api_key = data.get('api_key')
     provider = data.get('provider')
     model = data.get('model')
-    num_samples = int(data.get('num_samples', 4000))
+    num_samples = int(data.get('num_samples', 100))  # Reduced default to avoid rate limits
 
     # Limit samples to reasonable range
-    num_samples = min(max(num_samples, 10), 4000)
+    num_samples = min(max(num_samples, 10), 1000)  # Reduced max to 1000
 
     if not api_key or not provider or not model:
         return jsonify({"error": "Missing API key, provider, or model"}), 400
@@ -295,10 +303,13 @@ def identify_model():
 
     try:
         # Query the LLM and collect responses
+        print(f"Starting to collect {num_samples} samples from {provider}/{model}...")
         responses = query_llm(api_key, provider, model, num_samples)
 
         if not responses:
             return jsonify({"error": "Failed to collect responses from the model"}), 500
+
+        print(f"Successfully collected {len(responses)} responses")
 
         # Process responses to get word frequencies
         word_frequencies = process_responses(responses)
@@ -306,11 +317,47 @@ def identify_model():
         if not word_frequencies:
             return jsonify({"error": "No valid words extracted from responses"}), 500
 
+        print(f"Extracted {len(word_frequencies)} unique words")
+
         # Prepare features for prediction
         features = prepare_features(word_frequencies)
 
-        # Make prediction
-        predicted_model = classifier.predict(features)[0]
+        # Make prediction - handle both string and index outputs
+        raw_prediction = classifier.predict(features)[0]
+        print(f"Raw prediction from classifier: {raw_prediction} (type: {type(raw_prediction)})")
+
+        # Convert prediction to string if it's numpy type
+        if isinstance(raw_prediction, (np.integer, np.int64)):
+            prediction = int(raw_prediction)
+        elif hasattr(raw_prediction, 'item'):  # For numpy types
+            prediction = raw_prediction.item()
+        else:
+            prediction = raw_prediction
+
+        # Get list of classifier's known classes
+        class_labels = classifier.classes_.tolist() if hasattr(classifier, 'classes_') else []
+
+        # Handle prediction output
+        predicted_model = "unknown"
+        predicted_index = -1
+
+        # Try to interpret as class label
+        if isinstance(prediction, str) and prediction in class_labels:
+            predicted_model = prediction
+            predicted_index = class_labels.index(prediction)
+        else:
+            # Try to interpret as index
+            try:
+                prediction_idx = int(prediction)
+                if 0 <= prediction_idx < len(class_labels):
+                    predicted_model = class_labels[prediction_idx]
+                    predicted_index = prediction_idx
+                else:
+                    print(f"Prediction index out of range: {prediction_idx}")
+            except (ValueError, TypeError):
+                print(f"Prediction not recognized as model name or valid index: {prediction}")
+
+        print(f"Final prediction: {predicted_model} (index: {predicted_index})")
 
         # Get probabilities if available
         confidence = 0.0
@@ -318,22 +365,33 @@ def identify_model():
 
         if hasattr(classifier, 'predict_proba'):
             probabilities = classifier.predict_proba(features)[0]
+            print(f"Raw probabilities: {probabilities}")
 
-            # Get indices sorted by probability (descending)
-            top_indices = np.argsort(probabilities)[-5:][::-1]
+            # Get all predictions sorted by probability (descending)
+            sorted_indices = np.argsort(probabilities)[::-1]
 
             # Extract top 5 models and their probabilities
-            top_models = [LIST_OF_MODELS[i] for i in top_indices if i < len(LIST_OF_MODELS)]
-            top_probs = [float(probabilities[i]) for i in top_indices if i < len(LIST_OF_MODELS)]
+            top_models = []
+            top_probs = []
+            for i in sorted_indices[:5]:
+                if i < len(class_labels):
+                    model_name = class_labels[i]
+                    top_models.append(model_name)
+                    top_probs.append(float(probabilities[i]))
 
-            # Calculate confidence level
-            confidence = top_probs[0] if top_probs else 0.0
+            # Calculate confidence level (probability of the predicted model)
+            if predicted_index != -1 and predicted_index < len(probabilities):
+                confidence = probabilities[predicted_index]
+                print(f"Confidence for predicted model: {confidence:.2%}")
+            else:
+                print("Could not calculate confidence - invalid predicted index")
 
             # Create top predictions list
             top_predictions = [
                 {"model": model, "probability": float(prob)}
                 for model, prob in zip(top_models, top_probs)
             ]
+            print(f"Top predictions: {top_predictions}")
 
         # Prepare response
         model_info = {
@@ -341,18 +399,22 @@ def identify_model():
             "input_model": model,
             "samples_collected": len(responses),
             "unique_words": len(word_frequencies),
-            "predicted_model": predicted_model,
+            "predicted_model": predicted_model if predicted_model != "unknown" else "unrecognized_model",
             "confidence": f"{confidence:.2%}",
             "confidence_value": float(confidence),
             "top_predictions": top_predictions,
-            "word_frequencies": word_frequencies  # Include for debugging/analysis
+            "word_frequencies": word_frequencies,
+            "status": "success"
         }
 
         return jsonify(model_info)
 
     except Exception as e:
-        print(f"Error during prediction: {str(e)}")
-        return jsonify({"error": f"Prediction error: {str(e)}"}), 500
+        print(f"Error during prediction: {str(e)}", exc_info=True)
+        return jsonify({
+            "error": f"Prediction error: {str(e)}",
+            "status": "error"
+        }), 500
 
 @app.route('/api/models', methods=['GET'])
 def get_models():
