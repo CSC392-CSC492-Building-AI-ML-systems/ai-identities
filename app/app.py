@@ -104,7 +104,7 @@ def prepare_features(word_frequencies):
 
     return features
 
-def query_llm(api_key, provider, model, num_samples=100, batch_size=10):
+def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperature=0.7):
     """
     Query the LLM with the earth description prompt multiple times and collect responses
 
@@ -114,6 +114,7 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10):
         model: Model identifier to query
         num_samples: Number of samples to collect
         batch_size: Number of requests to send in parallel
+        temperature: Controls randomness (0=deterministic, 2=most random)
 
     Returns:
         List of responses from the LLM
@@ -135,7 +136,7 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10):
                     response = openai.chat.completions.create(
                         model=model,
                         messages=[{"role": "user", "content": prompt}],
-                        temperature=1.0,  # High temperature for variety
+                        temperature=temperature,
                         max_tokens=100
                     )
                     batch_responses.append(response.choices[0].message.content)
@@ -147,7 +148,7 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10):
 
             # Rate limit handling - sleep between batches
             if i + batch_count < num_samples:
-                time.sleep(1)  # Adjust sleep time based on provider rate limits
+                time.sleep(1)
 
     elif provider.lower() == 'anthropic':
         import anthropic
@@ -162,7 +163,7 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10):
                     response = client.messages.create(
                         model=model,
                         max_tokens=100,
-                        temperature=1.0,
+                        temperature=temperature,
                         messages=[{"role": "user", "content": prompt}]
                     )
                     batch_responses.append(response.content[0].text)
@@ -191,7 +192,7 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10):
                     try:
                         # Create a model instance
                         generation_config = {
-                            "temperature": 1.0,
+                            "temperature": temperature,
                             "max_output_tokens": 100,
                         }
 
@@ -214,13 +215,13 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10):
                     except Exception as e:
                         print(f"Error querying Google Gemini: {str(e)}")
                         if "429" in str(e):  # Rate limit error
-                            retry_after = 5  # Default wait time
+                            retry_after = 5
                             if hasattr(e, 'retry_delay') and hasattr(e.retry_delay, 'seconds'):
-                                retry_after = e.retry_delay.seconds + 1  # Add buffer
+                                retry_after = e.retry_delay.seconds + 1
                             print(f"Rate limited. Waiting {retry_after} seconds...")
                             time.sleep(retry_after)
-                            continue  # Retry this request
-                        continue  # Skip this request on other errors
+                            continue
+                        continue
 
                 responses.extend(batch_responses)
                 print(f"Collected {len(responses)}/{num_samples} responses")
@@ -232,8 +233,6 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10):
         except ImportError:
             print("Google Generative AI library not installed. Install with: pip install google-generativeai")
             return []
-
-    # Add more providers as needed
 
     return responses
 
@@ -260,7 +259,7 @@ def process_responses(responses):
         # Split by commas and clean each word
         for word in words.split(','):
             word = word.strip().strip('."\'\n\t')
-            if word:  # Skip empty strings
+            if word:
                 all_words.append(word)
 
     # Count word frequencies
@@ -282,17 +281,22 @@ def identify_model():
         "api_key": "your_api_key",
         "provider": "provider_name",
         "model": "model_name",
-        "num_samples": 100  // Optional, default is 100
+        "num_samples": 100,   // Optional, default is 100
+        "temperature": 0.7
     }
     """
     data = request.json
     api_key = data.get('api_key')
     provider = data.get('provider')
     model = data.get('model')
-    num_samples = int(data.get('num_samples', 100))  # Reduced default to avoid rate limits
+    num_samples = int(data.get('num_samples', 100))
+    temperature = float(data.get('temperature', 0.7))
+
+    # Validate temperature
+    temperature = max(0.0, min(temperature, 2.0))
 
     # Limit samples to reasonable range
-    num_samples = min(max(num_samples, 10), 1000)  # Reduced max to 1000
+    num_samples = min(max(num_samples, 10), 1000)
 
     if not api_key or not provider or not model:
         return jsonify({"error": "Missing API key, provider, or model"}), 400
@@ -302,8 +306,8 @@ def identify_model():
 
     try:
         # Query the LLM and collect responses
-        print(f"Starting to collect {num_samples} samples from {provider}/{model}...")
-        responses = query_llm(api_key, provider, model, num_samples)
+        print(f"Starting to collect {num_samples} samples from {provider}/{model} with temperature {temperature}...")
+        responses = query_llm(api_key, provider, model, num_samples, temperature=temperature)
 
         if not responses:
             return jsonify({"error": "Failed to collect responses from the model"}), 500
@@ -328,7 +332,7 @@ def identify_model():
         # Convert prediction to string if it's numpy type
         if isinstance(raw_prediction, (np.integer, np.int64)):
             prediction = int(raw_prediction)
-        elif hasattr(raw_prediction, 'item'):  # For numpy types
+        elif hasattr(raw_prediction, 'item'):
             prediction = raw_prediction.item()
         else:
             prediction = raw_prediction
@@ -429,20 +433,22 @@ def test_connection():
     {
         "api_key": "your_api_key",
         "provider": "provider_name",
-        "model": "model_name"
+        "model": "model_name",
+        "temperature": 0.7
     }
     """
     data = request.json
     api_key = data.get('api_key')
     provider = data.get('provider')
     model = data.get('model')
+    temperature = float(data.get('temperature', 0.7))
 
     if not api_key or not provider or not model:
         return jsonify({"error": "Missing API key, provider, or model"}), 400
 
     try:
         # Just query once to test connection
-        responses = query_llm(api_key, provider, model, num_samples=1)
+        responses = query_llm(api_key, provider, model, num_samples=1, temperature=temperature)
 
         if responses:
             return jsonify({

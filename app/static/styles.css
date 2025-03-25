@@ -193,4 +193,9 @@ input[type="password"] {
   .button-group {
     flex-direction: column;
   }
+
+  /* Make temperature input full width on mobile */
+  #temperature {
+    width: 100%;
+  }
 }
