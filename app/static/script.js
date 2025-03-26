@@ -119,93 +119,93 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   });
 
-// Cancel button
-document.getElementById('cancel-identification').addEventListener('click', function() {
-hideCard('progress-card');
-// Note: Currently no way to cancel an in-progress request,
-// but we can at least hide the progress UI
-});
+  // Cancel button
+  document.getElementById('cancel-identification').addEventListener('click', function() {
+    hideCard('progress-card');
+    // Note: Currently no way to cancel an in-progress request,
+    // but we can at least hide the progress UI
+  });
 
-// Back button from error
-document.getElementById('back-to-form').addEventListener('click', function() {
-hideCard('error-card');
-});
+  // Back button from error
+  document.getElementById('back-to-form').addEventListener('click', function() {
+    hideCard('error-card');
+  });
 
-// Helper functions
-function showCard(cardId) {
-// Hide all result cards
-document.querySelectorAll('.card').forEach(card => {
-if (card.id === 'testing-card' || card.id === 'progress-card' ||
-card.id === 'results-card' || card.id === 'error-card') {
-card.classList.add('hidden');
-}
-});
-// Show requested card
-document.getElementById(cardId).classList.remove('hidden');
-}
+  // Helper functions
+  function showCard(cardId) {
+    // Hide all result cards
+    document.querySelectorAll('.card').forEach(card => {
+      if (card.id === 'testing-card' || card.id === 'progress-card' ||
+          card.id === 'results-card' || card.id === 'error-card') {
+        card.classList.add('hidden');
+      }
+    });
+    // Show requested card
+    document.getElementById(cardId).classList.remove('hidden');
+  }
 
-function hideCard(cardId) {
-document.getElementById(cardId).classList.add('hidden');
-}
+  function hideCard(cardId) {
+    document.getElementById(cardId).classList.add('hidden');
+  }
 
-function showError(message) {
-document.getElementById('error-message').textContent = message;
-showCard('error-card');
-}
+  function showError(message) {
+    document.getElementById('error-message').textContent = message;
+    showCard('error-card');
+  }
 
-function displayResults(data) {
-// Fill in basic info
-document.getElementById('input-model').textContent = data.input_model;
-document.getElementById('provider-name').textContent = data.provider;
-document.getElementById('predicted-model').textContent = data.predicted_model;
-document.getElementById('confidence').textContent = data.confidence;
+  function displayResults(data) {
+    // Fill in basic info
+    document.getElementById('input-model').textContent = data.input_model;
+    document.getElementById('provider-name').textContent = data.provider;
+    document.getElementById('predicted-model').textContent = data.predicted_model;
+    document.getElementById('confidence').textContent = data.confidence;
 
-// Fill in top predictions table
-const predictionsTable = document.getElementById('top-predictions').querySelector('tbody');
-predictionsTable.innerHTML = '';
+    // Fill in top predictions table
+    const predictionsTable = document.getElementById('top-predictions').querySelector('tbody');
+    predictionsTable.innerHTML = '';
 
-data.top_predictions.forEach(prediction => {
-const row = document.createElement('tr');
+    data.top_predictions.forEach(prediction => {
+      const row = document.createElement('tr');
 
-const modelCell = document.createElement('td');
-modelCell.textContent = prediction.model;
-row.appendChild(modelCell);
+      const modelCell = document.createElement('td');
+      modelCell.textContent = prediction.model;
+      row.appendChild(modelCell);
 
-const probCell = document.createElement('td');
-probCell.textContent = (prediction.probability * 100).toFixed(2) + '%';
-row.appendChild(probCell);
+      const probCell = document.createElement('td');
+      probCell.textContent = (prediction.probability * 100).toFixed(2) + '%';
+      row.appendChild(probCell);
 
-predictionsTable.appendChild(row);
-});
+      predictionsTable.appendChild(row);
+    });
 
-// Fill in word frequencies table
-const wordFreqTable = document.getElementById('word-frequencies').querySelector('tbody');
-wordFreqTable.innerHTML = '';
+    // Fill in word frequencies table
+    const wordFreqTable = document.getElementById('word-frequencies').querySelector('tbody');
+    wordFreqTable.innerHTML = '';
 
-// Sort word frequencies by frequency (descending)
-const sortedWords = Object.entries(data.word_frequencies).sort((a, b) => b[1] - a[1]);
-const totalWords = sortedWords.reduce((sum, [_, freq]) => sum + freq, 0);
+    // Sort word frequencies by frequency (descending)
+    const sortedWords = Object.entries(data.word_frequencies).sort((a, b) => b[1] - a[1]);
+    const totalWords = sortedWords.reduce((sum, [_, freq]) => sum + freq, 0);
 
-// Show top 20 words
-sortedWords.slice(0, 20).forEach(([word, freq]) => {
-const row = document.createElement('tr');
+    // Show top 20 words
+    sortedWords.slice(0, 20).forEach(([word, freq]) => {
+      const row = document.createElement('tr');
 
-const wordCell = document.createElement('td');
-wordCell.textContent = word;
-row.appendChild(wordCell);
+      const wordCell = document.createElement('td');
+      wordCell.textContent = word;
+      row.appendChild(wordCell);
 
-const freqCell = document.createElement('td');
-freqCell.textContent = freq;
-row.appendChild(freqCell);
+      const freqCell = document.createElement('td');
+      freqCell.textContent = freq;
+      row.appendChild(freqCell);
 
-const percentCell = document.createElement('td');
-percentCell.textContent = ((freq / totalWords) * 100).toFixed(2) + '%';
-row.appendChild(percentCell);
+      const percentCell = document.createElement('td');
+      percentCell.textContent = ((freq / totalWords) * 100).toFixed(2) + '%';
+      row.appendChild(percentCell);
 
-wordFreqTable.appendChild(row);
-});
+      wordFreqTable.appendChild(row);
+    });
 
-// Show the results card
-showCard('results-card');
-}
+    // Show the results card
+    showCard('results-card');
+  }
 });

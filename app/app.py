@@ -106,33 +106,41 @@ def prepare_features(word_frequencies):
 
 def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperature=0.7):
     """
-    Query the LLM with the earth description prompt multiple times and collect responses
+    Query the LLM with the earth description prompt multiple times and collect responses.
+    Supports OpenAI, Anthropic, Google, and Deep Infra providers.
 
     Args:
         api_key: API key for the provider
-        provider: Provider name (e.g., 'openai', 'anthropic', etc.)
+        provider: Provider name (e.g., 'openai', 'anthropic', 'google', 'deepinfra')
         model: Model identifier to query
-        num_samples: Number of samples to collect
-        batch_size: Number of requests to send in parallel
+        num_samples: Number of samples to collect (10-1000)
+        batch_size: Number of requests to send in parallel (1-20)
         temperature: Controls randomness (0=deterministic, 2=most random)
 
     Returns:
         List of responses from the LLM
     """
+    global response
     responses = []
     prompt = "Describe the earth using only 10 adjectives. You can only use ten words, each separated by a comma."
 
-    # Implement connection to different providers
-    if provider.lower() == 'openai':
-        import openai
-        openai.api_key = api_key
+    # Validate and adjust parameters
+    temperature = max(0.0, min(temperature, 2.0))
+    num_samples = max(10, min(num_samples, 1000))
+    batch_size = max(1, min(batch_size, 20))
 
-        for i in range(0, num_samples, batch_size):
-            batch_count = min(batch_size, num_samples - i)
-            batch_responses = []
+    provider = provider.lower()
 
-            for j in range(batch_count):
-                try:
+    try:
+        if provider == 'openai':
+            import openai
+            openai.api_key = api_key
+
+            for i in range(0, num_samples, batch_size):
+                current_batch = min(batch_size, num_samples - i)
+                batch_responses = []
+
+                for _ in range(current_batch):
                     response = openai.chat.completions.create(
                         model=model,
                         messages=[{"role": "user", "content": prompt}],
@@ -140,26 +148,19 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
                         max_tokens=100
                     )
                     batch_responses.append(response.choices[0].message.content)
-                except Exception as e:
-                    print(f"Error querying OpenAI: {str(e)}")
 
-            responses.extend(batch_responses)
-            print(f"Collected {len(responses)}/{num_samples} responses")
+                responses.extend(batch_responses)
+                print(f"Collected {len(responses)}/{num_samples} responses")
 
-            # Rate limit handling - sleep between batches
-            if i + batch_count < num_samples:
-                time.sleep(1)
+        elif provider == 'anthropic':
+            import anthropic
+            client = anthropic.Anthropic(api_key=api_key)
 
-    elif provider.lower() == 'anthropic':
-        import anthropic
-        client = anthropic.Anthropic(api_key=api_key)
+            for i in range(0, num_samples, batch_size):
+                current_batch = min(batch_size, num_samples - i)
+                batch_responses = []
 
-        for i in range(0, num_samples, batch_size):
-            batch_count = min(batch_size, num_samples - i)
-            batch_responses = []
-
-            for j in range(batch_count):
-                try:
+                for _ in range(current_batch):
                     response = client.messages.create(
                         model=model,
                         max_tokens=100,
@@ -167,72 +168,107 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
                         messages=[{"role": "user", "content": prompt}]
                     )
                     batch_responses.append(response.content[0].text)
-                except Exception as e:
-                    print(f"Error querying Anthropic: {str(e)}")
-
-            responses.extend(batch_responses)
-            print(f"Collected {len(responses)}/{num_samples} responses")
-
-            # Rate limit handling
-            if i + batch_count < num_samples:
-                time.sleep(1)
-
-    elif provider.lower() == 'google':
-        try:
-            import google.generativeai as genai
-
-            # Configure the Google Generative AI client
-            genai.configure(api_key=api_key)
-
-            for i in range(0, num_samples, batch_size):
-                batch_count = min(batch_size, num_samples - i)
-                batch_responses = []
-
-                for j in range(batch_count):
-                    try:
-                        # Create a model instance
-                        generation_config = {
-                            "temperature": temperature,
-                            "max_output_tokens": 100,
-                        }
-
-                        gemini_model = genai.GenerativeModel(
-                            model_name=model,
-                            generation_config=generation_config
-                        )
-
-                        # Generate content
-                        response = gemini_model.generate_content(prompt)
-
-                        # Extract the text from the response
-                        if hasattr(response, 'text'):
-                            batch_responses.append(response.text)
-                        elif hasattr(response, 'parts'):
-                            batch_responses.append(''.join(part.text for part in response.parts))
-                        else:
-                            print(f"Warning: Unexpected response format: {response}")
-
-                    except Exception as e:
-                        print(f"Error querying Google Gemini: {str(e)}")
-                        if "429" in str(e):  # Rate limit error
-                            retry_after = 5
-                            if hasattr(e, 'retry_delay') and hasattr(e.retry_delay, 'seconds'):
-                                retry_after = e.retry_delay.seconds + 1
-                            print(f"Rate limited. Waiting {retry_after} seconds...")
-                            time.sleep(retry_after)
-                            continue
-                        continue
 
                 responses.extend(batch_responses)
                 print(f"Collected {len(responses)}/{num_samples} responses")
 
-                # Rate limit handling
-                if i + batch_count < num_samples:
+        elif provider == 'google':
+            try:
+                import google.generativeai as genai
+                genai.configure(api_key=api_key)
+
+                for i in range(0, num_samples, batch_size):
+                    current_batch = min(batch_size, num_samples - i)
+                    batch_responses = []
+
+                    for _ in range(current_batch):
+                        try:
+                            generation_config = {
+                                "temperature": temperature,
+                                "max_output_tokens": 100,
+                            }
+
+                            gemini_model = genai.GenerativeModel(
+                                model_name=model,
+                                generation_config=generation_config
+                            )
+
+                            response = gemini_model.generate_content(prompt)
+
+                            if hasattr(response, 'text'):
+                                batch_responses.append(response.text)
+                            elif hasattr(response, 'parts'):
+                                batch_responses.append(''.join(part.text for part in response.parts))
+                            else:
+                                print("Unexpected Google response format")
+                                continue
+
+                        except Exception as e:
+                            print(f"Google API error: {str(e)}")
+                            if "429" in str(e):
+                                time.sleep(5)
+                                continue
+
+                    responses.extend(batch_responses)
+                    print(f"Collected {len(responses)}/{num_samples} responses")
+
+                    if i + current_batch < num_samples:
+                        time.sleep(1)
+
+            except ImportError:
+                print("Google GenerativeAI not installed. Use: pip install google-generativeai")
+                return []
+
+        elif provider == 'deepinfra':
+            import requests
+
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
+
+            payload = {
+                "model": model,
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": temperature,
+                "max_tokens": 100
+            }
+
+            for i in range(0, num_samples, batch_size):
+                current_batch = min(batch_size, num_samples - i)
+                batch_responses = []
+
+                for _ in range(current_batch):
+                    try:
+                        response = requests.post(
+                            "https://api.deepinfra.com/v1/openai/chat/completions",
+                            headers=headers,
+                            json=payload,
+                            timeout=30
+                        )
+                        response.raise_for_status()
+                        data = response.json()
+                        batch_responses.append(data['choices'][0]['message']['content'])
+                    except Exception as e:
+                        print(f"DeepInfra API error: {str(e)}")
+                        if response.status_code == 429:
+                            retry_after = int(response.headers.get('Retry-After', 5))
+                            time.sleep(retry_after)
+                            continue
+
+                responses.extend(batch_responses)
+                print(f"Collected {len(responses)}/{num_samples} responses")
+
+                if i + current_batch < num_samples:
                     time.sleep(1)
 
-        except ImportError:
-            print("Google Generative AI library not installed. Install with: pip install google-generativeai")
+        else:
+            print(f"Unsupported provider: {provider}")
             return []
+
+    except Exception as e:
+        print(f"Critical error in query_llm: {str(e)}")
+        return responses if responses else []
 
     return responses
 
