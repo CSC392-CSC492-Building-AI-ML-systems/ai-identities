@@ -3,6 +3,7 @@ import numpy as np
 import pickle
 import os
 import re
+import threading
 import time
 from collections import Counter
 
@@ -135,22 +136,23 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
         if provider == 'openai':
             import openai
             openai.api_key = api_key
-
-            for i in range(0, num_samples, batch_size):
-                current_batch = min(batch_size, num_samples - i)
-                batch_responses = []
-
-                for _ in range(current_batch):
-                    response = openai.chat.completions.create(
-                        model=model,
-                        messages=[{"role": "user", "content": prompt}],
-                        temperature=temperature,
-                        max_tokens=100
-                    )
-                    batch_responses.append(response.choices[0].message.content)
-
-                responses.extend(batch_responses)
-                print(f"Collected {len(responses)}/{num_samples} responses")
+          
+            def send_response():
+                response = openai.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=temperature,
+                    max_tokens=100
+                )
+                responses.append(response.choices[0].message.content)
+            threads = []
+            for _ in range(100):
+                thread = threading.Thread(target=send_response)
+                thread.start()
+                threads.append(thread)
+            for thread in threads:
+                thread.join()
+            print(f"Collected {len(responses)}/{num_samples} responses")
 
         elif provider == 'anthropic':
             import anthropic
