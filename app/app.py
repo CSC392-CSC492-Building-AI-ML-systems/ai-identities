@@ -176,48 +176,132 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
             try:
                 import google.generativeai as genai
                 genai.configure(api_key=api_key)
+                print(f"Starting to collect {num_samples} samples from {model} with temperature {temperature}...")
+
+                # Consider a smaller batch_size if you still hit limits, e.g., batch_size = 5
+                batch_size = 10 # Or adjust as needed based on your quota
+
+                responses = []
+                REQUEST_DELAY_SECONDS = 2 # Start with 2 seconds, increase if needed
 
                 for i in range(0, num_samples, batch_size):
-                    current_batch = min(batch_size, num_samples - i)
-                    batch_responses = []
+                    current_batch_target = min(batch_size, num_samples - i)
+                    print(f"\nProcessing batch starting at sample {i} (target size: {current_batch_target})...")
+                    batch_responses_in_this_run = [] # Store responses for this specific batch run
 
-                    for _ in range(current_batch):
-                        try:
-                            generation_config = {
-                                "temperature": temperature,
-                                "max_output_tokens": 100,
-                            }
+                    for sample_index_in_batch in range(current_batch_target):
+                        actual_sample_number = i + sample_index_in_batch
+                        print(f"  Attempting sample {actual_sample_number + 1}/{num_samples}...")
 
-                            gemini_model = genai.GenerativeModel(
-                                model_name=model,
-                                generation_config=generation_config
-                            )
+                        max_retries = 5
+                        attempt = 0
+                        success = False
+                        response_text = None # Store the successful response text
 
-                            response = gemini_model.generate_content(prompt)
+                        while attempt < max_retries and not success:
+                            try:
+                                generation_config = {
+                                    "temperature": temperature,
+                                    "max_output_tokens": 100, # Ensure this is appropriate
+                                }
 
-                            if hasattr(response, 'text'):
-                                batch_responses.append(response.text)
-                            elif hasattr(response, 'parts'):
-                                batch_responses.append(''.join(part.text for part in response.parts))
-                            else:
-                                print("Unexpected Google response format")
-                                continue
+                                # Re-create model inside loop if config needs changing per request,
+                                # otherwise, can be created once before the inner loop.
+                                # For simplicity here, keeping it inside.
+                                gemini_model = genai.GenerativeModel(
+                                    model_name=model,
+                                    generation_config=generation_config
+                                )
 
-                        except Exception as e:
-                            print(f"Google API error: {str(e)}")
-                            if "429" in str(e):
-                                time.sleep(5)
-                                continue
+                                response = gemini_model.generate_content(prompt)
 
-                    responses.extend(batch_responses)
-                    print(f"Collected {len(responses)}/{num_samples} responses")
+                                # Extract response text
+                                if hasattr(response, 'text'):
+                                    response_text = response.text
+                                elif hasattr(response, 'parts') and response.parts:
+                                    response_text = ''.join(part.text for part in response.parts if hasattr(part, 'text'))
+                                else:
+                                    # Handle cases where the response might be blocked or empty
+                                    if response.prompt_feedback and response.prompt_feedback.block_reason:
+                                        print(f"    Sample {actual_sample_number + 1} blocked: {response.prompt_feedback.block_reason}")
+                                    else:
+                                        print(f"    Sample {actual_sample_number + 1} - Unexpected Google response format or empty response.")
+                                    response_text = None # Ensure it's None if blocked or unexpected
 
-                    if i + current_batch < num_samples:
-                        time.sleep(1)
+                                if response_text is not None:
+                                    success = True # Mark as successful to exit retry loop
+                                    print(f"    Sample {actual_sample_number + 1} succeeded.")
+                                # If response_text is None (blocked/empty), loop continues if attempts remain,
+                                # but it won't be added later. Exit retry loop if max attempts reached.
+
+                            except Exception as e:
+                                attempt += 1
+                                error_msg = str(e)
+                                print(f"    Google API error (sample {actual_sample_number + 1}, attempt {attempt}): {error_msg}")
+
+                                # Extract retry delay from error message if available
+                                retry_delay = None
+                                if "retry_delay" in error_msg:
+                                    try:
+                                        match = re.search(r'seconds: (\d+)', error_msg)
+                                        if match:
+                                            retry_delay = int(match.group(1))
+                                            # Add a small buffer to the suggested delay
+                                            retry_delay = min(retry_delay + 2, 120) # Add buffer, cap max delay
+                                    except Exception as parse_err:
+                                        print(f"      Could not parse retry_delay: {parse_err}")
+                                        retry_delay = None # Fallback to exponential backoff
+
+                                # If no specific delay from API, use exponential backoff
+                                if retry_delay is None:
+                                    retry_delay = min(2 ** attempt, 60) # Exponential backoff capped at 60s
+
+                                if attempt < max_retries:
+                                    print(f"      Retrying sample {actual_sample_number + 1} in {retry_delay} seconds...")
+                                    time.sleep(retry_delay)
+                                else:
+                                    print(f"    Max retries reached for sample {actual_sample_number + 1}. Giving up on this sample.")
+                                    break # Exit the retry loop for this sample
+
+                        # --- After the retry loop for a single sample ---
+                        if success and response_text is not None:
+                            batch_responses_in_this_run.append(response_text)
+                        # else: # Optional: Log or handle the failure explicitly if needed
+                        #    print(f"    Sample {actual_sample_number + 1} failed permanently.")
+
+
+                        # *** IMPORTANT: Add a delay AFTER each sample attempt cycle ***
+                        # Wait even if successful to avoid hitting RPM limits
+                        # Don't sleep if it was the last sample in the batch AND last batch overall
+                        is_last_sample_in_batch = (sample_index_in_batch == current_batch_target - 1)
+                        is_last_batch = (i + current_batch_target >= num_samples)
+                        if not (is_last_sample_in_batch and is_last_batch):
+                             # Only print sleep message if actually sleeping
+                             if success or attempt < max_retries : # Avoid sleep if last attempt failed and we are exiting
+                                 print(f"    --- Waiting {REQUEST_DELAY_SECONDS}s before next sample ---")
+                                 time.sleep(REQUEST_DELAY_SECONDS)
+
+
+                    # --- After processing all samples in the current batch ---
+                    if batch_responses_in_this_run:
+                        responses.extend(batch_responses_in_this_run)
+                    print(f"  Batch finished. Collected {len(responses)}/{num_samples} total responses so far.")
+
+                    # The time.sleep(1) between batches might be less critical now,
+                    # but can be kept or adjusted. It ensures a pause even if a batch finishes quickly.
+                    # if i + current_batch_target < num_samples:
+                    #     time.sleep(1) # Optional pause between batches
+
+                print(f"\nFinished collecting responses. Total successful: {len(responses)}/{num_samples}")
+
 
             except ImportError:
                 print("Google GenerativeAI not installed. Use: pip install google-generativeai")
                 return []
+            except Exception as general_err:
+                print(f"\nAn unexpected error occurred: {general_err}")
+                # Optionally return partial results: return responses
+                return [] # Or return empty on any major error
 
         elif provider == 'deepinfra':
             import requests
@@ -239,22 +323,38 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
                 batch_responses = []
 
                 for _ in range(current_batch):
-                    try:
-                        response = requests.post(
-                            "https://api.deepinfra.com/v1/openai/chat/completions",
-                            headers=headers,
-                            json=payload,
-                            timeout=30
-                        )
-                        response.raise_for_status()
-                        data = response.json()
-                        batch_responses.append(data['choices'][0]['message']['content'])
-                    except Exception as e:
-                        print(f"DeepInfra API error: {str(e)}")
-                        if response.status_code == 429:
-                            retry_after = int(response.headers.get('Retry-After', 5))
-                            time.sleep(retry_after)
-                            continue
+                    max_retries = 5
+                    base_delay = 1  # starting delay in seconds
+
+                    for attempt in range(max_retries):
+                        try:
+                            response = requests.post(
+                                "https://api.deepinfra.com/v1/openai/chat/completions",
+                                headers=headers,
+                                json=payload,
+                                timeout=30
+                            )
+                            response.raise_for_status()
+                            data = response.json()
+                            batch_responses.append(data['choices'][0]['message']['content'])
+                            break  # Success - exit retry loop
+
+                        except Exception as e:
+                            print(f"DeepInfra API error (attempt {attempt + 1}): {str(e)}")
+                            if (hasattr(e, 'response') and e.response.status_code in [429, 503]) or attempt == max_retries - 1:
+                                if attempt == max_retries - 1:
+                                    print("Max retries reached, giving up.")
+                                    break
+                                # Calculate delay with exponential backoff
+                                delay = base_delay * (2 ** attempt)
+                                # Use Retry-After header if available, otherwise use calculated delay
+                                if hasattr(e, 'response') and 'Retry-After' in e.response.headers:
+                                    delay = float(e.response.headers['Retry-After'])
+                                delay = min(delay, 60)  # cap at 60 seconds
+                                print(f"Retrying in {delay} seconds...")
+                                time.sleep(delay)
+                            else:
+                                break
 
                 responses.extend(batch_responses)
                 print(f"Collected {len(responses)}/{num_samples} responses")
