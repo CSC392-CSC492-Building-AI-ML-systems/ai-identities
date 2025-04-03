@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
       .then(data => {
         hideCard('testing-card');
         if (data.status === 'success') {
-          alert('Connection successful! Sample response: ' + data.response);
+          alert('Connection successful! Sample response: ' + data.response_preview);
         } else {
           showError(data.message || 'Error connecting to provider');
         }
@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', function() {
     wordFreqTable.innerHTML = '';
 
     // Sort word frequencies by frequency (descending)
-    const sortedWords = Object.entries(data.word_frequencies).sort((a, b) => b[1] - a[1]);
+    const sortedWords = Object.entries(data.word_frequencies_top).sort((a, b) => b[1] - a[1]);
     const totalWords = sortedWords.reduce((sum, [_, freq]) => sum + freq, 0);
 
     // Show top 20 words

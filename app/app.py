@@ -80,7 +80,7 @@ PROVIDER_BASE_URLS = {
     "google": "https://generativelanguage.googleapis.com/v1beta/openai/",
     "anthropic": "https://api.anthropic.com/v1", # Native API requires special headers and structure
     "deepinfra": "https://api.deepinfra.com/v1/openai",
-    "mistral": "https://api.mistral.ai/v1/chat/completions"
+    "mistral": "https://api.mistral.ai/v1/"
     # Add other providers here if they offer an OpenAI-compatible endpoint
 }
 
@@ -118,7 +118,6 @@ def prepare_features(word_frequencies):
     return features
 
 
-# --- Refactored LLM Query Function ---
 def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperature=0.7):
     """
     Query the LLM using the OpenAI SDK, configuring base_url for different providers.
@@ -178,10 +177,8 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
     # Use locks for thread-safe list append
     lock = threading.Lock()
     threads = []
-    MAX_RETRIES = 3
-    INITIAL_BACKOFF = 1.5 # seconds
 
-    def send_request_with_retry(attempt_index):
+    def send_single_request(attempt_index):
         nonlocal responses # Ensure we modify the outer scope variable
         # Instantiate client inside the thread to ensure config is isolated
         try:
@@ -189,95 +186,59 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
                 api_key=api_key,
                 base_url=base_url,
                 default_headers=default_headers,
-                timeout=60.0, # Set a request timeout
-                max_retries=0 # Handle retries manually in the loop below
+                timeout=5, # Set a request timeout
             )
         except Exception as client_err:
             app.logger.error(f"Failed to initialize OpenAI client for {provider_lower}: {client_err}", exc_info=False)
             return # Cannot proceed
 
-        retry_count = 0
-        while retry_count < MAX_RETRIES:
-            try:
-                request_start_time = time.time()
-                response_obj = client.chat.completions.create(
-                    model=model,
-                    messages=[{"role": "user", "content": prompt}],
-                    temperature=temperature,
-                    max_tokens=100, # Standard OpenAI param
-                    # **api_params # Add provider-specific params if needed (e.g., max_tokens_to_sample for Anthropic native)
-                )
-                request_duration = time.time() - request_start_time
-                app.logger.debug(f"Request {attempt_index+1} (attempt {retry_count+1}) to {provider_lower}/{model} successful in {request_duration:.2f}s")
+        try:
+            request_start_time = time.time()
+            response_obj = client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=temperature,
+                max_tokens=100, # Standard OpenAI param
+                # **api_params # Add provider-specific params if needed
+            )
+            request_duration = time.time() - request_start_time
+            app.logger.debug(f"Request {attempt_index+1} to {provider_lower}/{model} completed in {request_duration:.2f}s")
 
-                content = None
-                if response_obj.choices and response_obj.choices[0].message:
-                    content = response_obj.choices[0].message.content
+            content = None
+            if response_obj.choices and response_obj.choices[0].message:
+                content = response_obj.choices[0].message.content
 
-                if content:
-                    with lock:
-                        responses.append(content)
-                    return # Success, exit retry loop and thread
-                else:
-                    app.logger.warning(f"Request {attempt_index+1} to {provider_lower}/{model} yielded empty content. Response: {response_obj}")
-                    # Decide if empty content is retryable. Usually not.
-                    break # Exit retry loop
+            if content:
+                with lock:
+                    responses.append(content)
+                # Success
+            else:
+                app.logger.warning(f"Request {attempt_index+1} to {provider_lower}/{model} yielded empty content. Response: {response_obj}")
+                # Consider this a failure for this attempt
 
-            except openai.AuthenticationError as e:
-                app.logger.error(f"[Attempt {retry_count+1}] OpenAI Authentication Error for {provider_lower}/{model}: {e}. Check API key.", exc_info=False)
-                break # Don't retry auth errors
-            except openai.PermissionDeniedError as e:
-                app.logger.error(f"[Attempt {retry_count+1}] OpenAI Permission Denied Error for {provider_lower}/{model}: {e}. Check API key permissions/model access.", exc_info=False)
-                break # Don't retry permission errors
-            except openai.NotFoundError as e:
-                app.logger.error(f"[Attempt {retry_count+1}] OpenAI Not Found Error for {provider_lower}/{model}: {e}. Check model name and base URL.", exc_info=False)
-                break # Don't retry not found errors
-            except openai.RateLimitError as e:
-                retry_count += 1
-                app.logger.warning(f"[Attempt {retry_count}/{MAX_RETRIES}] OpenAI Rate Limit Error for {provider_lower}/{model}: {e}. Retrying...", exc_info=False)
-                if retry_count < MAX_RETRIES:
-                    # Use exponential backoff
-                    delay = INITIAL_BACKOFF * (2 ** (retry_count - 1))
-                    # Check for Retry-After header if the SDK exposes it easily (might be in e.response headers)
-                    # delay = max(delay, parse_retry_after(e)) # Example
-                    delay = min(delay, 60) # Cap delay
-                    time.sleep(delay)
-                else:
-                    app.logger.error(f"Max retries reached for {provider_lower}/{model} after rate limit.")
-                    break # Exit retry loop
-            except openai.APIConnectionError as e:
-                retry_count += 1
-                app.logger.warning(f"[Attempt {retry_count}/{MAX_RETRIES}] OpenAI API Connection Error for {provider_lower}/{model}: {e}. Retrying...", exc_info=False)
-                if retry_count < MAX_RETRIES:
-                    delay = INITIAL_BACKOFF * (2 ** (retry_count - 1))
-                    delay = min(delay, 30) # Cap delay
-                    time.sleep(delay)
-                else:
-                    app.logger.error(f"Max retries reached for {provider_lower}/{model} after connection error.")
-                    break # Exit retry loop
-            except openai.APIStatusError as e: # Catch other API errors (e.g., 500s)
-                retry_count += 1
-                app.logger.warning(f"[Attempt {retry_count}/{MAX_RETRIES}] OpenAI API Status Error {e.status_code} for {provider_lower}/{model}: {e}. Retrying...", exc_info=False)
-                if retry_count < MAX_RETRIES and (e.status_code >= 500 or e.status_code == 429): # Retry server errors and conflicts/overloads potentially
-                    delay = INITIAL_BACKOFF * (2 ** (retry_count - 1))
-                    delay = min(delay, 60) # Cap delay
-                    time.sleep(delay)
-                else:
-                    app.logger.error(f"Max retries reached or non-retryable status ({e.status_code}) for {provider_lower}/{model}.")
-                    break # Exit retry loop
-            except Exception as e:
-                # Catch any other unexpected errors during the API call
-                app.logger.error(f"[Attempt {retry_count+1}] Unexpected error during API call for {provider_lower}/{model}: {type(e).__name__} - {e}", exc_info=True)
-                break # Don't retry unknown errors by default
+        # --- Error Handling (Single Attempt) ---
+        except openai.AuthenticationError as e:
+            app.logger.error(f"OpenAI Authentication Error for request {attempt_index+1} ({provider_lower}/{model}): {e}. Check API key.", exc_info=False)
+        except openai.PermissionDeniedError as e:
+            app.logger.error(f"OpenAI Permission Denied Error for request {attempt_index+1} ({provider_lower}/{model}): {e}. Check API key permissions/model access.", exc_info=False)
+        except openai.NotFoundError as e:
+            app.logger.error(f"OpenAI Not Found Error for request {attempt_index+1} ({provider_lower}/{model}): {e}. Check model name and base URL.", exc_info=False)
+        except openai.RateLimitError as e:
+            app.logger.error(f"OpenAI Rate Limit Error for request {attempt_index+1} ({provider_lower}/{model}): {e}. Request failed.", exc_info=False)
+        except openai.APIConnectionError as e:
+            app.logger.error(f"OpenAI API Connection Error for request {attempt_index+1} ({provider_lower}/{model}): {e}. Request failed.", exc_info=False)
+        except openai.APIStatusError as e: # Catch other API errors (e.g., 500s)
+             app.logger.error(f"OpenAI API Status Error {e.status_code} for request {attempt_index+1} ({provider_lower}/{model}): {e}. Request failed.", exc_info=False)
+        except Exception as e:
+            # Catch any other unexpected errors during the API call
+            app.logger.error(f"Unexpected error during API call for request {attempt_index+1} ({provider_lower}/{model}): {type(e).__name__} - {e}", exc_info=True)
 
-        # Log if a request permanently failed after retries
-        if retry_count >= MAX_RETRIES:
-            app.logger.error(f"Request {attempt_index+1} failed permanently after {MAX_RETRIES} attempts for {provider_lower}/{model}.")
+        # No retry logic here, the function simply completes after one attempt (success or logged error)
 
     # --- Threading Logic ---
     try:
         for i in range(num_samples):
-            thread = threading.Thread(target=send_request_with_retry, args=(i,))
+            thread = threading.Thread(target=send_single_request, args=(i,))
             thread.start()
             threads.append(thread)
 
@@ -290,14 +251,13 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
             elif (i+1) % 5 == 0:
                 time.sleep(0.05)
 
-
         # Wait for all threads to complete
         for i, thread in enumerate(threads):
             thread.join(timeout=90) # Generous timeout per thread
             if thread.is_alive():
                 app.logger.warning(f"Thread {i+1} for {provider_lower}/{model} timed out.")
 
-        app.logger.info(f"Finished {provider_lower} query for {model}. Collected {len(responses)}/{num_samples} responses.")
+        app.logger.info(f"Finished {provider_lower} query for {model}. Attempted {num_samples} samples, successfully collected {len(responses)} responses.")
 
     except Exception as e:
         app.logger.error(f"Critical error during threading or request dispatch for {provider_lower}/{model}: {str(e)}", exc_info=True)
@@ -349,7 +309,7 @@ def process_responses(responses):
         top_5 = word_frequencies.most_common(5)
         app.logger.debug(f"Top 5 words: {top_5}")
 
-    return dict(word_frequencies)
+    return word_frequencies
 
 # --- Flask Routes ---
 
@@ -559,6 +519,7 @@ def test_connection():
         app.logger.info(f"Attempting single query to test connection to {provider}/{model}")
         # Use num_samples=1, batch_size=1, and handle retries within query_llm
         responses = query_llm(api_key, provider, model, num_samples=1, temperature=temperature, batch_size=1)
+        app.logger.info(f"query_llm call for test connection returned: {responses}\n")
         duration = time.time() - start_time
 
         if responses and isinstance(responses[0], str) and responses[0].strip():
