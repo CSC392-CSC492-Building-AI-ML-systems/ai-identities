@@ -1,8 +1,0 @@
-{
-  "benchmarks": [
-    { "name": "Benchmark 1", "accuracy": 95.5 },
-    { "name": "Benchmark 2", "accuracy": 92.3 },
-    { "name": "Benchmark 3", "accuracy": 89.7 }
-  ],
-  "modelClassification": "Gemini Flash 2.0"
-}

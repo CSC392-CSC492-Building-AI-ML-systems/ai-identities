@@ -136,7 +136,7 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
         if provider == 'openai':
             import openai
             openai.api_key = api_key
-          
+
             def send_response():
                 response = openai.chat.completions.create(
                     model=model,
@@ -146,7 +146,7 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
                 )
                 responses.append(response.choices[0].message.content)
             threads = []
-            for _ in range(100):
+            for _ in range(num_samples):
                 thread = threading.Thread(target=send_response)
                 thread.start()
                 threads.append(thread)
