@@ -1,3 +1,5 @@
+# --- START OF REFACTORED FILE app.py ---
+
 from flask import Flask, render_template, request, jsonify
 import numpy as np
 import pickle
@@ -6,10 +8,31 @@ import re
 import threading
 import time
 from collections import Counter
+import logging
+from logging.handlers import RotatingFileHandler # Keep if needed for local, but careful in serverless
+import sys
+import sklearn
+import openai # Use the OpenAI library exclusively
 
 app = Flask(__name__)
 
-# Constants for model prediction (copied from heatMap_prelim_classifier.py)
+# --- Logging Configuration ---
+# (Keep your existing logging setup, ensuring it works in your target environment)
+log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setFormatter(log_formatter)
+for handler in app.logger.handlers[:]:
+    app.logger.removeHandler(handler)
+app.logger.addHandler(console_handler)
+log_level_name = os.environ.get('LOG_LEVEL', 'INFO').upper()
+log_level = getattr(logging, log_level_name, logging.INFO)
+app.logger.setLevel(log_level)
+app.logger.info(f"Logging configured. Level: {log_level_name}. Handler: Console.")
+# --- End Logging Configuration ---
+
+
+# --- Constants ---
+# (Keep TRAINING_WORDS_LIST, TRAINING_WORDS_DICT, LIST_OF_MODELS as they are)
 TRAINING_WORDS_LIST = ['life-filled', 'home.', 'wondrous', 'immense', 'ever-changing.', 'massive',
                        'enigmatic', 'complex.', 'finite.\n\n\n\n', 'lively',
                        "here'sadescriptionofearthusingtenadjectives", 'me', 'dynamic', 'beautiful',
@@ -38,81 +61,71 @@ TRAINING_WORDS_LIST = ['life-filled', 'home.', 'wondrous', 'immense', 'ever-chan
                        'expansive', '7.', 'solid', 'vibrant', 'green', 'wet', 'extraordinary.',
                        'user', 'complex', 'wondrous.', 'majestic', 'comes', 'unique', 'unique.',
                        'life-sustaining.', 'living']
-
-# Create a word-to-index mapping for fast lookups
 TRAINING_WORDS_DICT = {word: idx for idx, word in enumerate(TRAINING_WORDS_LIST)}
-
-# List of models in training data with their order
 LIST_OF_MODELS = ["chatgpt-4o-latest", "DeepSeek-R1-Distill-Llama-70B", "DeepSeek-R1-Turbo",
-                 "DeepSeek-R1", "DeepSeek-V3", "gemini-1.5-flash", "gemini-2.0-flash-001",
-                 "gemma-2-27b-it", "gemma-3-27b-it", "gpt-3.5-turbo", "gpt-4.5-preview",
-                 "gpt-4o-mini", "gpt-4o", "Hermes-3-Llama-3.1-405B", "L3.1-70B-Euryale-v2.2",
-                 "L3.3-70B-Euryale-v2.3", "Llama-3.1-Nemotron-70B-Instruct",
-                 "Llama-3.2-90B-Vision-Instruct", "Llama-3.3-70B-Instruct-Turbo",
-                 "Meta-Llama-3.1-70B-Instruct-Turbo", "Mistral-Nemo-Instruct-2407",
-                 "Mixtral-8x7B-Instruct-v0.1", "MythoMax-L2-13b", "o1-mini",
-                 "Phi-4-multimodal-instruct", "phi-4", "Qwen2.5-7B-Instruct",
-                 "Sky-T1-32B-Preview", "WizardLM-2-8x22B"]
+                  "DeepSeek-R1", "DeepSeek-V3", "gemini-1.5-flash", "gemini-2.0-flash-001",
+                  "gemma-2-27b-it", "gemma-3-27b-it", "gpt-3.5-turbo", "gpt-4.5-preview",
+                  "gpt-4o-mini", "gpt-4o", "Hermes-3-Llama-3.1-405B", "L3.1-70B-Euryale-v2.2",
+                  "L3.3-70B-Euryale-v2.3", "Llama-3.1-Nemotron-70B-Instruct",
+                  "Llama-3.2-90B-Vision-Instruct", "Llama-3.3-70B-Instruct-Turbo",
+                  "Meta-Llama-3.1-70B-Instruct-Turbo", "Mistral-Nemo-Instruct-2407",
+                  "Mixtral-8x7B-Instruct-v0.1", "MythoMax-L2-13b", "o1-mini",
+                  "Phi-4-multimodal-instruct", "phi-4", "Qwen2.5-7B-Instruct",
+                  "Sky-T1-32B-Preview", "WizardLM-2-8x22B"]
 
-# Load the trained MLPClassifier model
+# --- Provider Base URL Mapping ---
+# Map provider names (lowercase) to their OpenAI-compatible base URLs
+PROVIDER_BASE_URLS = {
+    "openai": None, # Standard OpenAI API uses default base URL
+    "google": "https://generativelanguage.googleapis.com/v1beta/openai/",
+    "anthropic": "https://api.anthropic.com/v1", # Native API requires special headers and structure
+    "deepinfra": "https://api.deepinfra.com/v1/openai",
+    "mistral": "https://api.mistral.ai/v1/chat/completions"
+    # Add other providers here if they offer an OpenAI-compatible endpoint
+}
+
+# --- Load Model ---
 def load_model():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(script_dir, "mlp_classifier.pkl")
     try:
-        # Go up one level from app.py, then into classifiers
-        model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'classifiers', 'mlp_classifier.pkl')
+        app.logger.info(f"Attempting to load model from: {model_path}")
         with open(model_path, 'rb') as f:
             classifier = pickle.load(f)
-        print("Model loaded successfully!")
+        app.logger.info("Model loaded successfully!")
         return classifier
-    except pickle.UnpicklingError as e:
-        print(f"Error unpickling model: {e}")
-        return None
     except Exception as e:
-        print(f"Error loading model: {str(e)}")
+        app.logger.error(f"Error loading model: {str(e)}", exc_info=True)
         return None
 
-# Initialize the model
 classifier = load_model()
 
-# Process word frequencies and prepare features for prediction
+# --- Feature Preparation ---
+# (Keep prepare_features function as it is)
 def prepare_features(word_frequencies):
-    """
-    Prepare feature vector from word frequencies dict for model prediction
-
-    Args:
-        word_frequencies: Dict of {word: frequency}
-
-    Returns:
-        Numpy array of features aligned with training data
-    """
-    # Create a features array aligned with training data
     features = np.zeros((1, len(TRAINING_WORDS_LIST)))
-
-    # Normalize the input frequencies
     total_freq = sum(word_frequencies.values())
     if total_freq == 0:
-        print("Warning: Empty word frequencies provided")
+        app.logger.warning("Empty word frequencies provided to prepare_features")
         return features
-
-    # Fill in the features array
     for word, freq in word_frequencies.items():
         if word in TRAINING_WORDS_DICT:
             idx = TRAINING_WORDS_DICT[word]
             features[0, idx] = freq / total_freq
-
-    # Check if we have any non-zero features
+    app.logger.debug(f"Prepared features. Total frequency: {total_freq}")
     if np.sum(features) == 0:
-        print("Warning: No overlapping words between input and training set")
-
+        app.logger.warning("No overlapping words found between input and training set")
     return features
 
+
+# --- Refactored LLM Query Function ---
 def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperature=0.7):
     """
-    Query the LLM with the earth description prompt multiple times and collect responses.
-    Supports OpenAI, Anthropic, Google, and Deep Infra providers.
+    Query the LLM using the OpenAI SDK, configuring base_url for different providers.
 
     Args:
         api_key: API key for the provider
-        provider: Provider name (e.g., 'openai', 'anthropic', 'google', 'deepinfra')
+        provider: Provider name (e.g., 'openai', 'anthropic', 'google', 'deepinfra', 'mistral')
         model: Model identifier to query
         num_samples: Number of samples to collect (10-1000)
         batch_size: Number of requests to send in parallel (1-20)
@@ -121,490 +134,485 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
     Returns:
         List of responses from the LLM
     """
-    global response
     responses = []
     prompt = "Describe the earth using only 10 adjectives. You can only use ten words, each separated by a comma."
 
     # Validate and adjust parameters
     temperature = max(0.0, min(temperature, 2.0))
     num_samples = max(10, min(num_samples, 1000))
-    batch_size = max(1, min(batch_size, 20))
+    batch_size = max(1, min(batch_size, 20)) # Consider adjusting based on provider limits
 
-    provider = provider.lower()
+    provider_lower = provider.lower()
+    base_url = PROVIDER_BASE_URLS.get(provider_lower)
 
-    try:
-        if provider == 'openai':
-            import openai
-            openai.api_key = api_key
+    app.logger.info(f"Starting LLM query: Provider={provider_lower}, Model={model}, Samples={num_samples}, BatchSize={batch_size}, Temp={temperature}, BaseURL={base_url or 'Default OpenAI'}")
 
-            def send_response():
-                response = openai.chat.completions.create(
+    # --- Provider Specific Configuration ---
+    # Anthropic requires specific headers when using its native API via an OpenAI client proxy/adapter
+    # Note: Directly hitting api.anthropic.com/v1 with the standard openai client is unlikely to work
+    # without a translation layer or using Anthropic's specific SDK. This assumes either a proxy
+    # or that the user knows this might fail for standard Anthropic endpoints.
+    default_headers = {}
+    api_params = {} # Extra params for the create call if needed
+
+    if provider_lower == 'anthropic':
+        # Standard Anthropic requires this header. Add if using a proxy that expects it.
+        default_headers["anthropic-version"] = "2023-06-01"
+        # Anthropic uses 'max_tokens_to_sample' not 'max_tokens' in its native API
+        # If using a proxy that translates, 'max_tokens' might work.
+        # If hitting native endpoint via adapter, might need custom logic.
+        # For simplicity here, we'll *assume* 'max_tokens' works via the chosen base_url.
+        app.logger.warning("Attempting Anthropic call via OpenAI client. Requires compatible endpoint/proxy. Using standard 'max_tokens' parameter.")
+        # api_params["max_tokens_to_sample"] = 100 # Example if native param needed
+
+    if provider_lower == 'google':
+        # The specified Google base URL might expect a different API structure (generateContent)
+        # and model name format (e.g., "models/gemini-1.5-flash-latest").
+        # This might fail if 'model' is passed as 'gemini-1.5-flash'.
+        app.logger.warning("Attempting Google call via OpenAI client. Base URL might expect different API structure/model format (e.g., 'models/gemini...').")
+        # Google might use 'maxOutputTokens' instead of 'max_tokens'.
+        # Adjust model name if needed based on proxy/endpoint behavior:
+        # if not model.startswith("models/"):
+        #     model = f"models/{model}" # Example adaptation
+
+    # Use locks for thread-safe list append
+    lock = threading.Lock()
+    threads = []
+    MAX_RETRIES = 3
+    INITIAL_BACKOFF = 1.5 # seconds
+
+    def send_request_with_retry(attempt_index):
+        nonlocal responses # Ensure we modify the outer scope variable
+        # Instantiate client inside the thread to ensure config is isolated
+        try:
+            client = openai.OpenAI(
+                api_key=api_key,
+                base_url=base_url,
+                default_headers=default_headers,
+                timeout=60.0, # Set a request timeout
+                max_retries=0 # Handle retries manually in the loop below
+            )
+        except Exception as client_err:
+            app.logger.error(f"Failed to initialize OpenAI client for {provider_lower}: {client_err}", exc_info=False)
+            return # Cannot proceed
+
+        retry_count = 0
+        while retry_count < MAX_RETRIES:
+            try:
+                request_start_time = time.time()
+                response_obj = client.chat.completions.create(
                     model=model,
                     messages=[{"role": "user", "content": prompt}],
                     temperature=temperature,
-                    max_tokens=100
+                    max_tokens=100, # Standard OpenAI param
+                    # **api_params # Add provider-specific params if needed (e.g., max_tokens_to_sample for Anthropic native)
                 )
-                responses.append(response.choices[0].message.content)
-            threads = []
-            for _ in range(num_samples):
-                thread = threading.Thread(target=send_response)
-                thread.start()
-                threads.append(thread)
-            for thread in threads:
-                thread.join()
-            print(f"Collected {len(responses)}/{num_samples} responses")
+                request_duration = time.time() - request_start_time
+                app.logger.debug(f"Request {attempt_index+1} (attempt {retry_count+1}) to {provider_lower}/{model} successful in {request_duration:.2f}s")
 
-        elif provider == 'anthropic':
-            import anthropic
-            client = anthropic.Anthropic(api_key=api_key)
+                content = None
+                if response_obj.choices and response_obj.choices[0].message:
+                    content = response_obj.choices[0].message.content
 
-            for i in range(0, num_samples, batch_size):
-                current_batch = min(batch_size, num_samples - i)
-                batch_responses = []
+                if content:
+                    with lock:
+                        responses.append(content)
+                    return # Success, exit retry loop and thread
+                else:
+                    app.logger.warning(f"Request {attempt_index+1} to {provider_lower}/{model} yielded empty content. Response: {response_obj}")
+                    # Decide if empty content is retryable. Usually not.
+                    break # Exit retry loop
 
-                for _ in range(current_batch):
-                    response = client.messages.create(
-                        model=model,
-                        max_tokens=100,
-                        temperature=temperature,
-                        messages=[{"role": "user", "content": prompt}]
-                    )
-                    batch_responses.append(response.content[0].text)
+            except openai.AuthenticationError as e:
+                app.logger.error(f"[Attempt {retry_count+1}] OpenAI Authentication Error for {provider_lower}/{model}: {e}. Check API key.", exc_info=False)
+                break # Don't retry auth errors
+            except openai.PermissionDeniedError as e:
+                app.logger.error(f"[Attempt {retry_count+1}] OpenAI Permission Denied Error for {provider_lower}/{model}: {e}. Check API key permissions/model access.", exc_info=False)
+                break # Don't retry permission errors
+            except openai.NotFoundError as e:
+                app.logger.error(f"[Attempt {retry_count+1}] OpenAI Not Found Error for {provider_lower}/{model}: {e}. Check model name and base URL.", exc_info=False)
+                break # Don't retry not found errors
+            except openai.RateLimitError as e:
+                retry_count += 1
+                app.logger.warning(f"[Attempt {retry_count}/{MAX_RETRIES}] OpenAI Rate Limit Error for {provider_lower}/{model}: {e}. Retrying...", exc_info=False)
+                if retry_count < MAX_RETRIES:
+                    # Use exponential backoff
+                    delay = INITIAL_BACKOFF * (2 ** (retry_count - 1))
+                    # Check for Retry-After header if the SDK exposes it easily (might be in e.response headers)
+                    # delay = max(delay, parse_retry_after(e)) # Example
+                    delay = min(delay, 60) # Cap delay
+                    time.sleep(delay)
+                else:
+                    app.logger.error(f"Max retries reached for {provider_lower}/{model} after rate limit.")
+                    break # Exit retry loop
+            except openai.APIConnectionError as e:
+                retry_count += 1
+                app.logger.warning(f"[Attempt {retry_count}/{MAX_RETRIES}] OpenAI API Connection Error for {provider_lower}/{model}: {e}. Retrying...", exc_info=False)
+                if retry_count < MAX_RETRIES:
+                    delay = INITIAL_BACKOFF * (2 ** (retry_count - 1))
+                    delay = min(delay, 30) # Cap delay
+                    time.sleep(delay)
+                else:
+                    app.logger.error(f"Max retries reached for {provider_lower}/{model} after connection error.")
+                    break # Exit retry loop
+            except openai.APIStatusError as e: # Catch other API errors (e.g., 500s)
+                retry_count += 1
+                app.logger.warning(f"[Attempt {retry_count}/{MAX_RETRIES}] OpenAI API Status Error {e.status_code} for {provider_lower}/{model}: {e}. Retrying...", exc_info=False)
+                if retry_count < MAX_RETRIES and (e.status_code >= 500 or e.status_code == 429): # Retry server errors and conflicts/overloads potentially
+                    delay = INITIAL_BACKOFF * (2 ** (retry_count - 1))
+                    delay = min(delay, 60) # Cap delay
+                    time.sleep(delay)
+                else:
+                    app.logger.error(f"Max retries reached or non-retryable status ({e.status_code}) for {provider_lower}/{model}.")
+                    break # Exit retry loop
+            except Exception as e:
+                # Catch any other unexpected errors during the API call
+                app.logger.error(f"[Attempt {retry_count+1}] Unexpected error during API call for {provider_lower}/{model}: {type(e).__name__} - {e}", exc_info=True)
+                break # Don't retry unknown errors by default
 
-                responses.extend(batch_responses)
-                print(f"Collected {len(responses)}/{num_samples} responses")
+        # Log if a request permanently failed after retries
+        if retry_count >= MAX_RETRIES:
+            app.logger.error(f"Request {attempt_index+1} failed permanently after {MAX_RETRIES} attempts for {provider_lower}/{model}.")
 
-        elif provider == 'google':
-            try:
-                import google.generativeai as genai
-                genai.configure(api_key=api_key)
-                print(f"Starting to collect {num_samples} samples from {model} with temperature {temperature}...")
+    # --- Threading Logic ---
+    try:
+        for i in range(num_samples):
+            thread = threading.Thread(target=send_request_with_retry, args=(i,))
+            thread.start()
+            threads.append(thread)
 
-                # Consider a smaller batch_size if you still hit limits, e.g., batch_size = 5
-                batch_size = 10 # Or adjust as needed based on your quota
+            # Simple batching delay
+            if (i + 1) % batch_size == 0:
+                app.logger.debug(f"Launched batch of {batch_size} threads (up to {i+1}/{num_samples}). Pausing briefly...")
+                time.sleep(0.2) # Adjust delay as needed based on provider rate limits
 
-                responses = []
-                REQUEST_DELAY_SECONDS = 2 # Start with 2 seconds, increase if needed
-
-                for i in range(0, num_samples, batch_size):
-                    current_batch_target = min(batch_size, num_samples - i)
-                    print(f"\nProcessing batch starting at sample {i} (target size: {current_batch_target})...")
-                    batch_responses_in_this_run = [] # Store responses for this specific batch run
-
-                    for sample_index_in_batch in range(current_batch_target):
-                        actual_sample_number = i + sample_index_in_batch
-                        print(f"  Attempting sample {actual_sample_number + 1}/{num_samples}...")
-
-                        max_retries = 5
-                        attempt = 0
-                        success = False
-                        response_text = None # Store the successful response text
-
-                        while attempt < max_retries and not success:
-                            try:
-                                generation_config = {
-                                    "temperature": temperature,
-                                    "max_output_tokens": 100, # Ensure this is appropriate
-                                }
-
-                                # Re-create model inside loop if config needs changing per request,
-                                # otherwise, can be created once before the inner loop.
-                                # For simplicity here, keeping it inside.
-                                gemini_model = genai.GenerativeModel(
-                                    model_name=model,
-                                    generation_config=generation_config
-                                )
-
-                                response = gemini_model.generate_content(prompt)
-
-                                # Extract response text
-                                if hasattr(response, 'text'):
-                                    response_text = response.text
-                                elif hasattr(response, 'parts') and response.parts:
-                                    response_text = ''.join(part.text for part in response.parts if hasattr(part, 'text'))
-                                else:
-                                    # Handle cases where the response might be blocked or empty
-                                    if response.prompt_feedback and response.prompt_feedback.block_reason:
-                                        print(f"    Sample {actual_sample_number + 1} blocked: {response.prompt_feedback.block_reason}")
-                                    else:
-                                        print(f"    Sample {actual_sample_number + 1} - Unexpected Google response format or empty response.")
-                                    response_text = None # Ensure it's None if blocked or unexpected
-
-                                if response_text is not None:
-                                    success = True # Mark as successful to exit retry loop
-                                    print(f"    Sample {actual_sample_number + 1} succeeded.")
-                                # If response_text is None (blocked/empty), loop continues if attempts remain,
-                                # but it won't be added later. Exit retry loop if max attempts reached.
-
-                            except Exception as e:
-                                attempt += 1
-                                error_msg = str(e)
-                                print(f"    Google API error (sample {actual_sample_number + 1}, attempt {attempt}): {error_msg}")
-
-                                # Extract retry delay from error message if available
-                                retry_delay = None
-                                if "retry_delay" in error_msg:
-                                    try:
-                                        match = re.search(r'seconds: (\d+)', error_msg)
-                                        if match:
-                                            retry_delay = int(match.group(1))
-                                            # Add a small buffer to the suggested delay
-                                            retry_delay = min(retry_delay + 2, 120) # Add buffer, cap max delay
-                                    except Exception as parse_err:
-                                        print(f"      Could not parse retry_delay: {parse_err}")
-                                        retry_delay = None # Fallback to exponential backoff
-
-                                # If no specific delay from API, use exponential backoff
-                                if retry_delay is None:
-                                    retry_delay = min(2 ** attempt, 60) # Exponential backoff capped at 60s
-
-                                if attempt < max_retries:
-                                    print(f"      Retrying sample {actual_sample_number + 1} in {retry_delay} seconds...")
-                                    time.sleep(retry_delay)
-                                else:
-                                    print(f"    Max retries reached for sample {actual_sample_number + 1}. Giving up on this sample.")
-                                    break # Exit the retry loop for this sample
-
-                        # --- After the retry loop for a single sample ---
-                        if success and response_text is not None:
-                            batch_responses_in_this_run.append(response_text)
-                        # else: # Optional: Log or handle the failure explicitly if needed
-                        #    print(f"    Sample {actual_sample_number + 1} failed permanently.")
+            # Optional smaller stagger within a batch
+            elif (i+1) % 5 == 0:
+                time.sleep(0.05)
 
 
-                        # *** IMPORTANT: Add a delay AFTER each sample attempt cycle ***
-                        # Wait even if successful to avoid hitting RPM limits
-                        # Don't sleep if it was the last sample in the batch AND last batch overall
-                        is_last_sample_in_batch = (sample_index_in_batch == current_batch_target - 1)
-                        is_last_batch = (i + current_batch_target >= num_samples)
-                        if not (is_last_sample_in_batch and is_last_batch):
-                             # Only print sleep message if actually sleeping
-                             if success or attempt < max_retries : # Avoid sleep if last attempt failed and we are exiting
-                                 print(f"    --- Waiting {REQUEST_DELAY_SECONDS}s before next sample ---")
-                                 time.sleep(REQUEST_DELAY_SECONDS)
+        # Wait for all threads to complete
+        for i, thread in enumerate(threads):
+            thread.join(timeout=90) # Generous timeout per thread
+            if thread.is_alive():
+                app.logger.warning(f"Thread {i+1} for {provider_lower}/{model} timed out.")
 
-
-                    # --- After processing all samples in the current batch ---
-                    if batch_responses_in_this_run:
-                        responses.extend(batch_responses_in_this_run)
-                    print(f"  Batch finished. Collected {len(responses)}/{num_samples} total responses so far.")
-
-                    # The time.sleep(1) between batches might be less critical now,
-                    # but can be kept or adjusted. It ensures a pause even if a batch finishes quickly.
-                    # if i + current_batch_target < num_samples:
-                    #     time.sleep(1) # Optional pause between batches
-
-                print(f"\nFinished collecting responses. Total successful: {len(responses)}/{num_samples}")
-
-
-            except ImportError:
-                print("Google GenerativeAI not installed. Use: pip install google-generativeai")
-                return []
-            except Exception as general_err:
-                print(f"\nAn unexpected error occurred: {general_err}")
-                # Optionally return partial results: return responses
-                return [] # Or return empty on any major error
-
-        elif provider == 'deepinfra':
-            import requests
-
-            headers = {
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json"
-            }
-
-            payload = {
-                "model": model,
-                "messages": [{"role": "user", "content": prompt}],
-                "temperature": temperature,
-                "max_tokens": 100
-            }
-
-            for i in range(0, num_samples, batch_size):
-                current_batch = min(batch_size, num_samples - i)
-                batch_responses = []
-
-                for _ in range(current_batch):
-                    max_retries = 5
-                    base_delay = 1  # starting delay in seconds
-
-                    for attempt in range(max_retries):
-                        try:
-                            response = requests.post(
-                                "https://api.deepinfra.com/v1/openai/chat/completions",
-                                headers=headers,
-                                json=payload,
-                                timeout=30
-                            )
-                            response.raise_for_status()
-                            data = response.json()
-                            batch_responses.append(data['choices'][0]['message']['content'])
-                            break  # Success - exit retry loop
-
-                        except Exception as e:
-                            print(f"DeepInfra API error (attempt {attempt + 1}): {str(e)}")
-                            if (hasattr(e, 'response') and e.response.status_code in [429, 503]) or attempt == max_retries - 1:
-                                if attempt == max_retries - 1:
-                                    print("Max retries reached, giving up.")
-                                    break
-                                # Calculate delay with exponential backoff
-                                delay = base_delay * (2 ** attempt)
-                                # Use Retry-After header if available, otherwise use calculated delay
-                                if hasattr(e, 'response') and 'Retry-After' in e.response.headers:
-                                    delay = float(e.response.headers['Retry-After'])
-                                delay = min(delay, 60)  # cap at 60 seconds
-                                print(f"Retrying in {delay} seconds...")
-                                time.sleep(delay)
-                            else:
-                                break
-
-                responses.extend(batch_responses)
-                print(f"Collected {len(responses)}/{num_samples} responses")
-
-                if i + current_batch < num_samples:
-                    time.sleep(1)
-
-        else:
-            print(f"Unsupported provider: {provider}")
-            return []
+        app.logger.info(f"Finished {provider_lower} query for {model}. Collected {len(responses)}/{num_samples} responses.")
 
     except Exception as e:
-        print(f"Critical error in query_llm: {str(e)}")
-        return responses if responses else []
+        app.logger.error(f"Critical error during threading or request dispatch for {provider_lower}/{model}: {str(e)}", exc_info=True)
+        # Return partial results if any collected
+        return responses
 
     return responses
 
+
+# --- Response Processing ---
+# (Keep process_responses function as it is)
 def process_responses(responses):
-    """
-    Process the responses from the LLM to extract and count words
-
-    Args:
-        responses: List of text responses from the LLM
-
-    Returns:
-        Dictionary of {word: frequency}
-    """
     all_words = []
+    processed_count = 0
+    skipped_count = 0
+    app.logger.info(f"Processing {len(responses)} raw responses...")
 
-    for response in responses:
-        # Clean and normalize the response
-        words = response.lower().strip()
+    for i, response in enumerate(responses):
+        if not isinstance(response, str) or not response.strip():
+            app.logger.debug(f"Skipping invalid/empty response at index {i}: Type={type(response)}, Value='{str(response)[:50]}...'")
+            skipped_count += 1
+            continue
 
-        # Remove any numbering if present
-        words = re.sub(r'^\d+\.?\s*', '', words)
-        words = re.sub(r'\s*\d+\.?\s*', ',', words)
+        processed_count += 1
+        words_text = response.lower().strip()
+        words_text = re.sub(r'^(here are|okay,? here are|sure,? here are|here\'s a list of)?\s*(\d+\s+)?(adjectives|words)?\s*[:\-]*\s*', '', words_text, flags=re.IGNORECASE)
+        words_text = re.sub(r'^\s*\d+\.?\s*', '', words_text)
+        words_text = re.sub(r'\s*\d+\.?\s*$', '', words_text)
+        words_text = re.sub(r'\s*\d+[\.\)]\s*', ',', words_text)
+        words_text = re.sub(r'[\n;]+', ',', words_text)
 
-        # Split by commas and clean each word
-        for word in words.split(','):
-            word = word.strip().strip('."\'\n\t')
-            if word:
-                all_words.append(word)
+        extracted_in_response = 0
+        potential_words = words_text.split(',')
+        for word in potential_words:
+            cleaned_word = word.strip()
+            cleaned_word = re.sub(r'^[^\w]+|[^\w]+$', '', cleaned_word) # Punctuation from ends only
+            if cleaned_word and len(cleaned_word) < 30:
+                all_words.append(cleaned_word)
+                extracted_in_response += 1
+            elif cleaned_word:
+                app.logger.debug(f"Skipping potentially invalid word: '{cleaned_word[:50]}...'")
 
-    # Count word frequencies
+        if extracted_in_response == 0 and response.strip():
+            app.logger.debug(f"Response '{response[:50]}...' yielded no words after cleaning.")
+
     word_frequencies = Counter(all_words)
+    app.logger.info(f"Processed {processed_count} valid responses (skipped {skipped_count}). Found {len(word_frequencies)} unique words. Total word occurrences: {len(all_words)}")
+    if word_frequencies:
+        top_5 = word_frequencies.most_common(5)
+        app.logger.debug(f"Top 5 words: {top_5}")
+
     return dict(word_frequencies)
+
+# --- Flask Routes ---
 
 @app.route('/')
 def home():
+    app.logger.info("Serving home page")
     return render_template('index.html')
 
 @app.route('/api/identify-model', methods=['POST'])
 def identify_model():
-    """
-    Endpoint to identify model by querying it with the earth description prompt
-    and analyzing word frequencies in responses.
+    start_time = time.time()
+    app.logger.info("Received request for /api/identify-model")
+    if not request.is_json:
+        app.logger.warning("Request is not JSON")
+        return jsonify({"error": "Request must be JSON"}), 400
 
-    Expected JSON input:
-    {
-        "api_key": "your_api_key",
-        "provider": "provider_name",
-        "model": "model_name",
-        "num_samples": 100,   // Optional, default is 100
-        "temperature": 0.7
-    }
-    """
     data = request.json
     api_key = data.get('api_key')
     provider = data.get('provider')
     model = data.get('model')
-    num_samples = int(data.get('num_samples', 100))
-    temperature = float(data.get('temperature', 0.7))
+    num_samples = data.get('num_samples', 100)
+    temperature = data.get('temperature', 0.7)
+    batch_size = data.get('batch_size', 10) # Allow specifying batch size
 
-    # Validate temperature
-    temperature = max(0.0, min(temperature, 2.0))
+    # --- Input Validation ---
+    try:
+        num_samples = int(num_samples)
+        num_samples = min(max(num_samples, 10), 1000)
+    except (ValueError, TypeError):
+        num_samples = 100
+    try:
+        temperature = float(temperature)
+        temperature = max(0.0, min(temperature, 2.0))
+    except (ValueError, TypeError):
+        temperature = 0.7
+    try:
+        batch_size = int(batch_size)
+        batch_size = min(max(batch_size, 1), 20) # Limit batch size
+    except (ValueError, TypeError):
+        batch_size = 10 # Default if invalid
 
-    # Limit samples to reasonable range
-    num_samples = min(max(num_samples, 10), 1000)
+    log_api_key_snippet = f"{api_key[:4]}..." if api_key and len(api_key) > 4 else "Provided" if api_key else "None"
+    app.logger.info(f"Identify request params: Provider={provider}, Model={model}, Samples={num_samples}, Temp={temperature}, Batch={batch_size}, APIKey={log_api_key_snippet}")
 
     if not api_key or not provider or not model:
         return jsonify({"error": "Missing API key, provider, or model"}), 400
-
     if classifier is None:
-        return jsonify({"error": "Model not loaded. Please check server logs."}), 500
+        return jsonify({"error": "Classifier model not loaded."}), 500
+
+    # Check if provider is known (optional but good)
+    if provider.lower() not in PROVIDER_BASE_URLS:
+        # We can still attempt the call if base_url is None (defaults to OpenAI)
+        # Or we can return an error if it's explicitly unknown.
+        # Let's allow attempting with default OpenAI URL if provider unknown.
+        app.logger.warning(f"Provider '{provider}' not explicitly listed. Attempting with default OpenAI base URL.")
+        # Alternatively, return error:
+        # return jsonify({"error": f"Unsupported provider: {provider}. Supported: {list(PROVIDER_BASE_URLS.keys())}"}), 400
+
 
     try:
-        # Query the LLM and collect responses
-        print(f"Starting to collect {num_samples} samples from {provider}/{model} with temperature {temperature}...")
-        responses = query_llm(api_key, provider, model, num_samples, temperature=temperature)
+        app.logger.info(f"Starting LLM query task for {provider}/{model}...")
+        responses = query_llm(api_key, provider, model, num_samples, batch_size, temperature)
 
         if not responses:
-            return jsonify({"error": "Failed to collect responses from the model"}), 500
+            return jsonify({"error": f"Failed to collect responses from {provider}/{model}. Check logs."}), 500
+        app.logger.info(f"Collected {len(responses)} responses.")
 
-        print(f"Successfully collected {len(responses)} responses")
-
-        # Process responses to get word frequencies
         word_frequencies = process_responses(responses)
-
         if not word_frequencies:
-            return jsonify({"error": "No valid words extracted from responses"}), 500
+            return jsonify({"error": "No valid words extracted from responses."}), 400
+        app.logger.info(f"Extracted {len(word_frequencies)} unique words.")
 
-        print(f"Extracted {len(word_frequencies)} unique words")
-
-        # Prepare features for prediction
         features = prepare_features(word_frequencies)
+        if np.sum(features) == 0:
+            app.logger.warning("Feature vector is all zeros (no overlap with training words).")
 
-        # Make prediction - handle both string and index outputs
+        app.logger.info("Making prediction...")
         raw_prediction = classifier.predict(features)[0]
-        print(f"Raw prediction from classifier: {raw_prediction} (type: {type(raw_prediction)})")
 
-        # Convert prediction to string if it's numpy type
-        if isinstance(raw_prediction, (np.integer, np.int64)):
-            prediction = int(raw_prediction)
-        elif hasattr(raw_prediction, 'item'):
-            prediction = raw_prediction.item()
-        else:
-            prediction = raw_prediction
+        prediction = raw_prediction
+        if isinstance(raw_prediction, (np.integer, np.int64)): prediction = int(raw_prediction)
+        elif hasattr(raw_prediction, 'item'): prediction = raw_prediction.item()
 
-        # Get list of classifier's known classes
-        class_labels = classifier.classes_.tolist() if hasattr(classifier, 'classes_') else []
+        class_labels = []
+        if hasattr(classifier, 'classes_'): class_labels = classifier.classes_.tolist()
+        else: app.logger.warning("Classifier missing 'classes_' attribute.")
 
-        # Handle prediction output
         predicted_model = "unknown"
         predicted_index = -1
-
-        # Try to interpret as class label
-        if isinstance(prediction, str) and prediction in class_labels:
-            predicted_model = prediction
-            predicted_index = class_labels.index(prediction)
+        if class_labels:
+            if isinstance(prediction, str) and prediction in class_labels:
+                predicted_model = prediction
+                try: predicted_index = class_labels.index(prediction)
+                except ValueError: predicted_index = -1
+            elif isinstance(prediction, int) and 0 <= prediction < len(class_labels):
+                predicted_model = class_labels[prediction]
+                predicted_index = prediction
+            else:
+                app.logger.warning(f"Prediction '{prediction}' type {type(prediction)} invalid or out of range.")
         else:
-            # Try to interpret as index
-            try:
-                prediction_idx = int(prediction)
-                if 0 <= prediction_idx < len(class_labels):
-                    predicted_model = class_labels[prediction_idx]
-                    predicted_index = prediction_idx
-                else:
-                    print(f"Prediction index out of range: {prediction_idx}")
-            except (ValueError, TypeError):
-                print(f"Prediction not recognized as model name or valid index: {prediction}")
+            app.logger.error("Cannot determine model name: class labels unavailable.")
 
-        print(f"Final prediction: {predicted_model} (index: {predicted_index})")
+        app.logger.info(f"Predicted Model='{predicted_model}', Index={predicted_index}")
 
-        # Get probabilities if available
         confidence = 0.0
         top_predictions = []
+        if hasattr(classifier, 'predict_proba') and class_labels and predicted_index != -1:
+            try:
+                probabilities = classifier.predict_proba(features)[0]
+                if len(probabilities) == len(class_labels):
+                    sorted_indices = np.argsort(probabilities)[::-1]
+                    top_predictions = [
+                        {"model": class_labels[i], "probability": float(probabilities[i])}
+                        for i in sorted_indices[:5]
+                    ]
+                    confidence = float(probabilities[predicted_index])
+                    preds_log = [{'m': p['model'], 'p': f"{p['probability']:.4f}"} for p in top_predictions]
+                    app.logger.info(f"Confidence: {confidence:.4f}, Top 5: {preds_log}")
+                else:
+                    app.logger.error(f"Probability array length mismatch ({len(probabilities)} vs {len(class_labels)})")
+            except Exception as proba_error:
+                app.logger.error(f"Error getting probabilities: {proba_error}", exc_info=False)
 
-        if hasattr(classifier, 'predict_proba'):
-            probabilities = classifier.predict_proba(features)[0]
-            print(f"Raw probabilities: {probabilities}")
+        end_time = time.time()
+        duration = end_time - start_time
+        app.logger.info(f"Identify request for {provider}/{model} completed in {duration:.2f} seconds.")
 
-            # Get all predictions sorted by probability (descending)
-            sorted_indices = np.argsort(probabilities)[::-1]
+        status_message = "success"
+        final_predicted_model = predicted_model
+        if predicted_model == "unknown":
+            status_message = "success_unrecognized"
+            final_predicted_model = "unrecognized_model"
+        elif np.sum(features) == 0:
+            status_message = "success_no_overlap"
 
-            # Extract top 5 models and their probabilities
-            top_models = []
-            top_probs = []
-            for i in sorted_indices[:5]:
-                if i < len(class_labels):
-                    model_name = class_labels[i]
-                    top_models.append(model_name)
-                    top_probs.append(float(probabilities[i]))
-
-            # Calculate confidence level (probability of the predicted model)
-            if predicted_index != -1 and predicted_index < len(probabilities):
-                confidence = probabilities[predicted_index]
-                print(f"Confidence for predicted model: {confidence:.2%}")
-            else:
-                print("Could not calculate confidence - invalid predicted index")
-
-            # Create top predictions list
-            top_predictions = [
-                {"model": model, "probability": float(prob)}
-                for model, prob in zip(top_models, top_probs)
-            ]
-            print(f"Top predictions: {top_predictions}")
-
-        # Prepare response
         model_info = {
             "provider": provider,
             "input_model": model,
             "samples_collected": len(responses),
-            "unique_words": len(word_frequencies),
-            "predicted_model": predicted_model if predicted_model != "unknown" else "unrecognized_model",
+            "unique_words_extracted": len(word_frequencies),
+            "predicted_model": final_predicted_model,
             "confidence": f"{confidence:.2%}",
-            "confidence_value": float(confidence),
+            "confidence_value": confidence,
             "top_predictions": top_predictions,
-            "word_frequencies": word_frequencies,
-            "status": "success"
+            "word_frequencies_top": dict(word_frequencies.most_common(20)),
+            "status": status_message,
+            "processing_time_seconds": round(duration, 2)
         }
-
         return jsonify(model_info)
 
     except Exception as e:
-        print(f"Error during prediction: {str(e)}")
+        duration = time.time() - start_time
+        app.logger.error(f"Error during identify model request ({duration:.2f}s) for {provider}/{model}: {str(e)}", exc_info=True)
         return jsonify({
-            "error": f"Prediction error: {str(e)}",
-            "status": "error"
+            "error": f"An unexpected error occurred: {str(e)}",
+            "status": "error",
+            "processing_time_seconds": round(duration, 2)
         }), 500
 
 @app.route('/api/models', methods=['GET'])
 def get_models():
-    """Endpoint to return the list of models the classifier knows about"""
-    return jsonify({"models": LIST_OF_MODELS})
+    app.logger.info("Request received for /api/models")
+    known_models = LIST_OF_MODELS # Default
+    if classifier and hasattr(classifier, 'classes_'):
+        classifier_classes = classifier.classes_.tolist()
+        if len(classifier_classes) > 0:
+            known_models = classifier_classes
+            if set(LIST_OF_MODELS) != set(classifier_classes):
+                app.logger.warning("Mismatch between hardcoded LIST_OF_MODELS and classifier.classes_!")
+
+    # Also return the providers we have base URLs for
+    supported_providers = list(PROVIDER_BASE_URLS.keys())
+
+    return jsonify({
+        "models": known_models,
+        "supported_providers": supported_providers # Inform frontend about providers
+    })
+
 
 @app.route('/api/test-connection', methods=['POST'])
 def test_connection():
-    """
-    Test connection to LLM provider
+    start_time = time.time()
+    app.logger.info("Received request for /api/test-connection")
+    if not request.is_json: return jsonify({"error": "Request must be JSON"}), 400
 
-    Expected JSON input:
-    {
-        "api_key": "your_api_key",
-        "provider": "provider_name",
-        "model": "model_name",
-        "temperature": 0.7
-    }
-    """
     data = request.json
     api_key = data.get('api_key')
     provider = data.get('provider')
     model = data.get('model')
-    temperature = float(data.get('temperature', 0.7))
+    temperature = data.get('temperature', 0.1) # Low temp for test
+
+    try: temperature = max(0.0, min(float(temperature), 1.0))
+    except: temperature = 0.1
+
+    log_api_key_snippet = f"{api_key[:4]}..." if api_key and len(api_key) > 4 else "Provided" if api_key else "None"
+    app.logger.info(f"Test connection params: Provider={provider}, Model={model}, Temp={temperature}, APIKey={log_api_key_snippet}")
 
     if not api_key or not provider or not model:
         return jsonify({"error": "Missing API key, provider, or model"}), 400
 
-    try:
-        # Just query once to test connection
-        responses = query_llm(api_key, provider, model, num_samples=1, temperature=temperature)
+    # Check if provider is known (optional)
+    if provider.lower() not in PROVIDER_BASE_URLS:
+        app.logger.warning(f"Provider '{provider}' not explicitly listed for test. Attempting with default OpenAI base URL.")
 
-        if responses:
+
+    try:
+        app.logger.info(f"Attempting single query to test connection to {provider}/{model}")
+        # Use num_samples=1, batch_size=1, and handle retries within query_llm
+        responses = query_llm(api_key, provider, model, num_samples=1, temperature=temperature, batch_size=1)
+        duration = time.time() - start_time
+
+        if responses and isinstance(responses[0], str) and responses[0].strip():
+            app.logger.info(f"Test connection successful for {provider}/{model} ({duration:.2f}s).")
             return jsonify({
                 "status": "success",
-                "message": "Successfully connected to provider",
-                "response": responses[0]
+                "message": f"Successfully connected to {provider} and received response from {model}.",
+                "response_preview": responses[0][:100] + ('...' if len(responses[0]) > 100 else ''),
+                "processing_time_seconds": round(duration, 2)
             })
-        else:
+        elif responses:
+            app.logger.warning(f"Test connection to {provider}/{model} returned an invalid/empty response: Type={type(responses[0])} ({duration:.2f}s)")
             return jsonify({
                 "status": "error",
-                "message": "Connected but received no response"
+                "message": f"Connected to {provider}/{model} but received an empty or invalid response.",
+                "response_type": str(type(responses[0])),
+                "processing_time_seconds": round(duration, 2)
+            }), 500
+        else: # No response collected
+            app.logger.warning(f"Test connection failed: No response from {provider}/{model} ({duration:.2f}s). Check API key, model name, provider status, base URL compatibility.")
+            return jsonify({
+                "status": "error",
+                "message": f"Failed to get response from '{model}' via '{provider}'. Check API key, model name, Base URL, and provider status. See server logs for details.",
+                "processing_time_seconds": round(duration, 2)
             }), 500
 
     except Exception as e:
+        duration = time.time() - start_time
+        app.logger.error(f"Test connection error for {provider}/{model} ({duration:.2f}s): {str(e)}", exc_info=True)
+        # Check for specific OpenAI errors if possible to give better feedback
+        error_message = f"An unexpected error occurred: {str(e)}"
+        if isinstance(e, openai.AuthenticationError):
+            error_message = "Authentication failed. Check your API key."
+        elif isinstance(e, openai.PermissionDeniedError):
+            error_message = "Permission denied. Check API key permissions or model access."
+        elif isinstance(e, openai.NotFoundError):
+            error_message = f"Model '{model}' not found or Base URL for '{provider}' is incorrect/incompatible."
+        elif isinstance(e, openai.RateLimitError):
+            error_message = "Rate limit exceeded. Please wait and try again."
+        elif isinstance(e, openai.APIConnectionError):
+            error_message = f"Could not connect to the API endpoint for '{provider}'. Check network or Base URL."
+
         return jsonify({
             "status": "error",
-            "message": f"Connection error: {str(e)}"
+            "message": error_message,
+            "processing_time_seconds": round(duration, 2)
         }), 500
 
+
+# --- Main Execution ---
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5001))
+    debug_mode = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
+    app.logger.info(f"Starting Flask application. Debug mode: {debug_mode}, Port: {port}")
+    app.run(debug=debug_mode, host='0.0.0.0', port=port, use_reloader=debug_mode)
+
+# --- END OF REFACTORED FILE app.py ---

@@ -1,7 +1,7 @@
-flask
-numpy
-# scikit-learn
-pickle-mixin
-openai
-anthropic
-google-generativeai
+# flask
+# numpy
+scikit-learn
+# pickle-mixin
+# openai
+# anthropic
+# google-generativeai
