@@ -12,7 +12,7 @@ import logging
 from logging.handlers import RotatingFileHandler # Keep if needed for local, but careful in serverless
 import sys
 import sklearn
-import openai # Use the OpenAI library exclusively
+from openai import APIStatusError, APIConnectionError, RateLimitError, AuthenticationError, PermissionDeniedError, NotFoundError, OpenAI
 
 app = Flask(__name__)
 
@@ -121,6 +121,7 @@ def prepare_features(word_frequencies):
 def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperature=0.7):
     """
     Query the LLM using the OpenAI SDK, configuring base_url for different providers.
+    Propagates critical errors by raising ProviderAPIError.
 
     Args:
         api_key: API key for the provider
@@ -131,13 +132,16 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
         temperature: Controls randomness (0=deterministic, 2=most random)
 
     Returns:
-        List of responses from the LLM
+        List of responses from the LLM.
+
+    Raises:
+        ProviderAPIError: If a critical, non-transient error occurs during API calls (e.g., Auth, 422).
     """
     responses = []
     prompt = "Describe the earth using only 10 adjectives. You can only use ten words, each separated by a comma."
 
     # Validate and adjust parameters
-    temperature = max(0.0, min(temperature, 2.0))
+    temperature = max(0.0, min(temperature, 2.0)) # Allow up to 2.0 initially
     num_samples = max(10, min(num_samples, 1000))
     batch_size = max(1, min(batch_size, 20)) # Consider adjusting based on provider limits
 
@@ -177,20 +181,31 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
     # Use locks for thread-safe list append
     lock = threading.Lock()
     threads = []
+    first_critical_error = None # Shared variable to store the first critical error
 
     def send_single_request(attempt_index):
-        nonlocal responses # Ensure we modify the outer scope variable
-        # Instantiate client inside the thread to ensure config is isolated
+        nonlocal responses, first_critical_error # Allow modification of outer scope variables
+
+        # Check if a critical error has already been flagged by another thread
+        with lock:
+            if first_critical_error is not None:
+                return # Stop this thread early if another thread hit a critical error
+
         try:
-            client = openai.OpenAI(
+            client = OpenAI(
                 api_key=api_key,
                 base_url=base_url,
                 default_headers=default_headers,
                 timeout=5, # Set a request timeout
             )
         except Exception as client_err:
-            app.logger.error(f"Failed to initialize OpenAI client for {provider_lower}: {client_err}", exc_info=False)
-            return # Cannot proceed
+            app.logger.error(f"[Req {attempt_index+1}] Failed to initialize OpenAI client for {provider_lower}: {client_err}", exc_info=False)
+            # Consider this a critical configuration error
+            with lock:
+                if first_critical_error is None:
+                    first_critical_error = ProviderAPIError(
+                        f"Failed to initialize API client: {client_err}", provider=provider_lower, model=model)
+            return
 
         try:
             request_start_time = time.time()
@@ -210,60 +225,152 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
 
             if content:
                 with lock:
-                    responses.append(content)
-                # Success
+                    # Only add response if no critical error has occurred
+                    if first_critical_error is None:
+                        responses.append(content)
             else:
-                app.logger.warning(f"Request {attempt_index+1} to {provider_lower}/{model} yielded empty content. Response: {response_obj}")
-                # Consider this a failure for this attempt
+                app.logger.warning(f"[Req {attempt_index+1}] {provider_lower}/{model} yielded empty content. Response: {response_obj}")
 
-        # --- Error Handling (Single Attempt) ---
-        except openai.AuthenticationError as e:
-            app.logger.error(f"OpenAI Authentication Error for request {attempt_index+1} ({provider_lower}/{model}): {e}. Check API key.", exc_info=False)
-        except openai.PermissionDeniedError as e:
-            app.logger.error(f"OpenAI Permission Denied Error for request {attempt_index+1} ({provider_lower}/{model}): {e}. Check API key permissions/model access.", exc_info=False)
-        except openai.NotFoundError as e:
-            app.logger.error(f"OpenAI Not Found Error for request {attempt_index+1} ({provider_lower}/{model}): {e}. Check model name and base URL.", exc_info=False)
-        except openai.RateLimitError as e:
-            app.logger.error(f"OpenAI Rate Limit Error for request {attempt_index+1} ({provider_lower}/{model}): {e}. Request failed.", exc_info=False)
-        except openai.APIConnectionError as e:
-            app.logger.error(f"OpenAI API Connection Error for request {attempt_index+1} ({provider_lower}/{model}): {e}. Request failed.", exc_info=False)
-        except openai.APIStatusError as e: # Catch other API errors (e.g., 500s)
-             app.logger.error(f"OpenAI API Status Error {e.status_code} for request {attempt_index+1} ({provider_lower}/{model}): {e}. Request failed.", exc_info=False)
+        # --- Specific Error Handling within Thread ---
+        # Prioritize critical errors that should stop the process
+        except AuthenticationError as e:
+            error_msg = f"Authentication Failed for {provider_lower}. Check API Key."
+            app.logger.error(f"[Req {attempt_index+1}] {error_msg}: {e}", exc_info=False)
+            with lock:
+                if first_critical_error is None:
+                    first_critical_error = ProviderAPIError(error_msg, status_code=401, provider=provider_lower, model=model)
+        except PermissionDeniedError as e:
+            error_msg = f"Permission Denied for {provider_lower}/{model}. Check API key permissions or model access."
+            app.logger.error(f"[Req {attempt_index+1}] {error_msg}: {e}", exc_info=False)
+            with lock:
+                if first_critical_error is None:
+                    first_critical_error = ProviderAPIError(error_msg, status_code=403, provider=provider_lower, model=model)
+        except NotFoundError as e:
+            error_msg = f"Model '{model}' not found via {provider_lower} or Base URL is incorrect/incompatible."
+            app.logger.error(f"[Req {attempt_index+1}] {error_msg}: {e}", exc_info=False)
+            with lock:
+                if first_critical_error is None:
+                    first_critical_error = ProviderAPIError(error_msg, status_code=404, provider=provider_lower, model=model)
+
+        # --- Handle APIStatusError (including 422) ---
+        except APIStatusError as e:
+            status_code = e.status_code
+            error_msg = f"API Status Error {status_code} for {provider_lower}/{model}"
+            is_critical = False # Assume not critical unless specified
+
+            if status_code == 422:
+                detailed_message = f"Invalid request (422)"
+                try:
+                    # Try to parse the response body for details
+                    error_body = e.response.json() # Use response.json() which parses
+                    if isinstance(error_body, dict):
+                        # Try extracting Mistral-like detail structure
+                        if 'message' in error_body and isinstance(error_body['message'], dict) and 'detail' in error_body['message']:
+                            details = error_body['message']['detail']
+                            if isinstance(details, list) and len(details) > 0 and isinstance(details[0], dict) and 'msg' in details[0]:
+                                param_info = details[0].get('loc', [])
+                                param_str = " -> ".join(map(str, param_info)) if param_info else "parameter"
+                                detailed_message = f"Invalid request parameter (422): {details[0]['msg']} (Location: {param_str})"
+                            # Fallback to top-level message if detail parsing fails
+                            elif 'message' in error_body:
+                                detailed_message = f"Invalid request (422): {error_body.get('message', str(e))}"
+
+                        # Generic fallback if structure is different but body exists
+                        elif 'message' in error_body:
+                            detailed_message = f"Invalid request (422): {error_body.get('message', str(e))}"
+                        else: # If body is dict but no 'message' key
+                            detailed_message = f"Invalid request (422): {str(error_body)}"
+
+                    else: # If body isn't a dict
+                        detailed_message = f"Invalid request (422): {e.response.text[:200] if e.response.text else str(e)}"
+
+                except Exception as parse_err:
+                    app.logger.warning(f"[Req {attempt_index+1}] Could not parse detailed 422 error body: {parse_err}. Raw text: {e.response.text[:200]}", exc_info=False)
+                    detailed_message = f"Invalid request (422): {str(e)}" # Fallback to default openai lib message
+
+                error_msg = detailed_message
+                is_critical = True # 422 indicates a problem with the request itself
+
+            elif status_code == 400: # Bad Request - Often similar to 422
+                error_msg = f"Bad Request (400) for {provider_lower}/{model}. Check parameters/request format."
+                is_critical = True
+            elif status_code == 429: # Rate Limit Error - Log but don't treat as critical failure for the whole process
+                error_msg = f"Rate Limit Exceeded (429) for {provider_lower}/{model}. Request failed."
+                app.logger.warning(f"[Req {attempt_index+1}] {error_msg}", exc_info=False) # Log as warning
+                is_critical = False # Allow other requests to proceed
+            elif status_code >= 500: # Server Errors - Log but don't treat as critical failure (might be transient)
+                error_msg = f"Server Error ({status_code}) from {provider_lower}/{model}. Request failed."
+                app.logger.warning(f"[Req {attempt_index+1}] {error_msg}: {e}", exc_info=False)
+                is_critical = False
+            else: # Other client-side errors (4xx)
+                error_msg = f"API Client Error ({status_code}) for {provider_lower}/{model}: {e}"
+                app.logger.error(f"[Req {attempt_index+1}] {error_msg}", exc_info=False)
+                is_critical = True # Treat other 4xx as critical by default
+
+            # Store the error if it's critical and none has been stored yet
+            if is_critical:
+                with lock:
+                    if first_critical_error is None:
+                        first_critical_error = ProviderAPIError(error_msg, status_code=status_code, provider=provider_lower, model=model)
+
+        # Handle connection errors (potentially transient, don't mark as critical failure immediately)
+        except APIConnectionError as e:
+            app.logger.warning(f"[Req {attempt_index+1}] API Connection Error for {provider_lower}/{model}: {e}. Request failed.", exc_info=False)
+        # Handle other unexpected errors
         except Exception as e:
-            # Catch any other unexpected errors during the API call
-            app.logger.error(f"Unexpected error during API call for request {attempt_index+1} ({provider_lower}/{model}): {type(e).__name__} - {e}", exc_info=True)
-
-        # No retry logic here, the function simply completes after one attempt (success or logged error)
+            error_msg = f"Unexpected error during API call for {provider_lower}/{model}: {type(e).__name__}"
+            app.logger.error(f"[Req {attempt_index+1}] {error_msg} - {e}", exc_info=True)
+            # Treat unexpected errors as potentially critical
+            with lock:
+                if first_critical_error is None:
+                    first_critical_error = ProviderAPIError(f"{error_msg}. See server logs.", status_code=500, provider=provider_lower, model=model)
 
     # --- Threading Logic ---
     try:
         for i in range(num_samples):
+            # Optimization: If a critical error occurred, stop launching new threads
+            with lock:
+                if first_critical_error is not None:
+                    app.logger.warning(f"Stopping thread launch early due to critical error: {first_critical_error}")
+                    break
+
             thread = threading.Thread(target=send_single_request, args=(i,))
             thread.start()
             threads.append(thread)
 
-            # Simple batching delay
+            # Simple batching delay / stagger
             if (i + 1) % batch_size == 0:
                 app.logger.debug(f"Launched batch of {batch_size} threads (up to {i+1}/{num_samples}). Pausing briefly...")
-                time.sleep(0.2) # Adjust delay as needed based on provider rate limits
-
-            # Optional smaller stagger within a batch
-            elif (i+1) % 5 == 0:
+                time.sleep(0.15) # Adjust delay as needed
+            elif (i+1) % 5 == 0: # Smaller stagger within batch
                 time.sleep(0.05)
 
-        # Wait for all threads to complete
+        # Wait for all *launched* threads to complete
+        app.logger.debug(f"Waiting for {len(threads)} launched threads to complete...")
         for i, thread in enumerate(threads):
             thread.join(timeout=90) # Generous timeout per thread
             if thread.is_alive():
-                app.logger.warning(f"Thread {i+1} for {provider_lower}/{model} timed out.")
+                app.logger.warning(f"Thread {i+1} for {provider_lower}/{model} timed out after 90s.")
 
-        app.logger.info(f"Finished {provider_lower} query for {model}. Attempted {num_samples} samples, successfully collected {len(responses)} responses.")
+        # --- Check for Critical Errors After Joining ---
+        with lock: # Read the shared variable safely
+            if first_critical_error is not None:
+                app.logger.error(f"Critical error encountered during batch API calls. Raising ProviderAPIError: {first_critical_error}")
+                raise first_critical_error # Propagate the first critical error
 
+        app.logger.info(f"Finished {provider_lower} query for {model}. Attempted {len(threads)} samples, successfully collected {len(responses)} responses.")
+        if len(responses) < num_samples and first_critical_error is None:
+            app.logger.warning(f"Collected fewer responses ({len(responses)}) than attempted ({len(threads)}) potentially due to non-critical errors (e.g., timeouts, rate limits, server errors).")
+
+    except ProviderAPIError:
+        raise # Re-raise the explicitly caught critical error
     except Exception as e:
-        app.logger.error(f"Critical error during threading or request dispatch for {provider_lower}/{model}: {str(e)}", exc_info=True)
-        # Return partial results if any collected
-        return responses
+        # Catch unexpected errors during threading/joining itself
+        app.logger.error(f"Critical error during threading/dispatch for {provider_lower}/{model}: {str(e)}", exc_info=True)
+        # Raise a generic ProviderAPIError if something went wrong outside the API calls
+        raise ProviderAPIError(f"Threading or dispatch error: {str(e)}", provider=provider_lower, model=model, status_code=500) from e
 
+    # Return collected responses only if no critical error was raised
     return responses
 
 
@@ -551,15 +658,15 @@ def test_connection():
         app.logger.error(f"Test connection error for {provider}/{model} ({duration:.2f}s): {str(e)}", exc_info=True)
         # Check for specific OpenAI errors if possible to give better feedback
         error_message = f"An unexpected error occurred: {str(e)}"
-        if isinstance(e, openai.AuthenticationError):
+        if isinstance(e, AuthenticationError):
             error_message = "Authentication failed. Check your API key."
-        elif isinstance(e, openai.PermissionDeniedError):
+        elif isinstance(e, PermissionDeniedError):
             error_message = "Permission denied. Check API key permissions or model access."
-        elif isinstance(e, openai.NotFoundError):
+        elif isinstance(e, NotFoundError):
             error_message = f"Model '{model}' not found or Base URL for '{provider}' is incorrect/incompatible."
-        elif isinstance(e, openai.RateLimitError):
+        elif isinstance(e, RateLimitError):
             error_message = "Rate limit exceeded. Please wait and try again."
-        elif isinstance(e, openai.APIConnectionError):
+        elif isinstance(e, APIConnectionError):
             error_message = f"Could not connect to the API endpoint for '{provider}'. Check network or Base URL."
 
         return jsonify({
@@ -567,6 +674,20 @@ def test_connection():
             "message": error_message,
             "processing_time_seconds": round(duration, 2)
         }), 500
+
+
+# --- Custom Exception for API Errors ---
+class ProviderAPIError(Exception):
+    """Custom exception for critical API errors from providers."""
+    def __init__(self, message, status_code=None, provider=None, model=None):
+        super().__init__(message)
+        self.status_code = status_code
+        self.message = message
+        self.provider = provider
+        self.model = model
+
+    def __str__(self):
+        return f"ProviderAPIError(provider={self.provider}, model={self.model}, status={self.status_code}): {self.message}"
 
 
 # --- Main Execution ---
