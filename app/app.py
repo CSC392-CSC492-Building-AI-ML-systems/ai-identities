@@ -138,7 +138,7 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
         ProviderAPIError: If a critical, non-transient error occurs during API calls (e.g., Auth, 422).
     """
     responses = []
-    prompt = "Describe the earth using only 10 adjectives. You can only use ten words, each separated by a comma."
+    prompt = "What are the 15 best words to describe the Earth? Write only those words on one line, in order from highest ranked to lowest ranked, each separated by the symbol \"|\"."
 
     # Validate and adjust parameters
     temperature = max(0.0, min(temperature, 2.0)) # Allow up to 2.0 initially
@@ -375,7 +375,6 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
 
 
 # --- Response Processing ---
-# (Keep process_responses function as it is)
 def process_responses(responses):
     all_words = []
     processed_count = 0
@@ -389,26 +388,10 @@ def process_responses(responses):
             continue
 
         processed_count += 1
-        words_text = response.lower().strip()
-        words_text = re.sub(r'^(here are|okay,? here are|sure,? here are|here\'s a list of)?\s*(\d+\s+)?(adjectives|words)?\s*[:\-]*\s*', '', words_text, flags=re.IGNORECASE)
-        words_text = re.sub(r'^\s*\d+\.?\s*', '', words_text)
-        words_text = re.sub(r'\s*\d+\.?\s*$', '', words_text)
-        words_text = re.sub(r'\s*\d+[\.\)]\s*', ',', words_text)
-        words_text = re.sub(r'[\n;]+', ',', words_text)
-
-        extracted_in_response = 0
-        potential_words = words_text.split(',')
-        for word in potential_words:
-            cleaned_word = word.strip()
-            cleaned_word = re.sub(r'^[^\w]+|[^\w]+$', '', cleaned_word) # Punctuation from ends only
-            if cleaned_word and len(cleaned_word) < 30:
-                all_words.append(cleaned_word)
-                extracted_in_response += 1
-            elif cleaned_word:
-                app.logger.debug(f"Skipping potentially invalid word: '{cleaned_word[:50]}...'")
-
-        if extracted_in_response == 0 and response.strip():
-            app.logger.debug(f"Response '{response[:50]}...' yielded no words after cleaning.")
+        # Extract words using the regex
+        words = re.findall(r'(?:\d+\.\s*)?([A-Za-z]+)(?=\s*\||\s*$)', response)
+        # Convert to lowercase and add to list
+        all_words.extend(word.lower() for word in words)
 
     word_frequencies = Counter(all_words)
     app.logger.info(f"Processed {processed_count} valid responses (skipped {skipped_count}). Found {len(word_frequencies)} unique words. Total word occurrences: {len(all_words)}")
