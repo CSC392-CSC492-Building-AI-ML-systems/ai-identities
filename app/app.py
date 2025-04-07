@@ -1,5 +1,3 @@
-# --- START OF REFACTORED FILE app.py ---
-
 from flask import Flask, render_template, request, jsonify
 import numpy as np
 import pickle
@@ -7,17 +5,23 @@ import os
 import re
 import threading
 import time
+import uuid
 from collections import Counter
 import logging
-from logging.handlers import RotatingFileHandler # Keep if needed for local, but careful in serverless
+from logging.handlers import RotatingFileHandler
 import sys
 import sklearn
 from openai import APIStatusError, APIConnectionError, RateLimitError, AuthenticationError, PermissionDeniedError, NotFoundError, OpenAI
 
 app = Flask(__name__)
 
+# --- Task Management Store (In-Memory) ---
+# WARNING: This in-memory store is simple but will be lost if the server restarts.
+# For production, use a database, cache (like Redis), or a more robust task queue system.
+tasks = {}
+task_lock = threading.Lock() # To ensure thread-safe access to the tasks dictionary
+
 # --- Logging Configuration ---
-# (Keep your existing logging setup, ensuring it works in your target environment)
 log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 console_handler = logging.StreamHandler(sys.stdout)
 console_handler.setFormatter(log_formatter)
@@ -32,7 +36,6 @@ app.logger.info(f"Logging configured. Level: {log_level_name}. Handler: Console.
 
 
 # --- Constants ---
-# (Keep TRAINING_WORDS_LIST, TRAINING_WORDS_DICT, LIST_OF_MODELS as they are)
 TRAINING_WORDS_LIST = ['life-filled', 'home.', 'wondrous', 'immense', 'ever-changing.', 'massive',
                        'enigmatic', 'complex.', 'finite.\n\n\n\n', 'lively',
                        "here'sadescriptionofearthusingtenadjectives", 'me', 'dynamic', 'beautiful',
@@ -74,7 +77,6 @@ LIST_OF_MODELS = ["chatgpt-4o-latest", "DeepSeek-R1-Distill-Llama-70B", "DeepSee
                   "Sky-T1-32B-Preview", "WizardLM-2-8x22B"]
 
 # --- Provider Base URL Mapping ---
-# Map provider names (lowercase) to their OpenAI-compatible base URLs
 PROVIDER_BASE_URLS = {
     "openai": None, # Standard OpenAI API uses default base URL
     "google": "https://generativelanguage.googleapis.com/v1beta/openai/",
@@ -101,7 +103,6 @@ def load_model():
 classifier = load_model()
 
 # --- Feature Preparation ---
-# (Keep prepare_features function as it is)
 def prepare_features(word_frequencies):
     features = np.zeros((1, len(TRAINING_WORDS_LIST)))
     total_freq = sum(word_frequencies.values())
@@ -118,9 +119,9 @@ def prepare_features(word_frequencies):
     return features
 
 
-def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperature=0.7):
+def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperature=0.7, progress_callback=None, task_id=None):
     """
-    Query the LLM using the OpenAI SDK, configuring base_url for different providers.
+    Query the LLM using the OpenAI SDK, configure base_url, and report progress.
     Propagates critical errors by raising ProviderAPIError.
 
     Args:
@@ -128,8 +129,10 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
         provider: Provider name (e.g., 'openai', 'anthropic', 'google', 'deepinfra', 'mistral')
         model: Model identifier to query
         num_samples: Number of samples to collect (10-1000)
-        batch_size: Number of requests to send in parallel (1-20)
-        temperature: Controls randomness (0=deterministic, 2=most random)
+        batch_size: Number of parallel requests (1-20)
+        temperature: Controls randomness
+        progress_callback: Optional function to call with (completed_count, total_samples)
+        task_id: Optional task ID for logging context
 
     Returns:
         List of responses from the LLM.
@@ -141,14 +144,15 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
     prompt = "What are the 15 best words to describe the Earth? Write only those words on one line, in order from highest ranked to lowest ranked, each separated by the symbol \"|\"."
 
     # Validate and adjust parameters
-    temperature = max(0.0, min(temperature, 2.0)) # Allow up to 2.0 initially
-    num_samples = max(10, min(num_samples, 1000))
-    batch_size = max(1, min(batch_size, 20)) # Consider adjusting based on provider limits
+    temperature = max(0.0, min(temperature, 2.0))
+    num_samples = max(10, min(num_samples, 10))
+    batch_size = max(1, min(batch_size, 20))
 
     provider_lower = provider.lower()
     base_url = PROVIDER_BASE_URLS.get(provider_lower)
 
-    app.logger.info(f"Starting LLM query: Provider={provider_lower}, Model={model}, Samples={num_samples}, BatchSize={batch_size}, Temp={temperature}, BaseURL={base_url or 'Default OpenAI'}")
+    log_prefix = f"[Task={task_id}] " if task_id else ""
+    app.logger.info(f"{log_prefix}Starting LLM query: Provider={provider_lower}, Model={model}, Samples={num_samples}, BatchSize={batch_size}, Temp={temperature}, BaseURL={base_url or 'Default OpenAI'}")
 
     # --- Provider Specific Configuration ---
     # Anthropic requires specific headers when using its native API via an OpenAI client proxy/adapter
@@ -165,48 +169,46 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
         # If using a proxy that translates, 'max_tokens' might work.
         # If hitting native endpoint via adapter, might need custom logic.
         # For simplicity here, we'll *assume* 'max_tokens' works via the chosen base_url.
-        app.logger.warning("Attempting Anthropic call via OpenAI client. Requires compatible endpoint/proxy. Using standard 'max_tokens' parameter.")
-        # api_params["max_tokens_to_sample"] = 100 # Example if native param needed
-
+        app.logger.warning(f"{log_prefix}Attempting Anthropic call via OpenAI client. Requires compatible endpoint/proxy.")
     if provider_lower == 'google':
         # The specified Google base URL might expect a different API structure (generateContent)
         # and model name format (e.g., "models/gemini-1.5-flash-latest").
         # This might fail if 'model' is passed as 'gemini-1.5-flash'.
-        app.logger.warning("Attempting Google call via OpenAI client. Base URL might expect different API structure/model format (e.g., 'models/gemini...').")
-        # Google might use 'maxOutputTokens' instead of 'max_tokens'.
-        # Adjust model name if needed based on proxy/endpoint behavior:
-        # if not model.startswith("models/"):
-        #     model = f"models/{model}" # Example adaptation
+        app.logger.warning(f"{log_prefix}Attempting Google call via OpenAI client. Base URL might expect different API structure/model format.")
 
-    # Use locks for thread-safe list append
-    lock = threading.Lock()
+    # Locks and shared state for this specific query batch
+    response_lock = threading.Lock()
+    progress_lock = threading.Lock() # Lock specifically for updating completed_count
     threads = []
     first_critical_error = None # Shared variable to store the first critical error
+    completed_count = 0 # Track successful responses within this query_llm call
 
     def send_single_request(attempt_index):
-        nonlocal responses, first_critical_error # Allow modification of outer scope variables
+        nonlocal responses, first_critical_error, completed_count # Allow modification of outer scope variables
 
         # Check if a critical error has already been flagged by another thread
-        with lock:
+        with response_lock:
             if first_critical_error is not None:
                 return # Stop this thread early if another thread hit a critical error
 
+        # --- Client Initialization ---
         try:
             client = OpenAI(
                 api_key=api_key,
                 base_url=base_url,
                 default_headers=default_headers,
-                timeout=5, # Set a request timeout
+                timeout=5,
             )
         except Exception as client_err:
-            app.logger.error(f"[Req {attempt_index+1}] Failed to initialize OpenAI client for {provider_lower}: {client_err}", exc_info=False)
+            msg = f"Failed to initialize API client: {client_err}"
+            app.logger.error(f"{log_prefix}[Req {attempt_index+1}] {msg}", exc_info=False)
             # Consider this a critical configuration error
-            with lock:
+            with response_lock:
                 if first_critical_error is None:
-                    first_critical_error = ProviderAPIError(
-                        f"Failed to initialize API client: {client_err}", provider=provider_lower, model=model)
+                    first_critical_error = ProviderAPIError(msg, provider=provider_lower, model=model)
             return
 
+        # --- API Call and Error Handling ---
         try:
             request_start_time = time.time()
             response_obj = client.chat.completions.create(
@@ -217,162 +219,130 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
                 # **api_params # Add provider-specific params if needed
             )
             request_duration = time.time() - request_start_time
-            app.logger.debug(f"Request {attempt_index+1} to {provider_lower}/{model} completed in {request_duration:.2f}s")
+            app.logger.debug(f"{log_prefix}Request {attempt_index+1} to {provider_lower}/{model} completed in {request_duration:.2f}s")
 
             content = None
             if response_obj.choices and response_obj.choices[0].message:
                 content = response_obj.choices[0].message.content
 
             if content:
-                with lock:
+                current_count_snapshot = 0
+                with response_lock:
                     # Only add response if no critical error has occurred
                     if first_critical_error is None:
                         responses.append(content)
+                        # Update progress safely *after* adding response
+                        with progress_lock:
+                            completed_count += 1
+                            current_count_snapshot = completed_count # Get value under lock
+
+                # Call callback *outside* locks if progress occurred
+                if progress_callback and current_count_snapshot > 0:
+                     try:
+                         # Pass current count and the target number of samples
+                         progress_callback(current_count_snapshot, num_samples)
+                     except Exception as cb_err:
+                         app.logger.error(f"{log_prefix}Error in progress callback: {cb_err}", exc_info=False)
             else:
-                app.logger.warning(f"[Req {attempt_index+1}] {provider_lower}/{model} yielded empty content. Response: {response_obj}")
+                app.logger.warning(f"{log_prefix}[Req {attempt_index+1}] {provider_lower}/{model} yielded empty content.")
 
-        # --- Specific Error Handling within Thread ---
-        # Prioritize critical errors that should stop the process
-        except AuthenticationError as e:
-            error_msg = f"Authentication Failed for {provider_lower}. Check API Key."
-            app.logger.error(f"[Req {attempt_index+1}] {error_msg}: {e}", exc_info=False)
-            with lock:
+        # --- Error Handling (Mostly same, just ensure logs have log_prefix) ---
+        # Authentication/Permission/NotFound errors
+        except (AuthenticationError, PermissionDeniedError, NotFoundError) as e:
+            error_msg_map = {
+                AuthenticationError: f"Authentication Failed for {provider_lower}. Check API Key.",
+                PermissionDeniedError: f"Permission Denied for {provider_lower}/{model}. Check permissions/access.",
+                NotFoundError: f"Model '{model}' not found via {provider_lower} or Base URL is incorrect/incompatible."
+            }
+            status_code_map = { AuthenticationError: 401, PermissionDeniedError: 403, NotFoundError: 404 }
+            error_msg = error_msg_map.get(type(e), "Authorization/Resource Error")
+            status_code = status_code_map.get(type(e))
+            app.logger.error(f"{log_prefix}[Req {attempt_index+1}] {error_msg}: {e}", exc_info=False)
+            with response_lock:
                 if first_critical_error is None:
-                    first_critical_error = ProviderAPIError(error_msg, status_code=401, provider=provider_lower, model=model)
-        except PermissionDeniedError as e:
-            error_msg = f"Permission Denied for {provider_lower}/{model}. Check API key permissions or model access."
-            app.logger.error(f"[Req {attempt_index+1}] {error_msg}: {e}", exc_info=False)
-            with lock:
-                if first_critical_error is None:
-                    first_critical_error = ProviderAPIError(error_msg, status_code=403, provider=provider_lower, model=model)
-        except NotFoundError as e:
-            error_msg = f"Model '{model}' not found via {provider_lower} or Base URL is incorrect/incompatible."
-            app.logger.error(f"[Req {attempt_index+1}] {error_msg}: {e}", exc_info=False)
-            with lock:
-                if first_critical_error is None:
-                    first_critical_error = ProviderAPIError(error_msg, status_code=404, provider=provider_lower, model=model)
+                    first_critical_error = ProviderAPIError(error_msg, status_code=status_code, provider=provider_lower, model=model)
 
-        # --- Handle APIStatusError (including 422) ---
+        # APIStatusError (422, 400, 429, 5xx, etc.)
         except APIStatusError as e:
             status_code = e.status_code
             error_msg = f"API Status Error {status_code} for {provider_lower}/{model}"
-            is_critical = False # Assume not critical unless specified
-
+            is_critical = False
             if status_code == 422:
-                detailed_message = f"Invalid request (422)"
+                detailed_message = f"Invalid request (422): {str(e)}"
                 try:
-                    # Try to parse the response body for details
-                    error_body = e.response.json() # Use response.json() which parses
-                    if isinstance(error_body, dict):
-                        # Try extracting Mistral-like detail structure
-                        if 'message' in error_body and isinstance(error_body['message'], dict) and 'detail' in error_body['message']:
-                            details = error_body['message']['detail']
-                            if isinstance(details, list) and len(details) > 0 and isinstance(details[0], dict) and 'msg' in details[0]:
-                                param_info = details[0].get('loc', [])
-                                param_str = " -> ".join(map(str, param_info)) if param_info else "parameter"
-                                detailed_message = f"Invalid request parameter (422): {details[0]['msg']} (Location: {param_str})"
-                            # Fallback to top-level message if detail parsing fails
-                            elif 'message' in error_body:
-                                detailed_message = f"Invalid request (422): {error_body.get('message', str(e))}"
-
-                        # Generic fallback if structure is different but body exists
-                        elif 'message' in error_body:
-                            detailed_message = f"Invalid request (422): {error_body.get('message', str(e))}"
-                        else: # If body is dict but no 'message' key
-                            detailed_message = f"Invalid request (422): {str(error_body)}"
-
-                    else: # If body isn't a dict
-                        detailed_message = f"Invalid request (422): {e.response.text[:200] if e.response.text else str(e)}"
-
-                except Exception as parse_err:
-                    app.logger.warning(f"[Req {attempt_index+1}] Could not parse detailed 422 error body: {parse_err}. Raw text: {e.response.text[:200]}", exc_info=False)
-                    detailed_message = f"Invalid request (422): {str(e)}" # Fallback to default openai lib message
-
+                    error_body = e.response.json()
+                    detailed_message = f"Invalid request (422): {error_body.get('message', str(e))}"
+                except Exception: pass # Ignore parsing errors
                 error_msg = detailed_message
-                is_critical = True # 422 indicates a problem with the request itself
-
-            elif status_code == 400: # Bad Request - Often similar to 422
+                is_critical = True
+            elif status_code == 400:
                 error_msg = f"Bad Request (400) for {provider_lower}/{model}. Check parameters/request format."
                 is_critical = True
-            elif status_code == 429: # Rate Limit Error - Log but don't treat as critical failure for the whole process
+            elif status_code == 429:
                 error_msg = f"Rate Limit Exceeded (429) for {provider_lower}/{model}. Request failed."
-                app.logger.warning(f"[Req {attempt_index+1}] {error_msg}", exc_info=False) # Log as warning
-                is_critical = False # Allow other requests to proceed
-            elif status_code >= 500: # Server Errors - Log but don't treat as critical failure (might be transient)
+                app.logger.warning(f"{log_prefix}[Req {attempt_index+1}] {error_msg}", exc_info=False)
+                is_critical = False
+            elif status_code >= 500:
                 error_msg = f"Server Error ({status_code}) from {provider_lower}/{model}. Request failed."
-                app.logger.warning(f"[Req {attempt_index+1}] {error_msg}: {e}", exc_info=False)
+                app.logger.warning(f"{log_prefix}[Req {attempt_index+1}] {error_msg}: {e}", exc_info=False)
                 is_critical = False
             else: # Other client-side errors (4xx)
                 error_msg = f"API Client Error ({status_code}) for {provider_lower}/{model}: {e}"
-                app.logger.error(f"[Req {attempt_index+1}] {error_msg}", exc_info=False)
-                is_critical = True # Treat other 4xx as critical by default
+                app.logger.error(f"{log_prefix}[Req {attempt_index+1}] {error_msg}", exc_info=False)
+                is_critical = True
 
-            # Store the error if it's critical and none has been stored yet
             if is_critical:
-                with lock:
+                with response_lock:
                     if first_critical_error is None:
                         first_critical_error = ProviderAPIError(error_msg, status_code=status_code, provider=provider_lower, model=model)
 
-        # Handle connection errors (potentially transient, don't mark as critical failure immediately)
+        # APIConnectionError
         except APIConnectionError as e:
-            app.logger.warning(f"[Req {attempt_index+1}] API Connection Error for {provider_lower}/{model}: {e}. Request failed.", exc_info=False)
-        # Handle other unexpected errors
+            app.logger.warning(f"{log_prefix}[Req {attempt_index+1}] API Connection Error for {provider_lower}/{model}: {e}. Request failed.", exc_info=False)
+        # Unexpected errors
         except Exception as e:
             error_msg = f"Unexpected error during API call for {provider_lower}/{model}: {type(e).__name__}"
-            app.logger.error(f"[Req {attempt_index+1}] {error_msg} - {e}", exc_info=True)
-            # Treat unexpected errors as potentially critical
-            with lock:
+            app.logger.error(f"{log_prefix}[Req {attempt_index+1}] {error_msg} - {e}", exc_info=True)
+            with response_lock:
                 if first_critical_error is None:
                     first_critical_error = ProviderAPIError(f"{error_msg}. See server logs.", status_code=500, provider=provider_lower, model=model)
 
     # --- Threading Logic ---
     try:
         for i in range(num_samples):
-            # Optimization: If a critical error occurred, stop launching new threads
-            with lock:
+            with response_lock:
                 if first_critical_error is not None:
-                    app.logger.warning(f"Stopping thread launch early due to critical error: {first_critical_error}")
+                    app.logger.warning(f"{log_prefix}Stopping thread launch early due to critical error: {first_critical_error}")
                     break
-
             thread = threading.Thread(target=send_single_request, args=(i,))
             thread.start()
             threads.append(thread)
+            if (i + 1) % batch_size == 0: time.sleep(0.1) # Simple stagger
+            elif (i + 1) % 5 == 0: time.sleep(0.03)
 
-            # Simple batching delay / stagger
-            if (i + 1) % batch_size == 0:
-                app.logger.debug(f"Launched batch of {batch_size} threads (up to {i+1}/{num_samples}). Pausing briefly...")
-                time.sleep(0.15) # Adjust delay as needed
-            elif (i+1) % 5 == 0: # Smaller stagger within batch
-                time.sleep(0.05)
-
-        # Wait for all *launched* threads to complete
-        app.logger.debug(f"Waiting for {len(threads)} launched threads to complete...")
+        app.logger.debug(f"{log_prefix}Waiting for {len(threads)} launched threads to complete...")
         for i, thread in enumerate(threads):
-            thread.join(timeout=90) # Generous timeout per thread
-            if thread.is_alive():
-                app.logger.warning(f"Thread {i+1} for {provider_lower}/{model} timed out after 90s.")
+            thread.join(timeout=90)
+            if thread.is_alive(): app.logger.warning(f"{log_prefix}Thread {i+1} timed out.")
 
         # --- Check for Critical Errors After Joining ---
-        with lock: # Read the shared variable safely
+        with response_lock:
             if first_critical_error is not None:
-                app.logger.error(f"Critical error encountered during batch API calls. Raising ProviderAPIError: {first_critical_error}")
-                raise first_critical_error # Propagate the first critical error
+                app.logger.error(f"{log_prefix}Critical error during batch API calls. Raising ProviderAPIError: {first_critical_error}")
+                raise first_critical_error
 
-        app.logger.info(f"Finished {provider_lower} query for {model}. Attempted {len(threads)} samples, successfully collected {len(responses)} responses.")
-        if len(responses) < num_samples and first_critical_error is None:
-            app.logger.warning(f"Collected fewer responses ({len(responses)}) than attempted ({len(threads)}) potentially due to non-critical errors (e.g., timeouts, rate limits, server errors).")
+        app.logger.info(f"{log_prefix}Finished query for {model}. Attempted {len(threads)} samples, successfully collected {len(responses)} responses ({completed_count} reported via callback).")
+        if len(responses) < completed_count: # Sanity check
+             app.logger.warning(f"{log_prefix}Mismatch between responses collected ({len(responses)}) and callback count ({completed_count}).")
+        if completed_count < num_samples and first_critical_error is None:
+            app.logger.warning(f"{log_prefix}Collected fewer responses ({completed_count}) than requested ({num_samples}) due to non-critical errors.")
 
-    except ProviderAPIError:
-        raise # Re-raise the explicitly caught critical error
+    except ProviderAPIError: raise
     except Exception as e:
-        # Catch unexpected errors during threading/joining itself
-        app.logger.error(f"Critical error during threading/dispatch for {provider_lower}/{model}: {str(e)}", exc_info=True)
-        # Raise a generic ProviderAPIError if something went wrong outside the API calls
+        app.logger.error(f"{log_prefix}Critical error during threading/dispatch for {provider_lower}/{model}: {str(e)}", exc_info=True)
         raise ProviderAPIError(f"Threading or dispatch error: {str(e)}", provider=provider_lower, model=model, status_code=500) from e
 
-    # Return collected responses only if no critical error was raised
     return responses
-
 
 # --- Response Processing ---
 def process_responses(responses):
@@ -401,91 +371,72 @@ def process_responses(responses):
 
     return word_frequencies
 
-# --- Flask Routes ---
+# --- Background Worker Function ---
+def run_identification_task(task_id, api_key, provider, model, num_samples, batch_size, temperature):
+    """The actual workhorse function that runs in a background thread."""
+    log_prefix = f"[Task={task_id}] "
+    app.logger.info(f"{log_prefix}Worker thread started for {provider}/{model}.")
 
-@app.route('/')
-def home():
-    app.logger.info("Serving home page")
-    return render_template('index.html')
-
-@app.route('/api/identify-model', methods=['POST'])
-def identify_model():
-    start_time = time.time()
-    app.logger.info("Received request for /api/identify-model")
-    if not request.is_json:
-        app.logger.warning("Request is not JSON")
-        return jsonify({"error": "Request must be JSON"}), 400
-
-    data = request.json
-    api_key = data.get('api_key')
-    provider = data.get('provider')
-    model = data.get('model')
-    num_samples = data.get('num_samples', 100)
-    temperature = data.get('temperature', 0.7)
-    batch_size = data.get('batch_size', 10) # Allow specifying batch size
-
-    # --- Input Validation ---
-    try:
-        num_samples = int(num_samples)
-        num_samples = min(max(num_samples, 10), 1000)
-    except (ValueError, TypeError):
-        num_samples = 100
-    try:
-        temperature = float(temperature)
-        temperature = max(0.0, min(temperature, 2.0))
-    except (ValueError, TypeError):
-        temperature = 0.7
-    try:
-        batch_size = int(batch_size)
-        batch_size = min(max(batch_size, 1), 20) # Limit batch size
-    except (ValueError, TypeError):
-        batch_size = 10 # Default if invalid
-
-    log_api_key_snippet = f"{api_key[:4]}..." if api_key and len(api_key) > 4 else "Provided" if api_key else "None"
-    app.logger.info(f"Identify request params: Provider={provider}, Model={model}, Samples={num_samples}, Temp={temperature}, Batch={batch_size}, APIKey={log_api_key_snippet}")
-
-    if not api_key or not provider or not model:
-        return jsonify({"error": "Missing API key, provider, or model"}), 400
-    if classifier is None:
-        return jsonify({"error": "Classifier model not loaded."}), 500
-
-    # Check if provider is known (optional but good)
-    if provider.lower() not in PROVIDER_BASE_URLS:
-        # We can still attempt the call if base_url is None (defaults to OpenAI)
-        # Or we can return an error if it's explicitly unknown.
-        # Let's allow attempting with default OpenAI URL if provider unknown.
-        app.logger.warning(f"Provider '{provider}' not explicitly listed. Attempting with default OpenAI base URL.")
-        # Alternatively, return error:
-        # return jsonify({"error": f"Unsupported provider: {provider}. Supported: {list(PROVIDER_BASE_URLS.keys())}"}), 400
+    def update_progress(completed, total):
+        """Callback function passed to query_llm."""
+        with task_lock:
+            if task_id in tasks:
+                tasks[task_id]['completed_samples'] = completed
+                # Update status to processing if it was pending
+                if tasks[task_id]['status'] == 'pending':
+                    tasks[task_id]['status'] = 'processing'
+                app.logger.debug(f"{log_prefix}Progress update: {completed}/{total} samples.")
+            else:
+                 app.logger.warning(f"{log_prefix}Progress update for non-existent task ID.")
 
 
     try:
-        app.logger.info(f"Starting LLM query task for {provider}/{model}...")
-        responses = query_llm(api_key, provider, model, num_samples, batch_size, temperature)
+        # 1. Query LLM with progress reporting
+        app.logger.info(f"{log_prefix}Starting LLM query...")
+        responses = query_llm(
+            api_key, provider, model,
+            num_samples, batch_size, temperature,
+            progress_callback=update_progress,
+            task_id=task_id # Pass task_id for logging context
+        )
+
+        # After query finishes, update status if still pending/processing
+        with task_lock:
+            if task_id in tasks and tasks[task_id]['status'] in ['pending', 'processing']:
+                 tasks[task_id]['status'] = 'processing' # Ensure it's marked as processing past query stage
+                 tasks[task_id]['completed_samples'] = len(responses) # Final count based on actual returns
+
 
         if not responses:
-            return jsonify({"error": f"Failed to collect responses from {provider}/{model}. Check logs."}), 500
-        app.logger.info(f"Collected {len(responses)} responses.")
+            raise ValueError(f"Failed to collect any responses from {provider}/{model}.")
+        app.logger.info(f"{log_prefix}Collected {len(responses)} responses.")
 
+        # 2. Process Responses
         word_frequencies = process_responses(responses)
         if not word_frequencies:
-            return jsonify({"error": "No valid words extracted from responses."}), 400
-        app.logger.info(f"Extracted {len(word_frequencies)} unique words.")
+            raise ValueError("No valid words extracted from responses.")
+        app.logger.info(f"{log_prefix}Extracted {len(word_frequencies)} unique words.")
 
+        # 3. Prepare Features
         features = prepare_features(word_frequencies)
         if np.sum(features) == 0:
-            app.logger.warning("Feature vector is all zeros (no overlap with training words).")
+            app.logger.warning(f"{log_prefix}Feature vector is all zeros (no overlap with training words).")
 
-        app.logger.info("Making prediction...")
+        # 4. Predict
+        if classifier is None:
+             raise RuntimeError("Classifier model is not loaded.")
+
+        app.logger.info(f"{log_prefix}Making prediction...")
         raw_prediction = classifier.predict(features)[0]
 
         prediction = raw_prediction
+        # Safely convert numpy types if needed
         if isinstance(raw_prediction, (np.integer, np.int64)): prediction = int(raw_prediction)
         elif hasattr(raw_prediction, 'item'): prediction = raw_prediction.item()
 
         class_labels = []
         if hasattr(classifier, 'classes_'): class_labels = classifier.classes_.tolist()
-        else: app.logger.warning("Classifier missing 'classes_' attribute.")
+        else: app.logger.warning(f"{log_prefix}Classifier missing 'classes_' attribute.")
 
         predicted_model = "unknown"
         predicted_index = -1
@@ -498,11 +449,11 @@ def identify_model():
                 predicted_model = class_labels[prediction]
                 predicted_index = prediction
             else:
-                app.logger.warning(f"Prediction '{prediction}' type {type(prediction)} invalid or out of range.")
+                app.logger.warning(f"{log_prefix}Prediction '{prediction}' type {type(prediction)} invalid or out of range.")
         else:
-            app.logger.error("Cannot determine model name: class labels unavailable.")
+            app.logger.error(f"{log_prefix}Cannot determine model name: class labels unavailable.")
 
-        app.logger.info(f"Predicted Model='{predicted_model}', Index={predicted_index}")
+        app.logger.info(f"{log_prefix}Predicted Model='{predicted_model}', Index={predicted_index}")
 
         confidence = 0.0
         top_predictions = []
@@ -513,20 +464,18 @@ def identify_model():
                     sorted_indices = np.argsort(probabilities)[::-1]
                     top_predictions = [
                         {"model": class_labels[i], "probability": float(probabilities[i])}
-                        for i in sorted_indices[:5]
+                        for i in sorted_indices[:5] # Keep top 5
                     ]
                     confidence = float(probabilities[predicted_index])
                     preds_log = [{'m': p['model'], 'p': f"{p['probability']:.4f}"} for p in top_predictions]
-                    app.logger.info(f"Confidence: {confidence:.4f}, Top 5: {preds_log}")
+                    app.logger.info(f"{log_prefix}Confidence: {confidence:.4f}, Top 5: {preds_log}")
                 else:
-                    app.logger.error(f"Probability array length mismatch ({len(probabilities)} vs {len(class_labels)})")
+                    app.logger.error(f"{log_prefix}Probability array length mismatch ({len(probabilities)} vs {len(class_labels)})")
             except Exception as proba_error:
-                app.logger.error(f"Error getting probabilities: {proba_error}", exc_info=False)
+                app.logger.error(f"{log_prefix}Error getting probabilities: {proba_error}", exc_info=False)
 
-        end_time = time.time()
-        duration = end_time - start_time
-        app.logger.info(f"Identify request for {provider}/{model} completed in {duration:.2f} seconds.")
 
+        # 5. Prepare Final Result
         status_message = "success"
         final_predicted_model = predicted_model
         if predicted_model == "unknown":
@@ -535,7 +484,7 @@ def identify_model():
         elif np.sum(features) == 0:
             status_message = "success_no_overlap"
 
-        model_info = {
+        result_data = {
             "provider": provider,
             "input_model": model,
             "samples_collected": len(responses),
@@ -544,20 +493,150 @@ def identify_model():
             "confidence": f"{confidence:.2%}",
             "confidence_value": confidence,
             "top_predictions": top_predictions,
-            "word_frequencies_top": dict(word_frequencies.most_common(20)),
-            "status": status_message,
-            "processing_time_seconds": round(duration, 2)
+            "word_frequencies_top": dict(word_frequencies.most_common(20)), # Keep top 20 words
+            "status": status_message, # Add overall status if needed, distinct from task status
+            # "processing_time_seconds": calculated later
         }
-        return jsonify(model_info)
 
+        # 6. Update Task State to Completed
+        with task_lock:
+            if task_id in tasks:
+                tasks[task_id]['status'] = 'completed'
+                tasks[task_id]['result'] = result_data
+                tasks[task_id]['end_time'] = time.time()
+                duration = tasks[task_id]['end_time'] - tasks[task_id]['start_time']
+                tasks[task_id]['result']['processing_time_seconds'] = round(duration, 2)
+                app.logger.info(f"{log_prefix}Task completed successfully in {duration:.2f} seconds.")
+            else:
+                app.logger.error(f"{log_prefix}Task ID disappeared before completion update.")
+
+    except ProviderAPIError as api_err: # Catch critical API errors from query_llm
+        error_message = f"API Error ({api_err.status_code}): {api_err.message}"
+        app.logger.error(f"{log_prefix}Worker failed due to ProviderAPIError: {error_message}", exc_info=False)
+        with task_lock:
+            if task_id in tasks:
+                tasks[task_id]['status'] = 'error'
+                tasks[task_id]['error_message'] = error_message
+                tasks[task_id]['end_time'] = time.time()
     except Exception as e:
-        duration = time.time() - start_time
-        app.logger.error(f"Error during identify model request ({duration:.2f}s) for {provider}/{model}: {str(e)}", exc_info=True)
-        return jsonify({
-            "error": f"An unexpected error occurred: {str(e)}",
-            "status": "error",
-            "processing_time_seconds": round(duration, 2)
-        }), 500
+        error_message = f"An unexpected error occurred: {str(e)}"
+        app.logger.error(f"{log_prefix}Worker failed: {error_message}", exc_info=True)
+        with task_lock:
+            if task_id in tasks:
+                tasks[task_id]['status'] = 'error'
+                tasks[task_id]['error_message'] = error_message
+                tasks[task_id]['end_time'] = time.time()
+
+# --- Flask Routes ---
+
+@app.route('/')
+def home():
+    app.logger.info("Serving home page")
+    return render_template('index.html')
+
+# --- Identify Model Endpoint (MODIFIED to Start Task) ---
+@app.route('/api/identify-model', methods=['POST'])
+def identify_model_start():
+    start_time = time.time()
+    app.logger.info("Received request to START /api/identify-model task")
+    if not request.is_json:
+        return jsonify({"error": "Request must be JSON"}), 400
+
+    data = request.json
+    api_key = data.get('api_key')
+    provider = data.get('provider')
+    model = data.get('model')
+    num_samples = data.get('num_samples', 100)
+    temperature = data.get('temperature', 0.7)
+    batch_size = data.get('batch_size', 10)
+
+    # --- Input Validation (same as before) ---
+    try: num_samples = min(max(int(num_samples), 10), 1000)
+    except: num_samples = 100
+    try: temperature = max(0.0, min(float(temperature), 2.0))
+    except: temperature = 0.7
+    try: batch_size = min(max(int(batch_size), 1), 20)
+    except: batch_size = 10
+
+    log_api_key_snippet = f"{api_key[:4]}..." if api_key and len(api_key) > 4 else "Provided" if api_key else "None"
+    app.logger.info(f"Identify START request params: Provider={provider}, Model={model}, Samples={num_samples}, Temp={temperature}, Batch={batch_size}, APIKey={log_api_key_snippet}")
+
+    if not api_key or not provider or not model:
+        return jsonify({"error": "Missing API key, provider, or model"}), 400
+    if classifier is None:
+        return jsonify({"error": "Classifier model not loaded."}), 500
+    if provider.lower() not in PROVIDER_BASE_URLS:
+         app.logger.warning(f"Provider '{provider}' not explicitly listed. Attempting with default OpenAI base URL.")
+
+    # --- Create and Start Task ---
+    task_id = str(uuid.uuid4())
+    task_info = {
+        "task_id": task_id,
+        "status": "pending", # Initial status
+        "provider": provider,
+        "model": model,
+        "total_samples": num_samples,
+        "completed_samples": 0,
+        "result": None,
+        "error_message": None,
+        "start_time": time.time(),
+        "end_time": None
+    }
+
+    with task_lock:
+        tasks[task_id] = task_info
+
+    app.logger.info(f"[Task={task_id}] Created task. Starting background worker...")
+
+    # Start the background worker thread
+    thread = threading.Thread(
+        target=run_identification_task,
+        args=(task_id, api_key, provider, model, num_samples, batch_size, temperature),
+        daemon=True # Allows app to exit even if thread is running (optional)
+    )
+    thread.start()
+
+    duration = time.time() - start_time
+    app.logger.info(f"[Task={task_id}] Identification task accepted and started in background ({duration:.3f}s). Returning task ID.")
+
+    # Return the Task ID immediately
+    return jsonify({"task_id": task_id}), 202 # 202 Accepted
+
+
+# --- Task Status Endpoint (NEW) ---
+@app.route('/api/task-status/<string:task_id>', methods=['GET'])
+def get_task_status(task_id):
+    app.logger.debug(f"Request received for /api/task-status/{task_id}")
+
+    with task_lock:
+        task_info = tasks.get(task_id)
+
+    if not task_info:
+        app.logger.warning(f"Task status request for unknown task_id: {task_id}")
+        return jsonify({"error": "Task not found"}), 404
+
+    status = task_info['status']
+    response_data = {"status": status}
+
+    if status == 'pending' or status == 'processing':
+        response_data["completed_samples"] = task_info.get('completed_samples', 0)
+        response_data["total_samples"] = task_info.get('total_samples', 1) # Avoid division by zero on client
+        app.logger.debug(f"Task {task_id} status: {status}, Progress: {response_data['completed_samples']}/{response_data['total_samples']}")
+    elif status == 'completed':
+        response_data["result"] = task_info.get('result')
+        app.logger.debug(f"Task {task_id} status: completed.")
+        # Optional: Clean up completed tasks after retrieval?
+        # with task_lock:
+        #     if task_id in tasks: del tasks[task_id]
+    elif status == 'error':
+        response_data["message"] = task_info.get('error_message', 'Unknown error')
+        app.logger.debug(f"Task {task_id} status: error, Message: {response_data['message']}")
+        # Optional: Clean up failed tasks?
+        # with task_lock:
+        #     if task_id in tasks: del tasks[task_id]
+
+    return jsonify(response_data)
+
 
 @app.route('/api/models', methods=['GET'])
 def get_models():
@@ -569,13 +648,10 @@ def get_models():
             known_models = classifier_classes
             if set(LIST_OF_MODELS) != set(classifier_classes):
                 app.logger.warning("Mismatch between hardcoded LIST_OF_MODELS and classifier.classes_!")
-
-    # Also return the providers we have base URLs for
     supported_providers = list(PROVIDER_BASE_URLS.keys())
-
     return jsonify({
         "models": known_models,
-        "supported_providers": supported_providers # Inform frontend about providers
+        "supported_providers": supported_providers
     })
 
 
@@ -589,7 +665,7 @@ def test_connection():
     api_key = data.get('api_key')
     provider = data.get('provider')
     model = data.get('model')
-    temperature = data.get('temperature', 0.1) # Low temp for test
+    temperature = data.get('temperature', 0.1)
 
     try: temperature = max(0.0, min(float(temperature), 1.0))
     except: temperature = 0.1
@@ -599,17 +675,13 @@ def test_connection():
 
     if not api_key or not provider or not model:
         return jsonify({"error": "Missing API key, provider, or model"}), 400
-
-    # Check if provider is known (optional)
     if provider.lower() not in PROVIDER_BASE_URLS:
         app.logger.warning(f"Provider '{provider}' not explicitly listed for test. Attempting with default OpenAI base URL.")
 
-
     try:
         app.logger.info(f"Attempting single query to test connection to {provider}/{model}")
-        # Use num_samples=1, batch_size=1, and handle retries within query_llm
-        responses = query_llm(api_key, provider, model, num_samples=1, temperature=temperature, batch_size=1)
-        app.logger.info(f"query_llm call for test connection returned: {responses}\n")
+        # Use num_samples=1, batch_size=1
+        responses = query_llm(api_key, provider, model, num_samples=1, temperature=temperature, batch_size=1) # No callback needed here
         duration = time.time() - start_time
 
         if responses and isinstance(responses[0], str) and responses[0].strip():
@@ -630,31 +702,22 @@ def test_connection():
             }), 500
         else: # No response collected
             app.logger.warning(f"Test connection failed: No response from {provider}/{model} ({duration:.2f}s). Check API key, model name, provider status, base URL compatibility.")
-            return jsonify({
-                "status": "error",
-                "message": f"Failed to get response from '{model}' via '{provider}'. Check API key, model name, Base URL, and provider status. See server logs for details.",
-                "processing_time_seconds": round(duration, 2)
-            }), 500
+            return jsonify({ "status": "error", "message": f"Failed to get response from '{model}' via '{provider}'. Check credentials, model name, Base URL, and provider status.", "processing_time_seconds": round(duration, 2) }), 500
 
+    except ProviderAPIError as api_err: # Catch specific API errors
+         duration = time.time() - start_time
+         app.logger.error(f"Test connection ProviderAPIError for {provider}/{model} ({duration:.2f}s): {api_err}", exc_info=False)
+         return jsonify({
+            "status": "error",
+            "message": f"API Error ({api_err.status_code}): {api_err.message}",
+            "processing_time_seconds": round(duration, 2)
+        }), api_err.status_code or 500
     except Exception as e:
         duration = time.time() - start_time
-        app.logger.error(f"Test connection error for {provider}/{model} ({duration:.2f}s): {str(e)}", exc_info=True)
-        # Check for specific OpenAI errors if possible to give better feedback
-        error_message = f"An unexpected error occurred: {str(e)}"
-        if isinstance(e, AuthenticationError):
-            error_message = "Authentication failed. Check your API key."
-        elif isinstance(e, PermissionDeniedError):
-            error_message = "Permission denied. Check API key permissions or model access."
-        elif isinstance(e, NotFoundError):
-            error_message = f"Model '{model}' not found or Base URL for '{provider}' is incorrect/incompatible."
-        elif isinstance(e, RateLimitError):
-            error_message = "Rate limit exceeded. Please wait and try again."
-        elif isinstance(e, APIConnectionError):
-            error_message = f"Could not connect to the API endpoint for '{provider}'. Check network or Base URL."
-
+        app.logger.error(f"Test connection unexpected error for {provider}/{model} ({duration:.2f}s): {str(e)}", exc_info=True)
         return jsonify({
             "status": "error",
-            "message": error_message,
+            "message": f"An unexpected error occurred: {str(e)}",
             "processing_time_seconds": round(duration, 2)
         }), 500
 
@@ -678,6 +741,7 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
     debug_mode = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
     app.logger.info(f"Starting Flask application. Debug mode: {debug_mode}, Port: {port}")
-    app.run(debug=debug_mode, host='0.0.0.0', port=port, use_reloader=debug_mode)
-
-# --- END OF REFACTORED FILE app.py ---
+    # Note: Flask's built-in server is not recommended for production. Use a proper WSGI server (e.g., Gunicorn, uWSGI).
+    # Also, the reloader in debug mode might interfere with background threads/in-memory state.
+    use_reloader = debug_mode and os.environ.get('WERKZEUG_RUN_MAIN') != 'true' # Avoid reloader issues with threads
+    app.run(debug=debug_mode, host='0.0.0.0', port=port, use_reloader=use_reloader) # Disable reloader if debugging threads
