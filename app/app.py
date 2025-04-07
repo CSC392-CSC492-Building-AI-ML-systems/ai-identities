@@ -128,7 +128,7 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
         api_key: API key for the provider
         provider: Provider name (e.g., 'openai', 'anthropic', 'google', 'deepinfra', 'mistral')
         model: Model identifier to query
-        num_samples: Number of samples to collect (10-1000)
+        num_samples: Number of samples to collect (10-4000)
         batch_size: Number of parallel requests (1-20)
         temperature: Controls randomness
         progress_callback: Optional function to call with (completed_count, total_samples)
