@@ -124,7 +124,7 @@ def prepare_features(word_frequencies):
 
 
 # --- Modified query_llm ---
-def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperature=0.7,
+def query_llm(api_key, provider, model, num_samples=100, temperature=0.7,
               # Add socketio instance and client session ID
               socketio_instance=None, client_sid=None):
     """
@@ -147,7 +147,6 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
 
     # Validate and adjust parameters
     temperature = max(0.0, min(temperature, 2.0))
-    num_samples = max(10, min(num_samples, 4000))
 
     provider_lower = provider.lower()
     base_url = PROVIDER_BASE_URLS.get(provider_lower)
@@ -211,11 +210,6 @@ def query_llm(api_key, provider, model, num_samples=100, batch_size=10, temperat
                     app.logger.warning(f"Non-critical: {error_msg}")
 
             emit_progress(i + 1, num_samples, f"Querying {provider_lower}/{model}...")
-
-            if (i + 1) % batch_size == 0:
-                time.sleep(0.15)
-            elif (i + 1) % 5 == 0:
-                time.sleep(0.05)
 
         emit_progress(num_samples, num_samples, "Processing responses...")
 
@@ -308,18 +302,15 @@ def identify_model():
     model = data.get('model')
     num_samples = data.get('num_samples', 100)
     temperature = data.get('temperature', 0.7)
-    batch_size = data.get('batch_size', 10)
 
     # ... (Input Validation remains the same) ...
     try: num_samples = int(num_samples); num_samples = min(max(num_samples, 10), 4000)
     except: num_samples = 100
     try: temperature = float(temperature); temperature = max(0.0, min(temperature, 2.0))
     except: temperature = 0.7
-    try: batch_size = int(batch_size); batch_size = min(max(batch_size, 1), 20)
-    except: batch_size = 10
 
     log_api_key_snippet = f"{api_key[:4]}..." if api_key and len(api_key) > 4 else "Provided" if api_key else "None"
-    app.logger.info(f"Identify request params for SID {client_sid}: Provider={provider}, Model={model}, Samples={num_samples}, Temp={temperature}, Batch={batch_size}, APIKey={log_api_key_snippet}")
+    app.logger.info(f"Identify request params for SID {client_sid}: Provider={provider}, Model={model}, Samples={num_samples}, Temp={temperature}, APIKey={log_api_key_snippet}")
 
 
     if not api_key or not provider or not model:
@@ -334,7 +325,7 @@ def identify_model():
     try:
         app.logger.info(f"Starting LLM query task for SID {client_sid} ({provider}/{model})...")
         responses = query_llm(
-            api_key, provider, model, num_samples, batch_size, temperature,
+            api_key, provider, model, num_samples, temperature,
             socketio_instance=socketio, client_sid=client_sid # Pass the correct SID
         )
 
@@ -490,7 +481,7 @@ def test_connection():
     # which is fine for the test connection as it doesn't need progress updates.
     try:
         app.logger.info(f"Attempting single query to test connection to {provider}/{model} for SID {client_sid or 'N/A'}")
-        responses = query_llm(api_key, provider, model, num_samples=1, temperature=temperature, batch_size=1)
+        responses = query_llm(api_key, provider, model, num_samples=1, temperature=temperature)
         duration = time.time() - start_time
 
         if responses and isinstance(responses[0], str) and responses[0].strip():
