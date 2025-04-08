@@ -1,3 +1,6 @@
+from eventlet import patcher
+patcher.monkey_patch()
+
 from flask_socketio import SocketIO
 from flask import Flask, render_template, request, jsonify
 import numpy as np
@@ -11,14 +14,14 @@ import logging
 from logging.handlers import RotatingFileHandler # Keep if needed for local, but careful in serverless
 import sys
 import sklearn
-from openai import APIStatusError, APIConnectionError, RateLimitError, AuthenticationError, PermissionDeniedError, NotFoundError, OpenAI
+from openai import APIStatusError, APIConnectionError, RateLimitError, AuthenticationError, PermissionDeniedError, NotFoundError, AsyncOpenAI
 
 app = Flask(__name__)
 # Add a secret key for session management if needed, and for SocketIO security
 app.config['SECRET_KEY'] = os.environ.get('FLASK_SECRET_KEY', 'your_secret_key_here!')
 # Initialize SocketIO
 # Using eventlet for async operations is generally recommended
-socketio = SocketIO(app, async_mode='eventlet')
+socketio = SocketIO(app, async_handlers=True)
 
 # --- Logging Configuration ---
 # (Keep your existing logging setup, ensuring it works in your target environment)
@@ -123,18 +126,20 @@ def prepare_features(word_frequencies):
     return features
 
 
-# --- Modified query_llm ---
-def query_llm(api_key, provider, model, num_samples=100, temperature=0.7,
-              # Add socketio instance and client session ID
-              socketio_instance=None, client_sid=None):
+async def query_llm(api_key, provider, model, num_samples=100, temperature=0.7,
+                    socketio_instance=None, client_sid=None):
     """
-    Query the LLM using the OpenAI SDK, emitting progress via SocketIO.
+    Asynchronously query the LLM using the AsyncOpenAI SDK, emitting progress via SocketIO.
     Propagates critical errors by raising ProviderAPIError.
 
     Args:
-        # ... (existing args) ...
-        socketio_instance: The Flask-SocketIO instance.
-        client_sid: The unique session ID of the client requesting the operation.
+        api_key: API key for the provider
+        provider: Name of the LLM provider
+        model: Model identifier
+        num_samples: Number of samples to generate
+        temperature: Temperature parameter for generation
+        socketio_instance: The Flask-SocketIO instance
+        client_sid: The unique session ID of the client
 
     Returns:
         List of responses from the LLM.
@@ -158,32 +163,37 @@ def query_llm(api_key, provider, model, num_samples=100, temperature=0.7,
     if provider_lower == 'google':
         app.logger.warning("Google call via OpenAI client may need custom API structure.")
 
-    def emit_progress(current, total, message):
+    def emit_progress_sync(current, total, message):
+        try:
+            socketio_instance.emit('progress', {
+                'current': current,
+                'total': total,
+                'message': message
+            }, room=client_sid)
+        except Exception as e:
+            app.logger.error(f"Emit failed to {client_sid}: {e}")
+
+    async def emit_progress(current, total, message):
         if socketio_instance and client_sid:
-            try:
-                socketio_instance.emit('progress', {
-                    'current': current,
-                    'total': total,
-                    'message': message
-                }, room=client_sid)
-                app.logger.debug(f"Progress to {client_sid}: {current}/{total} - {message}")
-            except Exception as e:
-                app.logger.error(f"Emit failed to {client_sid}: {e}", exc_info=False)
+            socketio_instance.start_background_task(
+                emit_progress_sync,
+                current, total, message
+            )
 
-    emit_progress(0, num_samples, f"Starting queries for {provider}/{model}...")
+    await emit_progress(0, num_samples, f"Starting queries for {provider}/{model}...")
 
-    client = OpenAI(
+    async_client = AsyncOpenAI(
         api_key=api_key,
         base_url=base_url,
         default_headers=default_headers,
-        timeout=15,
+        timeout=15.0,
         max_retries=10
     )
 
     try:
         for i in range(num_samples):
             try:
-                response = client.chat.completions.create(
+                response = await async_client.chat.completions.create(
                     model=model,
                     messages=[{"role": "user", "content": prompt}],
                     temperature=temperature,
@@ -204,20 +214,17 @@ def query_llm(api_key, provider, model, num_samples=100, temperature=0.7,
                 error_msg = f"[{i+1}] Error from {provider_lower}/{model}: {type(e).__name__} - {str(e)[:200]}"
                 if is_critical:
                     app.logger.error(f"Critical: {error_msg}")
-                    emit_progress(i, num_samples, f"Error: {error_msg}")
+                    await emit_progress(i, num_samples, f"Error: {error_msg}")
                     raise ProviderAPIError(error_msg, status_code=status_code, provider=provider_lower, model=model)
                 else:
                     app.logger.warning(f"Non-critical: {error_msg}")
 
-            emit_progress(i + 1, num_samples, f"Querying {provider_lower}/{model}...")
+            await emit_progress(i + 1, num_samples, f"Querying {provider_lower}/{model}...")
 
-        emit_progress(num_samples, num_samples, "Processing responses...")
+        await emit_progress(num_samples, num_samples, "Processing responses...")
 
     finally:
-        try:
-            client.close()
-        except Exception as e:
-            app.logger.warning(f"Error closing client: {e}", exc_info=False)
+        await async_client.close()
 
     app.logger.info(f"Finished {len(responses)} responses for SID {client_sid}")
     return responses
@@ -275,9 +282,8 @@ def home():
     # session['user_sid'] = request.sid # Requires app.config['SECRET_KEY']
     return render_template('index.html')
 
-# --- Modified identify_model route ---
 @app.route('/api/identify-model', methods=['POST'])
-def identify_model():
+async def identify_model():
     start_time = time.time()
 
     if not request.is_json:
@@ -324,7 +330,7 @@ def identify_model():
 
     try:
         app.logger.info(f"Starting LLM query task for SID {client_sid} ({provider}/{model})...")
-        responses = query_llm(
+        responses = await query_llm(
             api_key, provider, model, num_samples, temperature,
             socketio_instance=socketio, client_sid=client_sid # Pass the correct SID
         )
@@ -393,7 +399,7 @@ def identify_model():
         elif np.sum(features) == 0: status_message = "success_no_overlap"
 
         # Emit final 'complete' state via socket? Optional, as HTTP response signals end.
-        socketio.emit('progress', {'current': num_samples, 'total': num_samples, 'message': 'Complete!'}, room=client_sid)
+        socketio.emit('progress', {'current': num_samples, 'total': num_samples, 'message': 'Complete!'})
 
         model_info = {
             "provider": provider, "input_model": model, "samples_collected": len(responses),
