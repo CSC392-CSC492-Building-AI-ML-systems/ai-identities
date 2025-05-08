@@ -5,3 +5,4 @@ scikit-learn
 # openai
 # anthropic
 # google-generativeai
+fastapi[standard]

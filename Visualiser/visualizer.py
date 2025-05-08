@@ -164,7 +164,7 @@ def create_visualizations(all_data, top_words_by_model, top_n=15):
 
 if __name__ == "__main__":
     # Directory containing JSON files
-    directory = "testJSON"
+    directory = "../classifiers/predictionJSON_seen"
     
     # Find all JSON files in the directory
     json_files = find_json_files(directory)

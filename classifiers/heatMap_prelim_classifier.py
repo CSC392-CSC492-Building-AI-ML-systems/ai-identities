@@ -42,16 +42,7 @@ TRAINING_WORDS_DICT = {word: idx for idx, word in enumerate(TRAINING_WORDS_LIST)
 TRAINING_WORDS_SET = set(TRAINING_WORDS_LIST)
 
 # List of models in training data with their order
-LIST_OF_MODELS = ["chatgpt-4o-latest", "DeepSeek-R1-Distill-Llama-70B", "DeepSeek-R1-Turbo",
-                 "DeepSeek-R1", "DeepSeek-V3", "gemini-1.5-flash", "gemini-2.0-flash-001",
-                 "gemma-2-27b-it", "gemma-3-27b-it", "gpt-3.5-turbo", "gpt-4.5-preview",
-                 "gpt-4o-mini", "gpt-4o", "Hermes-3-Llama-3.1-405B", "L3.1-70B-Euryale-v2.2",
-                 "L3.3-70B-Euryale-v2.3", "Llama-3.1-Nemotron-70B-Instruct",
-                 "Llama-3.2-90B-Vision-Instruct", "Llama-3.3-70B-Instruct-Turbo",
-                 "Meta-Llama-3.1-70B-Instruct-Turbo", "Mistral-Nemo-Instruct-2407",
-                 "Mixtral-8x7B-Instruct-v0.1", "MythoMax-L2-13b", "o1-mini",
-                 "Phi-4-multimodal-instruct", "phi-4", "Qwen2.5-7B-Instruct",
-                 "Sky-T1-32B-Preview", "WizardLM-2-8x22B"]
+LIST_OF_MODELS = ["chatgpt-4o-latest"]
 
 MODEL_TO_INDEX = {model: idx for idx, model in enumerate(LIST_OF_MODELS)}
 MODEL_SET = set(LIST_OF_MODELS)
@@ -366,7 +357,7 @@ def predict_model(clf, word_frequencies, clf_name="", json_file_path=""):
             probabilities = clf.predict_proba(features)
 
             # Get the top 5 most likely models
-            top_indices = np.argsort(probabilities[0])[-5:][::-1]
+            top_indices = np.argsort(probabilities[0])[-20:][::-1]
             top_models = [clf.classes_[i] for i in top_indices]
             top_probs = [probabilities[0][i] for i in top_indices]
 
@@ -440,8 +431,8 @@ def process_single_model_json(json_file_path):
 
 
 def main():
-    train_file_path = './heatmap_data.json'
-    validation_file_path = './test/heatmap_data_3.json'
+    train_file_path = './heatmap_data_2.json'
+    validation_file_path = './validation/heatmap_data_2.json'
     model_save_path = "mlp_classifier.pkl"
 
     # Train on one dataset and validate on another
