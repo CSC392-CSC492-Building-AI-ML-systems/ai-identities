@@ -5,215 +5,237 @@ from datetime import datetime
 import numpy as np
 import sqlalchemy as sa
 from sqlalchemy import create_engine, Column, String, JSON, Float, Text
-from sqlalchemy.orm import declarative_base  # Updated import to avoid deprecation warning
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 import math
-from scipy.spatial.distance import cosine
+from scipy.spatial.distance import cosine, jaccard, cityblock
+import scipy.stats as stats
 
-from visualizer import compare_models  # Direct visualizer integration
+from visualizer import compare_models
 from heatMap_prelim_classifier import predict_model
 
 Base = declarative_base()
 
-class ModelIdentity(Base):
-    __tablename__ = 'model_identities'
+class EnhancedModelIdentity(Base):
+    __tablename__ = 'enhanced_model_identities'
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     model_name = Column(String, index=True)
     base_fingerprint = Column(JSON)
     current_fingerprint = Column(JSON)
     statistical_profile = Column(JSON)
-    classifier_data = Column(JSON)
-    visualizations = Column(JSON)
+    drift_metrics = Column(JSON)
+    distinctive_words = Column(JSON)
     created_at = Column(sa.DateTime, default=datetime.now)
     drift_history = Column(JSON)
 
-class UnifiedModelManager:
-    def __init__(self, db_uri="postgresql://postgres:PostgresHuh@localhost/model_DB", vis_dir="visualizations"):
+class EnhancedModelManager:
+    def __init__(self, db_uri="postgresql://postgres:PostgresHuh@localhost/model_DB", 
+                 vis_dir="visualizations", drift_sensitivity=0.75):
         self.engine = create_engine(db_uri)
         self.vis_dir = vis_dir
         os.makedirs(self.vis_dir, exist_ok=True)
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
         self.classifier = self._load_classifier()
-        self.drift_threshold = 0.92
+        self.drift_sensitivity = drift_sensitivity
 
     def _load_classifier(self):
         with open('classifiers/mlp_classifier.pkl', 'rb') as f:
             return pickle.load(f)
 
-    def _create_fingerprint(self, word_freq, top_n=30):
+    def _create_advanced_fingerprint(self, word_freq, top_n=50):
+        """
+        Create a multi-dimensional fingerprint with additional metrics
+        """
         total = sum(word_freq.values())
-        return {word: count/total for word, count in 
+        
+        # Basic frequency normalization
+        normalized_freq = {word: count/total for word, count in 
                 sorted(word_freq.items(), key=lambda x: x[1], reverse=True)[:top_n]}
-
-    def _calculate_stats(self, word_freq):
-        counts = list(word_freq.values())
-        sorted_counts = sorted(counts, reverse=True)
-        total = sum(counts)
         
-        # Entropy calculation
-        probs = [c/total for c in counts if c > 0]
-        entropy = -sum(p * math.log2(p) for p in probs)
+        # Rarity scoring (inverse frequency)
+        rarity_scores = {}
+        total_words = sum(word_freq.values())
+        for word, count in word_freq.items():
+            occurrence_prob = count / total_words
+            rarity_scores[word] = -math.log(occurrence_prob + 1e-10)
         
-        # Gini coefficient
-        # source: stackoverflow.com/questions/39512260/calculating-gini-coefficient-in-python-numpy
-        gini = 1 - sum((c/total)**2 for c in counts)
+        # Log frequency to capture power law distribution
+        log_freq = {word: math.log(count + 1) for word, count in word_freq.items()}
         
-        return {
-            'entropy': entropy,
-            'gini': gini,
-            'top10_ratio': sum(sorted_counts[:10])/total,
-            'temp_sensitivity': (sorted_counts[0] - sorted_counts[1])/total if len(sorted_counts) >1 else 0
-        }
-
-    
-    def _generate_visualizations(self, word_freq, model_id):
-        temp_json = f"temp_{model_id}.json"
-        with open(temp_json, 'w') as f:
-            json.dump(word_freq, f)
+        # Distinctive word identification
+        distinctive_words = {}
+        threshold = np.percentile(list(rarity_scores.values()), 90)
+        for word, rarity in rarity_scores.items():
+            if rarity > threshold:
+                distinctive_words[word] = {
+                    'count': word_freq.get(word, 0),
+                    'rarity_score': rarity
+                }
         
-        compare_models([temp_json], top_n=30)
-        
-        prefix = f"{model_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}"
-        vis_paths = {
-            'heatmap': os.path.join(self.vis_dir, f"{prefix}_heatmap.png"),
-            'top_words': os.path.join(self.vis_dir, f"{prefix}_top_words.png")
-        }
-        
-        os.rename('top_words_by_model.png', vis_paths['top_words'])
-        os.rename('word_frequency_heatmap.png', vis_paths['heatmap'])
-        
-        if os.path.exists('model_pca.png'):
-            vis_paths['pca'] = os.path.join(self.vis_dir, f"{prefix}_pca.png")
-            os.rename('model_pca.png', vis_paths['pca'])
-        
-        return vis_paths
-
-    def process_model_run(self, word_freq):
-        """Full processing pipeline for new data"""
-        session = self.Session()
-        
-        # Define result values to return after session closes
-        record_id = None
-        record_drift_history = []
-        record_stats = {}
-        add_new_record = True  # Flag to control whether to add new record
+        # Compute Zipf's law fit
+        sorted_counts = sorted(word_freq.values(), reverse=True)
+        rank_freq = [(rank+1, freq) for rank, freq in enumerate(sorted_counts)]
+        log_rank = np.log([r for r, _ in rank_freq])
+        log_freq = np.log([f for _, f in rank_freq])
         
         try:
-            # Get model prediction from our good ol classifier
+            slope, intercept, r_value, _, _ = stats.linregress(log_rank, log_freq)
+            zipf_fit = {
+                'slope': slope,
+                'intercept': intercept,
+                'r_squared': r_value**2
+            }
+        except Exception:
+            zipf_fit = None
+        
+        return {
+            'normalized_freq': normalized_freq,
+            'rarity_scores': rarity_scores,
+            'log_freq': log_freq,
+            'distinctive_words': distinctive_words,
+            'zipf_fit': zipf_fit,
+            'hapax_legomena_ratio': self._compute_hapax_legomena(word_freq)
+        }
+
+    def _compute_hapax_legomena(self, word_freq):
+        """
+        Compute the ratio of words that appear only once (hapax legomena)
+        """
+        total_words = sum(word_freq.values())
+        hapax_words = sum(1 for count in word_freq.values() if count == 1)
+        return hapax_words / total_words if total_words > 0 else 0
+
+    def _compute_drift_metrics(self, base_fingerprint, current_fingerprint):
+        """
+        Compute multiple drift metrics with weighted combination
+        """
+        # Cosine similarity on normalized frequencies
+        cosine_dist = 1 - cosine(
+            list(base_fingerprint['normalized_freq'].values())[:15], 
+            list(current_fingerprint['normalized_freq'].values())[:15]
+        )
+        
+        # Manhattan distance on rarity scores
+        manhattan_dist = 1 - cityblock(
+            list(base_fingerprint['rarity_scores'].values())[:15],
+            list(current_fingerprint['rarity_scores'].values())[:15]
+        )
+        
+        # Jaccard similarity on distinctive words
+        base_distinct_words = set(base_fingerprint['distinctive_words'].keys())
+        current_distinct_words = set(current_fingerprint['distinctive_words'].keys())
+        jaccard_dist = jaccard(base_distinct_words, current_distinct_words)
+        
+        # Zipf's law fit comparison
+        zipf_drift = abs(
+            base_fingerprint['zipf_fit']['slope'] - 
+            current_fingerprint['zipf_fit']['slope']
+        ) if base_fingerprint['zipf_fit'] and current_fingerprint['zipf_fit'] else 0
+        
+        # Weighted drift score
+        drift_score = (
+            0.4 * cosine_dist + 
+            0.3 * manhattan_dist + 
+            0.2 * (1 - jaccard_dist) + 
+            0.1 * (1 - zipf_drift)
+        )
+        
+        return {
+            'cosine_similarity': cosine_dist,
+            'manhattan_distance': manhattan_dist,
+            'jaccard_similarity': 1 - jaccard_dist,
+            'zipf_drift': zipf_drift,
+            'combined_drift_score': drift_score
+        }
+
+    def process_model_run(self, word_freq):
+        """Enhanced processing pipeline for new data"""
+        session = self.Session()
+        
+        try:
+            # Classifier prediction
             classifier_pred = predict_model(self.classifier, word_freq)
             
-            # IMP: Extra file for now, a copy of the word freq created in generate_visualization, gets removed later
-            temp_json = f"temp_{classifier_pred}.json"
-            fingerprint = self._create_fingerprint(word_freq)
-            stats = self._calculate_stats(word_freq)
+            # Create advanced fingerprint
+            current_fingerprint = self._create_advanced_fingerprint(word_freq)
             
-            # Generate visualizations
-            # TODO: Can be made so that we dont need to generate visualizations, have done that
-            # TODO: extensively in the past, but for now, I can't remove it since temp_json is created
-            # TODO: in generate_visualizations function, and needed later
-            vis_paths = self._generate_visualizations(word_freq, classifier_pred)
-            
-            # IMP: Check if the predicted model already exists in the database
-            existing = session.query(ModelIdentity).filter(
-                ModelIdentity.model_name == classifier_pred
-            ).order_by(ModelIdentity.created_at.desc()).first()
+            # Find existing model record
+            existing = session.query(EnhancedModelIdentity).filter(
+                EnhancedModelIdentity.model_name == classifier_pred
+            ).order_by(EnhancedModelIdentity.created_at.desc()).first()
 
-            new_record = ModelIdentity(
-                model_name=classifier_pred,
-                classifier_data=classifier_pred,
-                statistical_profile=stats,
-                current_fingerprint=fingerprint,
-                base_fingerprint=fingerprint,  # Initalizing step, may or may not be updated depending on drift
-                visualizations=vis_paths,
-                drift_history=[]
+            # Compute drift metrics if base fingerprint exists
+            drift_metrics = None
+            if existing and existing.base_fingerprint:
+                drift_metrics = self._compute_drift_metrics(
+                    existing.base_fingerprint, 
+                    current_fingerprint
+                )
+            
+            # Determine if this is a new model variant
+            is_new_variant = (
+                not existing or 
+                (drift_metrics and drift_metrics['combined_drift_score'] > self.drift_sensitivity)
             )
-
-            if existing:
-                if existing.base_fingerprint:  # Sanity check
-                    # Drift
-                    drift_score = 1 - cosine(
-                        list(existing.base_fingerprint.values()),
-                        list(fingerprint.values())
-                    )
-                    
-                    # If drift score is above threshold, we keep the existing model
-                    # and just update its drift history
-                    if drift_score >= self.drift_threshold:
-                        print(f"Low drift detected ({drift_score:.4f}): Updating existing model rather than creating new one")
-                        # Updating the existing model record's drift history here
-                        existing.drift_history = existing.drift_history + [drift_score] if existing.drift_history else [drift_score]
-                        # Update the record but don't add a new one
-                        session.add(existing)
-                        add_new_record = False
-                        
-                        # Set return values to use existing model's data
-                        record_id = existing.id
-                        record_drift_history = existing.drift_history.copy() if existing.drift_history else []
-                        record_stats = dict(existing.statistical_profile) if existing.statistical_profile else {}
-                    else:
-                        # High drift - create new model with new ID but link drift history
-                        print(f"High drift detected ({drift_score:.4f}): Creating new model variant")
-                        new_record.drift_history = existing.drift_history + [drift_score] if existing.drift_history else [drift_score]
-                        new_record.base_fingerprint = fingerprint  # New base fingerprint for this variant
-                        new_record.id = str(uuid.uuid4())  # Generate new ID
-                else:
-                    # Handle case where existing model doesn't have base_fingerprint
-                    new_record.drift_history = existing.drift_history if existing.drift_history else []
-                    new_record.base_fingerprint = fingerprint  # Use current fingerprint as base
-
             
-            # TODO: Maybe make it so that since this was predicted as the same model, \
-            # TODO: but somehow has a different drift score (look into the why), we say that its a "finetuned"
-            # TODO: version of <existing model name>.
-            # Add the new reocrd to the session
-            if add_new_record:
+            # Create new record or update existing
+            if is_new_variant:
+                new_record = EnhancedModelIdentity(
+                    model_name=classifier_pred,
+                    base_fingerprint=current_fingerprint,
+                    current_fingerprint=current_fingerprint,
+                    statistical_profile=current_fingerprint,
+                    drift_metrics=drift_metrics,
+                    distinctive_words=current_fingerprint['distinctive_words'],
+                    drift_history=[drift_metrics['combined_drift_score']] if drift_metrics else []
+                )
                 session.add(new_record)
                 record_id = new_record.id
-                record_drift_history = new_record.drift_history.copy() if new_record.drift_history else []
-                record_stats = dict(new_record.statistical_profile) if new_record.statistical_profile else {}
+            else:
+                existing.current_fingerprint = current_fingerprint
+                existing.drift_metrics = drift_metrics
+                if drift_metrics:
+                    existing.drift_history.append(drift_metrics['combined_drift_score'])
+                record_id = existing.id
             
             session.commit()
             
             return {
                 'id': record_id,
-                'drift_history': record_drift_history,
-                'stats': record_stats
+                'model': classifier_pred,
+                'drift_metrics': drift_metrics,
+                'is_new_variant': is_new_variant
             }
 
         finally:
             session.close()
-            # Remove the temporary file now
-            for f in [temp_json, 'heatmap_data_2.json']:
-                if os.path.exists(f):
-                    os.remove(f)
 
-class EnhancedClassifier:
+class EnhancedModelClassifier:
     def __init__(self, manager):
         self.manager = manager
-        self.classifier = manager.classifier
 
-    def predict_with_context(self, word_freq):
-        base_pred = predict_model(self.classifier, word_freq)
-        record_data = self.manager.process_model_run(word_freq)
+    def analyze_model(self, word_freq):
+        """Comprehensive model analysis with drift detection"""
+        analysis = self.manager.process_model_run(word_freq)
         
+        # Additional detailed analysis can be added here
         return {
-            'prediction': base_pred,
-            'model_id': record_data['id'],
-            'drift_score': record_data['drift_history'][-1] if record_data['drift_history'] else 1.0,
-            'stats': record_data['stats']
+            'model_prediction': analysis['model'],
+            'model_id': analysis['id'],
+            'is_new_model_variant': analysis['is_new_variant'],
+            'drift_metrics': analysis['drift_metrics'] or {}
         }
 
-# Usage example
+# Example usage
 if __name__ == "__main__":
-    manager = UnifiedModelManager()
-    enhanced_clf = EnhancedClassifier(manager)
+    manager = EnhancedModelManager()
+    enhanced_clf = EnhancedModelClassifier(manager)
     
-    with open('classifiers/testing_IDS/t1_DeepSeek-R1-Turbo_results.json') as f:
+    # Load some test data
+    with open('classifiers/testing_IDS/Llama-3.2-90B-Vision-Instruct_results_1.0.json') as f:
         data = json.load(f)
     
-    result = enhanced_clf.predict_with_context(data)
-    print(f"Predicted: {result['prediction']}")
-    print(f"Model ID: {result['model_id']}")
-    print(f"Drift Score: {result['drift_score']:.4f}")
+    result = enhanced_clf.analyze_model(data)
+    print(json.dumps(result, indent=2))
