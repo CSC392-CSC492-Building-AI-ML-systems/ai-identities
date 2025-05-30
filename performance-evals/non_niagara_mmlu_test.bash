@@ -37,7 +37,6 @@ for i in {1..30}; do
         rm -rf eval_results
     fi
 
-<<<<<<< HEAD
     # Run the Python script with the Gemini API parameters
     if ! python3 non_niagara_mmlu_eval.py --url https://generativelanguage.googleapis.com/v1beta/models/ \
         --model gemini-2.0-flash-lite \
@@ -45,18 +44,6 @@ for i in {1..30}; do
         --verbosity 0 \
         --parallel 256 \
         --api $GEMINI_API_KEY 2>&1 | tee /dev/tty; then
-=======
-    # Run the Python script with the Mistral API parameters
-    # Replace with the desired Mistral model
-    if ! python3 non_niagara_mmlu_eval.py --url https://api.deepinfra.com/v1/openai \
-        --model meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo \
-        --category 'philosophy' \
-        --verbosity 0 \
-        --parallel 256 \
-        --api '965sMLW4RZdByVitIRgJSUMnCaoBXoXb' \
-        --output eval_results \
-        --max_iterations 499; then
->>>>>>> 4a56c59775306210a6358efed1bcdad42a754ed7
         echo "Python script exited with an error. Terminating early." | tee /dev/tty
         exit 1
     fi
