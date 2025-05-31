@@ -1,19 +1,10 @@
 #!/bin/bash
 
-# Script: non_niagara_mmlu_eval_loop.sh
-# Description: This script runs the `non_niagara_mmlu_eval.py` Python script 26 times in a loop.
-#              Before each iteration, the `eval_results` folder is deleted to ensure a clean start.
-#              All console output is redirected to `results.txt`, except for progress updates and errors.
-#              The script will terminate early if the Python program exits with an error code of 1.
-# Usage: ./mistral_mmlu_eval_loop.sh <MISTRAL_API_KEY>
-
-# Exit immediately if a command exits with a non-zero status
-
-# Store the Mistral API key from the first command-line argument
-
+. set_api_key.bash
 if ! python3 get_model_data.py --url  https://api.deepinfra.com/v1/openai   \
-    --model google/gemma-3-27b-it \
-    --api_key ''; 
+    --model YOUR_MODEL_HERE \
+    --api_key $DEEPINFRA_API_KEY \
+    --temperature 0.0; 
     then
     echo "Python script exited with an error. Terminating early." | tee /dev/tty
     exit 1
