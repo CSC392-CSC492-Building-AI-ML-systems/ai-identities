@@ -1,7 +1,7 @@
 import sys
 import os
 import json
-from collections import defaultdict
+import re
 
 def load_json(filepath):
     with open(filepath, "r") as f:
@@ -10,23 +10,31 @@ def load_json(filepath):
 def get_top_key(d):
     if not d:
         return set()
-    print(d)
     max_val = max(d.values())
     return {k for k, v in d.items() if v == max_val}
+
+def extract_temperature(filename):
+    """Extract temperature from filename assuming it ends like *_results_<temp>.json"""
+    match = re.search(r'_results_([0-9.]+)\.json$', filename)
+    if match:
+        return float(match.group(1))
+    return None
 
 def compare_jsons(target_file, folder_path):
     target_data = load_json(target_file)
     target_filename = os.path.basename(target_file)
 
-    # List all JSON files in the folder, excluding the target file
+    # List all JSON files in the folder with temp == 0, excluding the target file
     all_files = [
         os.path.join(folder_path, f)
         for f in os.listdir(folder_path)
-        if f.endswith(".json") and f != target_filename
+        if f.endswith(".json")
+        and f != target_filename
+        and extract_temperature(f) == 0.0
     ]
 
     if not all_files:
-        print("No comparison JSON files found in the folder.")
+        print("No JSON files with temperature 0 found in the folder.")
         return
 
     other_data_list = [load_json(f) for f in all_files]
@@ -51,7 +59,7 @@ def compare_jsons(target_file, folder_path):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python compare.py target.json /path/to/folder")
+        print("Usage: python compare.py path/to/target.json path/to/folder")
         sys.exit(1)
 
     target_json = sys.argv[1]
