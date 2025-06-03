@@ -14,7 +14,7 @@ prompt_set = [p.strip() for p in prompt_set if p.strip()]
 # Create a queue with each prompt 10 times
 prompt_queue = Queue()
 for prompt in prompt_set:
-    for _ in range(10):
+    for _ in range(20):
         prompt_queue.put(prompt)
 
 # Parse CLI arguments
@@ -66,6 +66,7 @@ def get_response():
         except Exception as e:
             print(f"Error: {e}")
             time.sleep(0.5)
+            get_response()
 
 def run_threads(num_threads):
     threads = []
