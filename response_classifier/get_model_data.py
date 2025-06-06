@@ -3,27 +3,11 @@ import requests
 import json
 import argparse
 import time
-import sys
-import datetime
 from tqdm import tqdm
 from constants import PROMPTS
 from collections import defaultdict, Counter
 from queue import Queue
 
-
-# Clean and prepare prompt list
-SAMPLE_SIZE = None
-unique_prompt_set = list(set(PROMPTS.split("\n")))
-if isinstance(SAMPLE_SIZE, int) and SAMPLE_SIZE > 0:
-    prompt_set = [p.strip() for p in unique_prompt_set[:SAMPLE_SIZE] if p.strip()]
-else:
-    prompt_set = [p.strip() for p in unique_prompt_set if p.strip()]
-
-# Create a queue with each prompt 10 times
-prompt_queue = Queue()
-for prompt in prompt_set:
-    for _ in range(20):
-        prompt_queue.put(prompt)
 
 # Parse CLI arguments
 parser = argparse.ArgumentParser(description="Collecting data for APIs")
@@ -31,7 +15,22 @@ parser.add_argument("--url", type=str, required=True, help="OpenAI-compatible AP
 parser.add_argument("--api_key", type=str, required=True, help="OpenAI API key")
 parser.add_argument("--model", type=str, required=True, help="Model to use for completion")
 parser.add_argument("--temperature", type=float, default=0.0, help="Sampling temperature for the model")
+parser.add_argument('--sample_size', type=int, default=None, help='Sample size for the prompt list')
 args = parser.parse_args()
+
+# Clean and prepare prompt list
+SAMPLE_SIZE = args.sample_size
+unique_prompt_set = list(set(PROMPTS.split("\n")))
+if isinstance(SAMPLE_SIZE, int) and SAMPLE_SIZE > 0:
+    prompt_set = [p.strip() for p in unique_prompt_set[:SAMPLE_SIZE] if p.strip()]
+else:
+    prompt_set = [p.strip() for p in unique_prompt_set if p.strip()]
+
+# Create a queue with each prompt 20 times
+prompt_queue = Queue()
+for prompt in prompt_set:
+    for _ in range(20):
+        prompt_queue.put(prompt)
 
 # Initialize thread-safe data structures
 lock = threading.Lock()
