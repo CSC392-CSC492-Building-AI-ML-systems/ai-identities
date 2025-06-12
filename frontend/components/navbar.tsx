@@ -80,7 +80,7 @@ export default function Navbar() {
       </div>
       <div className="flex gap-16">
         <div className="flex gap-6">
-          <Link href="/">
+          <Link href="/wiki">
             <Pill text="Wiki" />
           </Link>
           <Link href="/">
