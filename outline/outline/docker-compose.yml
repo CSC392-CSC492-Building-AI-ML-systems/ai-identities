@@ -1,0 +1,75 @@
+version: "3.8"
+
+services:
+  outline:
+    image: docker.getoutline.com/outlinewiki/outline:latest
+    container_name: outline
+    env_file: ./.env
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./data/outline:/var/lib/outline/data
+    depends_on:
+      - postgres
+      - redis
+
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis.conf:/redis.conf
+    command: ["redis-server", "/redis.conf"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 30s
+      retries: 3
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: outline
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "outline", "-U", "user"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+# Optional HTTPS if you're using a real domain with DNS configured
+# Disable or remove if you're only running locally
+#  https-portal:
+#    image: steveltn/https-portal
+#    container_name: https-portal
+#    env_file: ./.env
+#    ports:
+#      - '80:80'
+#      - '443:443'
+#    links:
+#      - outline
+#    restart: always
+#    volumes:
+#      - https-portal-data:/var/lib/https-portal
+#    healthcheck:
+#      test: ["CMD", "service", "nginx", "status"]
+#      interval: 30s
+#      timeout: 20s
+#      retries: 3
+#    environment:
+#      DOMAINS: 'docs.localhost -> http://outline:3000'
+#      STAGE: 'local'
+#      WEBSOCKET: 'true'
+#      CLIENT_MAX_BODY_SIZE: '0'
+
+volumes:
+  storage-data:
+  database-data:
+  # https-portal-data: # only needed if using https-portal
