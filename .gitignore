@@ -1,3 +1,4 @@
+# Main project .gitignore
 *.DS_Store
 /node_modules/*
 package-lock.json
@@ -5,3 +6,16 @@ package.json
 .vscode
 *.env
 *.toml
+
+# Ignore outline's build and config files
+outline/outline/dist
+outline/outline/build
+outline/outline/node_modules/
+outline/outline/.env*
+outline/outline/*.log
+outline/outline/.vscode/
+outline/outline/data/
+outline/outline/.idea
+outline/outline/*.pem
+outline/outline/*.key
+outline/outline/*.cert
