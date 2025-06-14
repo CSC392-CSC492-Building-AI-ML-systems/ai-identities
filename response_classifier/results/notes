@@ -1,0 +1,18 @@
+Test identification on the collected json of varied models and temperatures
+
+If a 0.5.json and/or 1.0.json doesnt exist, the data was not diverse enough or replaced (resulting in too many 500 server errors to complete)
+
+
+
+gemini 1.5 depricated
+
+gemini 2.0, 2.5 don't seem work
+
+gemma-1.1 replaced, gemma-2 replaced
+gemma not diverse (seemingly)
+
+
+meta-llama 405B breaking
+mistral-7B-instruct-v0.1/2 have been replaced
+
+mixtral-8x22B-Instruct-v0.1 has been replaced
