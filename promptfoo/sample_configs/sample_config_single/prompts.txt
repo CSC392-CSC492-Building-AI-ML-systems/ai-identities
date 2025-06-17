@@ -1,3 +1,0 @@
-hello, {{var1}}, this is {{var2}}
----
-hello, again {{var1}}, this is again {{var2}}

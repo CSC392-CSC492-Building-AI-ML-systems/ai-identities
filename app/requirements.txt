@@ -1,8 +1,0 @@
-flask
-numpy
-scikit-learn
-pickle-mixin
-openai
-anthropic
-google-generativeai
-fastapi[standard]

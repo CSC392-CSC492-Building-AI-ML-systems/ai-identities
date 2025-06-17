@@ -6,6 +6,7 @@ package.json
 .vscode
 *.env
 *.toml
+.idea
 
 # Ignore outline's build and config files
 outline/outline/dist
