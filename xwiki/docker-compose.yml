@@ -41,7 +41,7 @@ services:
     # Provide a name instead of an auto-generated id for xwiki data (the permanent directory in included in it)
     # configured in the Dockerfile, to make it simpler to identify in 'docker volume ls'.
     volumes:
-      - xwiki-data:/usr/local/xwiki
+      - ./xwiki-data:/usr/local/xwiki
     networks:
       - bridge
   # The container that runs the database (postgres)
@@ -49,7 +49,7 @@ services:
     image: "postgres:17"
     container_name: xwiki-postgres-db
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - ./postgres-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_ROOT_PASSWORD=${POSTGRES_ROOT_PASSWORD}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
