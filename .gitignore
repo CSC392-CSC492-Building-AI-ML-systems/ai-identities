@@ -1,11 +1,12 @@
 # Main project .gitignore
 *.DS_Store
-/node_modules/*
+*/node_modules/*
 .vscode
 *.env
 *.toml
 .idea
-
+*/postgres-data/*
+*/xwiki-data/*
 # Ignore outline's build and config files
 outline/outline/dist
 outline/outline/build
