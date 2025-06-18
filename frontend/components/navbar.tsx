@@ -72,27 +72,22 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-[#3A3E83] shadow-md px-4 py-6 flex items-center justify-between">
-      <div className="text-3xl text-white ml-8">
+    <nav className="bg-[#2D2A5A] shadow-md px-10 py-6 flex items-center justify-between border-b border-[#9290C3]">
+      <div className="text-3xl font-normal" style={{ color: '#F3F3FF' }}>
         <Link href="/">
-          <span className="font-bold">LLM</span>Detective
+          <span className="font-bold" style={{ color: '#F3F3FF' }}>LLM</span><span className="font-normal" style={{ color: '#F3F3FF' }}>Detective</span>
         </Link>
       </div>
-      <div className="flex gap-16">
-        <div className="flex gap-6">
-          <Link href="/wiki">
-            <Pill text="Wiki" />
-          </Link>
-          <Link href="/">
-            <Pill text="Identify" />
-          </Link>
-          <Link href="/">
-            <Pill text="About" />
-          </Link>
+      <div className="flex gap-32">
+        <div className="flex gap-10">
+          <Link href="/wiki" className="relative text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2 after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-[-9px] after:w-[115%] after:h-[0.2rem] after:bg-[#9290C3] after:rounded-full after:opacity-0 hover:after:opacity-100 after:transition-all after:duration-200">Wiki</Link>
+          <Link href="/identify" className="relative text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2 after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-[-9px] after:w-[115%] after:h-[0.2rem] after:bg-[#9290C3] after:rounded-full after:opacity-0 hover:after:opacity-100 after:transition-all after:duration-200">Identify</Link>
+          <Link href="/about" className="relative text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2 after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-[-9px] after:w-[115%] after:h-[0.2rem] after:bg-[#9290C3] after:rounded-full after:opacity-0 hover:after:opacity-100 after:transition-all after:duration-200">About</Link>
         </div>
         <button
           onClick={handleAuthClick}
-          className="inline-block bg-white text-black px-8 py-2 rounded-full text-sm select-none"
+          className="relative text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal bg-transparent border-none outline-none cursor-pointer px-2 after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-[-9px] after:w-[115%] after:h-[0.2rem] after:bg-[#9290C3] after:rounded-full after:opacity-0 hover:after:opacity-100 after:transition-all after:duration-200"
+          style={{ background: 'none', boxShadow: 'none' }}
         >
           Login
         </button>

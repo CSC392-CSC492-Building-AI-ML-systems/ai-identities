@@ -6,7 +6,6 @@ import { z } from 'zod';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Navbar from "@/components/navbar";
 
 const loginSchema = z.object({
     firstName: z.string().min(2, "First name must be at least 2 characters"),
@@ -66,50 +65,53 @@ export default function LoginPage() {
   if (success) return <p>Login Succesful!</p>;
 
   return (
-    <div className="min-h-screen bg-gray-950">
-        <Navbar />
-        <form onSubmit={handleSubmit(onSubmit)} className="max-w-md mx-auto mt-10 p-6 bg-gray-800 rounded shadow">
-        <h2 className="text-2xl font-bold text-white mb-4">Log In</h2>
+    <div className="min-h-screen flex items-center justify-center">
+        <form onSubmit={handleSubmit(onSubmit)} className="max-w-md w-full mt-10 p-8 rounded-xl shadow-lg" style={{ background: '#2D2A5A' }}>
+        <h2 className="text-2xl font-bold mb-6" style={{ color: '#F3F3FF' }}>Log In</h2>
 
         {/* EMAIL */}
-        <label className="block mb-2 font-semibold text-white" htmlFor="email">Email</label>
+        <label className="block mb-2 font-semibold" htmlFor="email" style={{ color: '#F3F3FF' }}>Email</label>
         <input
         id="email"
         type="email"
-        {...register("email")}        /* register adds ref, value & onChange */
-        className="w-full mb-1 px-3 py-2 border rounded"
+        {...register("email")}
+        className="w-full mb-1 px-3 py-2 rounded bg-[#393E7C] text-[#F3F3FF] border border-[#9290C3] focus:outline-none focus:ring-2 focus:ring-[#9290C3]"
         />
         {errors.email && (
-        <p className="text-red-600 text-sm mb-4">
+        <p className="text-sm mb-4" style={{ color: '#FF6B6B' }}>
             {errors.email.message}
         </p>
         )}
 
         {/* PASSWORD */}
-        <label className="block mb-2 font-semibold text-white" htmlFor="email">Password</label>
+        <label className="block mb-2 font-semibold" htmlFor="password" style={{ color: '#F3F3FF' }}>Password</label>
         <input
         id="password"
         type="password"
         {...register("password")}
-        className="w-full mb-1 px-3 py-2 border rounded"
+        className="w-full mb-1 px-3 py-2 rounded bg-[#393E7C] text-[#F3F3FF] border border-[#9290C3] focus:outline-none focus:ring-2 focus:ring-[#9290C3]"
         />
         {errors.password && (
-        <p className="text-red-600 text-sm mb-4">
+        <p className="text-sm mb-4" style={{ color: '#FF6B6B' }}>
             {errors.password.message}
         </p>
         )}
         <div className="mt-4 mb-4">
-          New user?{' '}
-          <Link href="/signup" className="text-blue-600 underline">
+          <span style={{ color: '#9290C3' }}>New user?</span>{' '}
+          <Link href="/signup" className="text-[#9290C3] underline hover:text-[#F3F3FF] transition-colors">
             Signup
           </Link>
         </div>
         <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+            className="w-full py-2 rounded font-semibold transition-colors"
+            style={{ background: '#9290C3', color: '#F3F3FF' }}
+            onMouseOver={e => e.currentTarget.style.background = '#535C91'}
+            onMouseOut={e => e.currentTarget.style.background = '#9290C3'}
         >
             Log In
         </button>
+        {error && <p className="mt-4 text-center text-sm" style={{ color: '#FF6B6B' }}>{error}</p>}
         </form>
     </div>
   );
