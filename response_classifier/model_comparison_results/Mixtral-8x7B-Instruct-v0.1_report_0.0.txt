@@ -1,0 +1,36 @@
+Target: Mixtral-8x7B-Instruct-v0.1_results_0.0.json
+Total prompts compared: 948
+Devstral-Small-2505_results_0.0.json: 236 matches (24.89%) with target
+Llama-3.2-11B-Vision-Instruct_results_0.0.json: 214 matches (22.57%) with target
+Llama-3.2-1B-Instruct_results_0.0.json: 155 matches (16.35%) with target
+Llama-3.2-3B-Instruct_results_0.0.json: 196 matches (20.68%) with target
+Llama-3.2-90B-Vision-Instruct_results_0.0.json: 243 matches (25.63%) with target
+Llama-3.3-70B-Instruct-Turbo_results_0.0.json: 236 matches (24.89%) with target
+Llama-3.3-70B-Instruct_results_0.0.json: 242 matches (25.53%) with target
+Llama-4-Maverick-17B-128E-Instruct-FP8_results_0.0.json: 59 matches (6.22%) with target
+Llama-4-Scout-17B-16E-Instruct_results_0.0.json: 68 matches (7.17%) with target
+Meta-Llama-3-70B-Instruct_results_0.0.json: 242 matches (25.53%) with target
+Meta-Llama-3-8B-Instruct_results_0.0.json: 205 matches (21.62%) with target
+Meta-Llama-3.1-405B-Instruct_results_0.0.json: 232 matches (24.47%) with target
+Meta-Llama-3.1-70B-Instruct-Turbo_results_0.0.json: 241 matches (25.42%) with target
+Meta-Llama-3.1-70B-Instruct_results_0.0.json: 243 matches (25.63%) with target
+Meta-Llama-3.1-8B-Instruct-Turbo_results_0.0.json: 211 matches (22.26%) with target
+Meta-Llama-3.1-8B-Instruct_results_0.0.json: 214 matches (22.57%) with target
+Mistral-7B-Instruct-v0.1_results_0.0.json: 237 matches (25.00%) with target
+Mistral-7B-Instruct-v0.2_results_0.0.json: 237 matches (25.00%) with target
+Mistral-7B-Instruct-v0.3_results_0.0.json: 237 matches (25.00%) with target
+Mistral-Nemo-Instruct-2407_results_0.0.json: 157 matches (16.56%) with target
+Mistral-Small-24B-Instruct-2501_results_0.0.json: 197 matches (20.78%) with target
+Mixtral-8x22B-Instruct-v0.1_results_0.0.json: 307 matches (32.38%) with target
+codegemma-7b-it_results_0.0.json: 229 matches (24.16%) with target
+gemini-1.5-flash-8b_results_0.0.json: 268 matches (28.27%) with target
+gemini-1.5-flash_results_0.0.json: 268 matches (28.27%) with target
+gemini-2.0-flash-001_results_0.0.json: 231 matches (24.37%) with target
+gemini-2.5-flash_results_0.0.json: 1 matches (0.11%) with target
+gemma-1.1-7b-it_results_0.0.json: 230 matches (24.26%) with target
+gemma-2-27b-it_results_0.0.json: 257 matches (27.11%) with target
+gemma-2-9b-it_results_0.0.json: 232 matches (24.47%) with target
+gemma-3-12b-it_results_0.0.json: 232 matches (24.47%) with target
+gemma-3-27b-it_results_0.0.json: 258 matches (27.22%) with target
+gemma-3-4b-it_results_0.0.json: 240 matches (25.32%) with target
+
