@@ -1,0 +1,21 @@
+{
+  "The sound of laughter filled the air as": {
+    "room": 20
+  },
+  "The door slammed shut": {
+    "locked": 20
+  },
+  "The recipe called for": {
+    "\"": 14,
+    "flour": 6
+  },
+  "Despite the warnings, I ventured into": {
+    "darkness": 15,
+    "forest": 5
+  },
+  "The silence broken": {
+    "by": 17,
+    "Spe": 2,
+    "spoke": 1
+  }
+}

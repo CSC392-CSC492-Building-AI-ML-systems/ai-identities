@@ -1,0 +1,22 @@
+{
+  "Before the concert starts": {
+    "doors": 19,
+    "Doors": 1
+  },
+  "Throughout the long winter months": {
+    "cold": 18,
+    "dark": 2
+  },
+  "The sun is shining in the": {
+    "sky": 20
+  },
+  "The challenge was not to win, but to": {
+    "part": 20
+  },
+  "Outside the house": {
+    "yard": 5,
+    "g": 10,
+    "was": 4,
+    "door": 1
+  }
+}

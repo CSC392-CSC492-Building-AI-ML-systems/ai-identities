@@ -1,0 +1,32 @@
+{
+  "The fragrance of freshly brewed coffee": {
+    "aw": 3,
+    "in": 7,
+    "m": 3,
+    "is": 4,
+    "w": 1,
+    "ent": 1,
+    "ar": 1
+  },
+  "Among the trees, there was": {
+    "a": 17,
+    "A": 1,
+    "hidden": 2
+  },
+  "The door was": {
+    "open": 3,
+    "ajar": 2,
+    "closed": 8,
+    "locked": 7
+  },
+  "The moon is rising in the": {
+    "sky": 13,
+    "night": 5,
+    "e": 2
+  },
+  "The plan failed": {
+    "because": 18,
+    "com": 1,
+    "Unfortunately": 1
+  }
+}

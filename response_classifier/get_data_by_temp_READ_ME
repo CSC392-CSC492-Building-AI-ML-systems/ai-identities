@@ -1,0 +1,8 @@
+to use this
+
+
+./get_data_by_temp.bash [--testing] --temp (temperature)
+
+
+this will collect data for each model listed in models.txt by temperature 
+--testing for testing of course

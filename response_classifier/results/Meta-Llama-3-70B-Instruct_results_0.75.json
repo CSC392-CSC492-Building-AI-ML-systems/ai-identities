@@ -1,0 +1,20 @@
+{
+  "The moon cast shadows across the": {
+    "ground": 16,
+    "floor": 2,
+    "land": 2
+  },
+  "The car broke down": {
+    "on": 20
+  },
+  "The diary entry began": {
+    "with": 20
+  },
+  "The laughter echoed through the empty halls, as if": {
+    "it": 19,
+    "someone": 1
+  },
+  "The company is looking for someone with": {
+    "experience": 20
+  }
+}
