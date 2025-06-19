@@ -5,6 +5,7 @@ import Pill from "@/components/pill";
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation'; // Import for path change detection
+import Image from "next/image";
 
 
 export default function Navbar() {
@@ -73,13 +74,14 @@ export default function Navbar() {
 
   return (
     <nav className="bg-[#2D2A5A] shadow-md px-10 py-6 flex items-center justify-between border-b border-[#9290C3]">
-      <div className="text-3xl font-normal" style={{ color: '#F3F3FF' }}>
+      <div className="text-3xl font-normal flex items-center gap-2" style={{ color: '#F3F3FF' }}>
+        <Image src="/llmdetlogo.png" alt="Logo" width={48} height={48} />
         <Link href="/">
           <span className="font-bold" style={{ color: '#F3F3FF' }}>LLM</span><span className="font-normal" style={{ color: '#F3F3FF' }}>Detective</span>
         </Link>
       </div>
       <div className="flex gap-32">
-        <div className="flex gap-10">
+        <div className="flex gap-14">
           <Link href="/wiki" className="relative text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2 after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-[-9px] after:w-[115%] after:h-[0.2rem] after:bg-[#9290C3] after:rounded-full after:opacity-0 hover:after:opacity-100 after:transition-all after:duration-200">Wiki</Link>
           <Link href="/identify" className="relative text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2 after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-[-9px] after:w-[115%] after:h-[0.2rem] after:bg-[#9290C3] after:rounded-full after:opacity-0 hover:after:opacity-100 after:transition-all after:duration-200">Identify</Link>
           <Link href="/about" className="relative text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2 after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-[-9px] after:w-[115%] after:h-[0.2rem] after:bg-[#9290C3] after:rounded-full after:opacity-0 hover:after:opacity-100 after:transition-all after:duration-200">About</Link>
