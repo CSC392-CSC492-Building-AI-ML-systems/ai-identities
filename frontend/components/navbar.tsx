@@ -82,16 +82,26 @@ export default function Navbar() {
       </div>
       <div className="flex gap-32">
         <div className="flex gap-14">
-          <Link href="/wiki" className="relative text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2 after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-[-9px] after:w-[115%] after:h-[0.2rem] after:bg-[#9290C3] after:rounded-full after:opacity-0 hover:after:opacity-100 after:transition-all after:duration-200">Wiki</Link>
-          <Link href="/identify" className="relative text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2 after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-[-9px] after:w-[115%] after:h-[0.2rem] after:bg-[#9290C3] after:rounded-full after:opacity-0 hover:after:opacity-100 after:transition-all after:duration-200">Identify</Link>
-          <Link href="/about" className="relative text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2 after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-[-9px] after:w-[115%] after:h-[0.2rem] after:bg-[#9290C3] after:rounded-full after:opacity-0 hover:after:opacity-100 after:transition-all after:duration-200">About</Link>
+          <Link href="/wiki" className="relative group text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2">
+            Wiki
+            <span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
+          </Link>
+          <Link href="/identify" className="relative group text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2">
+            Identify
+            <span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
+          </Link>
+          <Link href="/about" className="relative group text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2">
+            About
+            <span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
+          </Link>
         </div>
         <button
           onClick={handleAuthClick}
-          className="relative text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal bg-transparent border-none outline-none cursor-pointer px-2 after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-[-9px] after:w-[115%] after:h-[0.2rem] after:bg-[#9290C3] after:rounded-full after:opacity-0 hover:after:opacity-100 after:transition-all after:duration-200"
+          className="relative group text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal bg-transparent border-none outline-none cursor-pointer px-2"
           style={{ background: 'none', boxShadow: 'none' }}
         >
           Login
+          <span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
         </button>
       </div>
     </nav>
