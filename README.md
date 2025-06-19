@@ -1,29 +1,28 @@
 # Repository Structure
 ```text
-├── frontend
-│   ├── app
-│   ├── components
+├── frontend/
+│   ├── app/
+│   ├── components/
 │   ├── eslint.config.mjs
 │   ├── next.config.ts
 │   ├── package.json
 │   ├── package-lock.json
 │   ├── postcss.config.js
-│   ├── public
+│   ├── public/
 │   ├── README.md
-│   ├── styles
+│   ├── styles/
 │   ├── tailwind.config.js
 │   └── tsconfig.json
-├── response_classifier
+├── response_classifier/
 │   ├── compare_all_models.py
 │   ├── compare.py
 │   ├── constants.py
 │   ├── data.py
 │   ├── get_model_data.bash
 │   ├── get_model_data.py
-│   ├── model_comparison_results
-│   ├── my_results_saved
-│   └── results
-└── xwiki
+│   ├── model_comparison_results/
+│   └── results/
+└── xwiki/
     └── docker-compose.yml
 ```
 # frontend/ directory
