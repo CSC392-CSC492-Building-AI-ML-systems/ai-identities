@@ -88,7 +88,7 @@ To collect data for a single model, you can use the following command and the re
 - Currently, users will have to manually set the model name and temperature in the bash script
 - `--testing`: (optional) Limits data collection to 5 unique prompts for a quick check (will be particularly useful to check the collected data of reasoning models)
 ```bash
-./get_data_by_temp.bash [--testing]
+./get_model_data.bash [--testing]
 ```
 
 ### How to generate the text file reports of LLM responses' comparison?
