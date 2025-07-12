@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { parseStringPromise } from "xml2js";
 
-const XWIKI_API_URL = "http://159.203.20.200:8080/xwiki/rest/wikis/xwiki/spaces/Main/pages";
+const XWIKI_API_URL = "/api/xwiki";
 
 // Type for a page entry from XWiki REST API
 interface XWikiPage {
@@ -12,13 +12,6 @@ interface XWikiPage {
   space: string[];
   name: string[];
 }
-
-// Credentials from environment variables
-const XWIKI_USERNAME = process.env.NEXT_PUBLIC_XWIKI_USERNAME || "";
-const XWIKI_PASSWORD = process.env.NEXT_PUBLIC_XWIKI_PASSWORD || "";
-const BASIC_AUTH = typeof window !== "undefined"
-  ? "Basic " + btoa(`${XWIKI_USERNAME}:${XWIKI_PASSWORD}`)
-  : "";
 
 export default function WikiPage() {
   const [pages, setPages] = useState<XWikiPage[]>([]);
@@ -31,17 +24,22 @@ export default function WikiPage() {
       setLoading(true);
       setError("");
       try {
+        console.log("Fetching from:", XWIKI_API_URL);
         const res = await fetch(XWIKI_API_URL, {
           headers: {
             Accept: "application/xml",
-            Authorization: BASIC_AUTH,
           },
         });
+        console.log("Response status:", res.status);
         if (!res.ok) throw new Error("Network response was not ok");
         const xml = await res.text();
+        console.log("XML response:", xml.substring(0, 500) + "...");
         const result = await parseStringPromise(xml);
+        console.log("Parsed result:", result);
         setPages((result.pages.page as XWikiPage[]) || []);
+        console.log("Pages set:", (result.pages.page as XWikiPage[]) || []);
       } catch (err) {
+        console.error("Error fetching pages:", err);
         setError("Failed to fetch wiki pages.");
       }
       setLoading(false);
@@ -52,6 +50,9 @@ export default function WikiPage() {
   const filtered = pages.filter((page) =>
     page.title[0].toLowerCase().includes(search.toLowerCase())
   );
+
+  console.log("Current pages:", pages);
+  console.log("Filtered pages:", filtered);
 
   return (
     <main className="flex flex-col items-center min-h-screen py-8">
