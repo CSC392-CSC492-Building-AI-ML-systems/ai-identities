@@ -39,10 +39,11 @@ export async function GET(request: NextRequest) {
 
       console.log(`Endpoint ${endpoint}: Status ${status}, Length: ${xml.length}`);
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       results.push({
         endpoint,
         status: 'ERROR',
-        error: error.message
+        error: errorMessage
       });
       console.error(`Error testing ${endpoint}:`, error);
     }
