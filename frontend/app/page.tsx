@@ -80,7 +80,7 @@ const sections = [
     bg: "bg-[#2D2A5A]",
     cta: (
       <div className="flex flex-col items-center justify-center w-full">
-        <img src="/llmdetlogo.png" alt="Logo" width={48} height={48} className="mb-2" />
+        <img src="/llmdetlogo.png" alt="Logo" width={32} height={32} className="mb-2" />
         <span className="text-[#F3F3FF] text-sm">&copy; {new Date().getFullYear()} LLM Detective. All rights reserved.</span>
       </div>
     ),
@@ -122,17 +122,17 @@ export default function HomePage() {
       {sections.map((section, i) => (
         <section
           key={i}
-          className={`min-h-[60vh] w-full flex flex-col items-center justify-center${i === sections.length - 1 ? ' bg-[#2D2A5A]' : ''}`}
+          className={`${i === sections.length - 1 ? 'min-h-[20vh] bg-[#2D2A5A]' : 'min-h-[60vh]'} w-full flex flex-col items-center justify-center`}
         >
           <div className="w-2/5 mx-auto flex flex-col items-center">
             {section.pill && <Pill text={section.pill} />}
             {section.title && (
-              <h1 className="text-5xl md:text-6xl mt-8 mb-4 text-[#2D2A5A] dark:text-[#F3F3FF] text-center drop-shadow-lg">
+              <h1 className={`text-5xl md:text-6xl mt-8 ${i === 0 ? 'mb-8' : 'mb-4'} text-[#2D2A5A] dark:text-[#F3F3FF] text-center drop-shadow-lg`}>
                 {section.title}
               </h1>
             )}
             {section.subtitle && (
-              <p className="text-xl md:text-2xl text-[#535C91] dark:text-[#F3F3FF] text-center mb-2">
+              <p className={`text-lg md:text-xl text-[#535C91] dark:text-[#F3F3FF] text-center mb-2 ${i === 0 ? 'mt-4' : ''}`}>
                 {section.subtitle}
               </p>
             )}
