@@ -8,10 +8,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 const loginSchema = z.object({
-    firstName: z.string().min(2, "First name must be at least 2 characters"),
-    lastName: z.string().min(2, "Last name must be at least 2 characters"),
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
+  username: z.string().min(2, "Username must be at least 2 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
   
 
@@ -19,8 +17,6 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter(); // Initialize router here
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -69,18 +65,18 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="max-w-md w-full mt-10 p-8 rounded-xl shadow-lg" style={{ background: '#2D2A5A' }}>
         <h2 className="text-2xl font-bold mb-6" style={{ color: '#F3F3FF' }}>Log In</h2>
 
-        {/* EMAIL */}
-        <label className="block mb-2 font-semibold" htmlFor="email" style={{ color: '#F3F3FF' }}>Email</label>
+        {/* USERNAME */}
+        <label className="block mb-2 font-semibold" htmlFor="username" style={{ color: '#F3F3FF' }}>Username</label>
         <input
-        id="email"
-        type="email"
-        {...register("email")}
-        className="w-full mb-1 px-3 py-2 rounded bg-[#393E7C] text-[#F3F3FF] border border-[#9290C3] focus:outline-none focus:ring-2 focus:ring-[#9290C3]"
+          id="username"
+          type="text"
+          {...register("username")}
+          className="w-full mb-1 px-3 py-2 rounded bg-[#393E7C] text-[#F3F3FF] border border-[#9290C3] focus:outline-none focus:ring-2 focus:ring-[#9290C3]"
         />
-        {errors.email && (
-        <p className="text-sm mb-4" style={{ color: '#FF6B6B' }}>
-            {errors.email.message}
-        </p>
+        {errors.username && (
+          <p className="text-sm mb-4" style={{ color: '#FF6B6B' }}>
+            {errors.username.message}
+          </p>
         )}
 
         {/* PASSWORD */}
