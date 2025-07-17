@@ -52,19 +52,19 @@ const sections = [
   {
     title: "Get Started",
     subtitle: "Try our Identify tool or browse the Wiki.",
-    pill: "Start Now",
+    pill: null,
     bg: "bg-blue-100",
     cta: (
       <div className="flex gap-4 mt-6">
         <Button
-          className="!bg-[#2D2A5A] text-white hover:outline hover:outline-2 hover:outline-[#F3F3FF] border-none"
+          className="!bg-[#2D2A5A] text-white hover:outline hover:outline-2 hover:outline-[#F3F3FF] border-none transition-transform duration-300 hover:scale-105"
           onClick={() => window.location.href = "/identify"}
           style={{ backgroundColor: '#2D2A5A' }}
         >
           Identify
         </Button>
         <Button
-          className="!bg-[#2D2A5A] text-white hover:outline hover:outline-2 hover:outline-[#F3F3FF] border-none"
+          className="!bg-[#2D2A5A] text-white hover:outline hover:outline-2 hover:outline-[#F3F3FF] border-none transition-transform duration-300 hover:scale-105"
           onClick={() => window.location.href = "/wiki"}
           style={{ backgroundColor: '#2D2A5A' }}
         >
@@ -95,36 +95,39 @@ function useSectionFadeIn(numSections: number) {
     const observer = new window.IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const idx = refs.current.findIndex((el) => el === entry.target);
-            if (idx !== -1 && !visible[idx]) {
-              setVisible((prev) => {
-                const updated = [...prev];
-                updated[idx] = true;
-                return updated;
-              });
-            }
+          const idx = refs.current.findIndex((el) => el === entry.target);
+          if (idx !== -1) {
+            setVisible((prev) => {
+              const updated = [...prev];
+              updated[idx] = entry.isIntersecting;
+              return updated;
+            });
           }
         });
       },
-      { threshold: 0.3 }
+      { threshold: 0.7 }
     );
     refs.current.forEach((el) => el && observer.observe(el));
     return () => observer.disconnect();
-  }, [numSections, visible]);
+  }, [numSections]);
 
   return { refs, visible };
 }
 
 export default function HomePage() {
+  const { refs, visible } = useSectionFadeIn(sections.length);
   return (
     <main className="bg-[#050a1f] pt-24">
       {sections.map((section, i) => (
         <section
           key={i}
+          ref={el => { refs.current[i] = el; }}
           className={`${i === sections.length - 1 ? 'min-h-[20vh] bg-[#2D2A5A]' : 'min-h-[60vh]'} w-full flex flex-col items-center justify-center`}
         >
-          <div className="w-2/5 mx-auto flex flex-col items-center">
+          <div
+            className={`w-2/5 mx-auto flex flex-col items-center transition-all duration-700 ease-out
+              ${visible[i] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+          >
             {section.pill && <Pill text={section.pill} />}
             {section.title && (
               <h1 className={`text-5xl md:text-6xl mt-8 ${i === 0 ? 'mb-8' : 'mb-4'} text-[#2D2A5A] dark:text-[#F3F3FF] text-center drop-shadow-lg`}>
@@ -137,7 +140,62 @@ export default function HomePage() {
               </p>
             )}
           </div>
-          {section.cta}
+          {/* Animate the Identify/Search/Explore cards as a group if this is the second section */}
+          {i === 1 && section.cta ? (
+            <>
+              {/* Heading fade in from bottom */}
+              <div className={`w-2/5 mx-auto flex flex-col items-center transition-all duration-700 ease-out
+                ${visible[i] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+                <h2 className="text-4xl md:text-5xl text-[#2D2A5A] dark:text-[#F3F3FF] text-center mb-8">Identify, Search, and Contribute</h2>
+              </div>
+              {/* Deck of cards animation */}
+              <div className="relative w-[928px] mx-auto mt-8" style={{ minHeight: 320 }}>
+                {[
+                  {
+                    icon: '🕵️‍♂️',
+                    title: 'Identify',
+                    desc: 'Use our tools to detect which large language model (LLM) generated a given text, leveraging advanced AI identification.'
+                  },
+                  {
+                    icon: '🔍',
+                    title: 'Wiki Search',
+                    desc: 'Search our structured, searchable wiki of LLMs—from ChatGPT to open-source models—to find detailed information on every model we track.'
+                  },
+                  {
+                    icon: '✏️',
+                    title: 'Contribute',
+                    desc: 'Edit and improve our wiki data. Help keep the LLM knowledge base accurate and up to date for the whole community.'
+                  }
+                ].map((card, cardIdx) => {
+                  const cardWidth = 288;
+                  const gap = 32;
+                  const x = cardIdx * (cardWidth + gap);
+                  return (
+                    <div
+                      key={cardIdx}
+                      className={`absolute top-0 h-[320px] transition-all duration-700 ease-out
+                        ${visible[i] ? 'opacity-100' : 'opacity-0'}
+                      `}
+                      style={{
+                        left: 0,
+                        transform: visible[i]
+                          ? `translateX(${x}px)`
+                          : `translateX(0px)`,
+                        transitionDelay: visible[i] ? `${cardIdx * 120}ms` : '0ms',
+                        width: cardWidth,
+                      }}
+                    >
+                      <div className="bg-[#2D2A5A] rounded-2xl shadow-lg p-8 flex flex-col items-start text-white h-full transition-transform duration-300 hover:scale-105">
+                        <div className="mb-4 text-3xl">{card.icon}</div>
+                        <div className="text-2xl mb-2 font-semibold">{card.title}</div>
+                        <div className="text-base opacity-80">{card.desc}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          ) : section.cta}
         </section>
       ))}
     </main>

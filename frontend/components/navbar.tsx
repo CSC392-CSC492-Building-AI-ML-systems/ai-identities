@@ -75,33 +75,33 @@ export default function Navbar() {
   return (
     <div className="fixed top-0 left-0 w-full z-50 flex justify-center">
       <nav className="h-20 w-[60%] bg-[#2D2A5A] flex items-center justify-between px-6 rounded-2xl" style={{ boxShadow: '0 6px 24px 0 rgba(0,0,0,0.5)' }}>
-        <div className="text-3xl font-normal flex items-center gap-2" style={{ color: '#F3F3FF' }}>
-          <Image src="/llmdetlogo.png" alt="Logo" width={48} height={48} />
-          <Link href="/">
-            <span className="font-bold" style={{ color: '#F3F3FF' }}>LLM</span><span className="font-normal" style={{ color: '#F3F3FF' }}>Detective</span>
-          </Link>
-        </div>
-        <div className="flex gap-32">
-          <div className="flex gap-14">
+      <div className="text-3xl font-normal flex items-center gap-2" style={{ color: '#F3F3FF' }}>
+        <Image src="/llmdetlogo.png" alt="Logo" width={48} height={48} />
+        <Link href="/">
+          <span className="font-bold" style={{ color: '#F3F3FF' }}>LLM</span><span className="font-normal" style={{ color: '#F3F3FF' }}>Detective</span>
+        </Link>
+      </div>
+      <div className="flex gap-32">
+        <div className="flex gap-14">
             <Link href="/identify" className="relative group text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2">
               Identify
               <span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
             </Link>
-            <Link href="/wiki" className="relative group text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2">
-              Wiki
-              <span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
-            </Link>
-          </div>
-          <button
-            onClick={handleAuthClick}
-            className="relative group text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal bg-transparent border-none outline-none cursor-pointer px-2"
-            style={{ background: 'none', boxShadow: 'none' }}
-          >
-            Login
+          <Link href="/wiki" className="relative group text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2">
+            Wiki
             <span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
-          </button>
+          </Link>
         </div>
-      </nav>
+        <button
+          onClick={handleAuthClick}
+          className="relative group text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal bg-transparent border-none outline-none cursor-pointer px-2"
+          style={{ background: 'none', boxShadow: 'none' }}
+        >
+          Login
+          <span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
+        </button>
+      </div>
+    </nav>
     </div>
   );
 }
