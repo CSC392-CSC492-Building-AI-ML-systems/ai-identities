@@ -130,12 +130,12 @@ export default function HomePage() {
           >
             {section.pill && <Pill text={section.pill} />}
             {section.title && (
-              <h1 className={`text-5xl md:text-6xl mt-8 ${i === 0 ? 'mb-8' : 'mb-4'} text-[#2D2A5A] dark:text-[#F3F3FF] text-center drop-shadow-lg`}>
+              <h1 className={`text-5xl md:text-6xl mt-8 ${i === 0 ? 'mb-8' : 'mb-4'} text-[#F3F3FF] text-center drop-shadow-lg`}>
                 {section.title}
               </h1>
             )}
             {section.subtitle && (
-              <p className={`text-lg md:text-xl text-[#535C91] dark:text-[#F3F3FF] text-center mb-2 ${i === 0 ? 'mt-4' : ''}`}>
+              <p className={`text-lg md:text-xl text-[#B8B8FF] text-center mb-2 ${i === 0 ? 'mt-4' : ''}`}>
                 {section.subtitle}
               </p>
             )}
@@ -185,10 +185,10 @@ export default function HomePage() {
                         width: cardWidth,
                       }}
                     >
-                      <div className="bg-[#2D2A5A] rounded-2xl shadow-lg p-8 flex flex-col items-start text-white h-full transition-transform duration-300 hover:scale-105">
+                      <div className="bg-[#2D2A5A] rounded-2xl shadow-lg p-8 flex flex-col items-start text-[#F3F3FF] h-full transition-transform duration-300 hover:scale-105">
                         <div className="mb-4 text-3xl">{card.icon}</div>
                         <div className="text-2xl mb-2 font-semibold">{card.title}</div>
-                        <div className="text-base opacity-80">{card.desc}</div>
+                        <div className="text-base text-[#B8B8FF]">{card.desc}</div>
                       </div>
                     </div>
                   );
