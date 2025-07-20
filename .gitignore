@@ -19,3 +19,6 @@ outline/outline/.idea
 outline/outline/*.pem
 outline/outline/*.key
 outline/outline/*.cert
+*/venv/*
+test.py
+test2.py
