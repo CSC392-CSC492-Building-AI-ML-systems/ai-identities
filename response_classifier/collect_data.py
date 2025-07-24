@@ -27,7 +27,7 @@ def parse_arguments():
     parser.add_argument('--prevent-cache', action='store_true',
                         help="Add unique ID to prompts to prevent potential caching")
     parser.add_argument('--max-tokens', type=int, default=5000,
-                        help="Max tokens for responses (default: 1500)")
+                        help="Max tokens for responses (default: 5000)")
     parser.add_argument('--temperature', type=float, default=0.7,
                         help="Temperature for generation when data_point_num=1 (default: 0.7)")
     parser.add_argument('--system-prompt', type=str, default="",
@@ -79,7 +79,7 @@ def generate_llm_temperatures(low, high, num, inclusive_high):
     else:
         step = (high - low) / num
 
-    temps = [low + i * step for i in range(num)]
+    temps = [round(low + i * step, 2) for i in range(num)]
     return temps
 
 
@@ -113,31 +113,37 @@ def process_prompt(prompt, temperature, model, args, openai_client) -> dict:
     if args.system_prompt:
         messages.insert(0, {"role": "system", "content": args.system_prompt})
 
-    try:
-        response = openai_client.chat.completions.create(
-            model=model,
-            messages=messages,
-            max_tokens=args.max_tokens,
-            temperature=temperature
-        )
-        generated_text = response.choices[0].message.content.strip()
-        return {
-            'prompt': prompt,
-            'modified_prompt': modified_prompt if args.prevent_cache else None,
-            'response': generated_text,
-            'temperature': temperature,
-            'timestamp': time.time(),
-            'error': None
-        }
-    except Exception as e:
-        return {
-            'prompt': prompt,
-            'modified_prompt': modified_prompt if args.prevent_cache else None,
-            'response': None,
-            'temperature': temperature,
-            'timestamp': time.time(),
-            'error': str(e)
-        }
+    max_retries = 3
+    for retry in range(max_retries):
+        try:
+            response = openai_client.chat.completions.create(
+                model=model,
+                messages=messages,
+                max_tokens=args.max_tokens,
+                temperature=temperature
+            )
+            generated_text = response.choices[0].message.content.strip()
+            return {
+                'prompt': prompt,
+                'modified_prompt': modified_prompt if args.prevent_cache else None,
+                'response': generated_text,
+                'temperature': temperature,
+                'timestamp': time.time(),
+                'error': None,
+                'retries': retry + 1
+            }
+        except Exception as e:
+            if retry == (max_retries - 1):
+                return {
+                    'prompt': prompt,
+                    'modified_prompt': modified_prompt if args.prevent_cache else None,
+                    'response': None,
+                    'temperature': temperature,
+                    'timestamp': time.time(),
+                    'error': str(e),
+                    'retries': max_retries
+                }
+            time.sleep(2 ** retry)
 
 
 def process_model(model, args, prompts, temps_list, openai_client, json_lock):
@@ -148,7 +154,7 @@ def process_model(model, args, prompts, temps_list, openai_client, json_lock):
     model_filename = model.replace('/', '_') + '.json'
     output_file = os.path.join(BASE_DIR, model_filename)
 
-    # Skip if data exists and --force not set (additional check beyond JSON flag)
+    # Skip if data exists and --force is not set
     if os.path.exists(output_file) and not args.force:
         print(f"Skipping {model} (data already exists at {output_file}). Use --force to re-collect.")
         return
@@ -163,7 +169,6 @@ def process_model(model, args, prompts, temps_list, openai_client, json_lock):
         for future in tqdm(concurrent.futures.as_completed(future_to_task),
                            total=len(tasks), desc=f"Collecting response data for {model}", leave=False):
             responses.append(future.result())
-            time.sleep(0.5)  # Small delay to avoid rate limits; adjust or remove
 
     # Save LLM response data for `model` to JSON file
     with open(output_file, 'w') as f:

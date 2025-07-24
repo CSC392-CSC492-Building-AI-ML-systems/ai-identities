@@ -18,7 +18,7 @@
         "in_cost": 0.06,
         "out_cost": 0.24,
         "cost_unit": "Mtoken",
-        "data_collected": true
+        "data_collected": false
     },
     {
         "model_name": "Qwen/QwQ-32B",
@@ -46,7 +46,7 @@
         "in_cost": 0.06,
         "out_cost": 0.15,
         "cost_unit": "Mtoken",
-        "data_collected": true
+        "data_collected": false
     },
     {
         "model_name": "Qwen/Qwen2.5-VL-32B-Instruct",
@@ -242,7 +242,7 @@
         "in_cost": 0.5,
         "out_cost": 2.15,
         "cost_unit": "Mtoken",
-        "data_collected": true
+        "data_collected": false
     },
     {
         "model_name": "deepseek-ai/DeepSeek-V3-0324",
