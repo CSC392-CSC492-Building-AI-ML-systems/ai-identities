@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from tqdm import tqdm
 
-# Constants (global, but minimal)
+
 MODEL_JSON = 'llm_set1.json'
 PROMPT_JSON = 'user_prompt_set.json'
 BASE_DIR = 'model_selection_dataset/raw_data'
