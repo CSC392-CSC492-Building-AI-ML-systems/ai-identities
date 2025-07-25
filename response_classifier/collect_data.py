@@ -26,18 +26,22 @@ def parse_arguments():
                         help="Process all models from llm_set1.json where data_collected is false")
     parser.add_argument('--prevent-cache', action='store_true',
                         help="Add unique ID to prompts to prevent potential caching")
-    parser.add_argument('--max-tokens', type=int, default=5000,
-                        help="Max tokens for responses (default: 5000)")
+    parser.add_argument('--max-tokens', type=int, default=3500,
+                        help="Max tokens for responses (default: 3500)")
     parser.add_argument('--temperature', type=float, default=0.7,
                         help="Temperature for generation when data_point_num=1 (default: 0.7)")
     parser.add_argument('--system-prompt', type=str, default="",
                         help="Optional system prompt (e.g., 'You are a helpful assistant')")
-    parser.add_argument('--max-workers', type=int, default=100,
-                        help="Max concurrent threads (default: 100; adjust for rate limits)")
+    parser.add_argument('--max-workers', type=int, default=125,
+                        help="Max concurrent threads (default: 125; adjust for rate limits)")
     parser.add_argument('--force', action='store_true',
                         help="Force collection even if data exists or data_collected is true")
-    parser.add_argument('--data-point-num', type=int, default=1,
-                        help="Number of data points per (model, user prompt) pair (default: 1; must be divisible by 3 if >1)")
+    parser.add_argument('--low-bin-num', type=int, default=0,
+                        help="Number of data points in low temp bin [0.0, 0.4) (must be multiple of 6 if >0; default is 0)")
+    parser.add_argument('--med-bin-num', type=int, default=0,
+                        help="Number of data points in med temp bin [0.4, 0.8) (must be multiple of 6 if >0; default is 0)")
+    parser.add_argument('--high-bin-num', type=int, default=0,
+                        help="Number of data points in high temp bin [0.8, 1.2) (must be multiple of 6 if >0; default is 0)")
     return parser.parse_args()
 
 
@@ -65,7 +69,7 @@ def load_json_file(file_path):
         raise ValueError(f"Invalid JSON in file: {file_path}")
 
 
-def generate_llm_temperatures(low, high, num, inclusive_high):
+def generate_llm_temperatures(low, high, num) -> list[float]:
     """
     Generate evenly spaced temperatures for a bin.
     """
@@ -74,28 +78,26 @@ def generate_llm_temperatures(low, high, num, inclusive_high):
     if num == 1:
         return [low]  # Start of the bin for single point
 
-    if inclusive_high:
-        step = (high - low) / (num - 1)
-    else:
-        step = (high - low) / num
-
+    step = (high - low) / num
     temps = [round(low + i * step, 2) for i in range(num)]
     return temps
 
 
-def generate_temps_list(args):
+def generate_temps_list(args) -> list[float]:
     """
     Generate temperature list based on data_point_num.
     """
-    if args.data_point_num == 1:
+    total_number_of_data_points = args.low_bin_num + args.med_bin_num + args.high_bin_num
+    if total_number_of_data_points == 0:
         return [args.temperature]
-    elif args.data_point_num % 3 != 0:
-        raise ValueError("data_point_num must be divisible by 3 when it is greater than 1")
     else:
-        num_per_bin = args.data_point_num // 3
-        low_temps = generate_llm_temperatures(0.0, 0.35, num_per_bin, inclusive_high=False)
-        med_temps = generate_llm_temperatures(0.35, 0.7, num_per_bin, inclusive_high=False)
-        high_temps = generate_llm_temperatures(0.7, 1.0, num_per_bin, inclusive_high=True)
+        for num, name in [(args.low_bin_num, 'low'), (args.med_bin_num, 'med'), (args.high_bin_num, 'high')]:
+            if num > 0 and num % 6 != 0:
+                raise ValueError(f"{name}-bin-num must be a multiple of 6 when greater than 0")
+
+        low_temps = generate_llm_temperatures(0.0, 0.4, args.low_bin_num)
+        med_temps = generate_llm_temperatures(0.4, 0.8, args.med_bin_num)
+        high_temps = generate_llm_temperatures(0.8, 1.2, args.high_bin_num)
         return low_temps + med_temps + high_temps
 
 
@@ -114,7 +116,7 @@ def process_prompt(prompt, temperature, model, args, openai_client) -> dict:
         messages.insert(0, {"role": "system", "content": args.system_prompt})
 
     max_retries = 3
-    for retry in range(max_retries):
+    for attempt in range(max_retries):
         try:
             response = openai_client.chat.completions.create(
                 model=model,
@@ -130,10 +132,10 @@ def process_prompt(prompt, temperature, model, args, openai_client) -> dict:
                 'temperature': temperature,
                 'timestamp': time.time(),
                 'error': None,
-                'retries': retry + 1
+                'attempt': attempt + 1
             }
         except Exception as e:
-            if retry == (max_retries - 1):
+            if attempt == (max_retries - 1):
                 return {
                     'prompt': prompt,
                     'modified_prompt': modified_prompt if args.prevent_cache else None,
@@ -141,9 +143,9 @@ def process_prompt(prompt, temperature, model, args, openai_client) -> dict:
                     'temperature': temperature,
                     'timestamp': time.time(),
                     'error': str(e),
-                    'retries': max_retries
+                    'attempt': attempt + 1
                 }
-            time.sleep(2 ** retry)
+            time.sleep(2 ** attempt)
 
 
 def process_model(model, args, prompts, temps_list, openai_client, json_lock):
@@ -174,8 +176,6 @@ def process_model(model, args, prompts, temps_list, openai_client, json_lock):
     with open(output_file, 'w') as f:
         json.dump(responses, f, indent=4)
 
-    print(f"Saved responses for {model} to {output_file}")
-
     # Update llm_set1.json to set data_collected=True for `model`
     with json_lock:
         updated_model_data = load_json_file(MODEL_JSON)
@@ -203,7 +203,7 @@ def main():
     prompts = load_json_file(PROMPT_JSON)
     model_data = load_json_file(MODEL_JSON)
 
-    # Get models to process
+    # Create a list of models to process and collect data from
     if args.all:
         models = [entry['model_name'] for entry in model_data
                   if (not entry.get('data_collected', False) or args.force)]
@@ -218,7 +218,7 @@ def main():
     model_json_lock = threading.Lock()  # Lock for thread-safe JSON updates
     temps_list = generate_temps_list(args)  # Generate llm temperature list
 
-    # Outer/model executor for parallelizing across models
+    # Model executor for parallelizing across models
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as model_executor:  # Adjust workers for rate limits
         future_to_model = {
             model_executor.submit(
@@ -228,7 +228,7 @@ def main():
         for future in tqdm(concurrent.futures.as_completed(future_to_model), total=len(models), desc="Processing models", leave=True):
             future.result()  # Wait for completion
 
-    print("Data collection complete.")
+    print(f"Data collection complete. Saved responses to {BASE_DIR}")
 
 
 if __name__ == "__main__":
