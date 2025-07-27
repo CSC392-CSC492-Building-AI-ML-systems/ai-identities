@@ -65,9 +65,9 @@ export default function IdentifyPage() {
   // render UI elements with tailwind
   return (
     <main className="min-h-screen bg-[#050a1f] pt-24 flex flex-col items-center">
-      <h1 className="text-3xl font-semibold text-[#2D2A5A] dark:text-[#F3F3FF] mt-80 mb-2">Identify the LLM</h1>
+      <h1 className="text-3xl font-semibold text-[#F3F3FF] dark:text-[#F3F3FF] mt-80 mb-2">Identify the LLM</h1>
 
-      <p className="text-base text-[#535C91] dark:text-[#F3F3FF] mb-10">Upload a JSON file to identify!</p>
+      <p className="text-base text-[#F3F3FF] dark:text-[#F3F3FF] mb-10">Upload a JSON file to identify!</p>
 
       <label
         htmlFor="json-upload"
