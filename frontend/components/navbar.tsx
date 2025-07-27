@@ -6,10 +6,13 @@ import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation'; // Import for path change detection
 import Image from "next/image";
+import { useXWikiAuth } from '../hooks/useXWikiAuth';
 
 
 export default function Navbar() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  const { loggedIn, username, loading } = useXWikiAuth();
   const router = useRouter(); 
   const pathname = usePathname();  // To track the current route
 
@@ -58,18 +61,14 @@ export default function Navbar() {
     }
   }, [isAuthenticated]);
 
-  const handleAuthClick = () => {
-    if (isAuthenticated) {
-      // Handle logout
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("userId");
-      setIsAuthenticated(false); // Update the state
-      router.push("/signup"); // Redirect to login
-    } else {
-      // Redirect to login page if not authenticated
-      router.push("/login");
-    }
+  const handleLogin = () => {
+    const redirectUrl = encodeURIComponent('http://159.203.20.200:8080/bin/view/redir');
+    window.location.href = `/bin/login/XWiki/XWikiLogin?xredirect=${redirectUrl}`;
+  };
+
+  const handleLogout = () => {
+    const redirectUrl = encodeURIComponent('http://159.203.20.200:8080/bin/view/redir');
+    window.location.href = `/bin/logout/XWiki/XWikiLogout?xredirect=${redirectUrl}`;
   };
 
   return (
@@ -92,15 +91,20 @@ export default function Navbar() {
             <span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
           </Link>
         </div>
-        <button
-          onClick={handleAuthClick}
-          className="relative group text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal bg-transparent border-none outline-none cursor-pointer px-2"
-          style={{ background: 'none', boxShadow: 'none' }}
-        >
-          Login
-          <span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
-        </button>
-      </div>
+          {loading ? (
+            <span className="text-[#F3F3FF] px-2">Checking...</span>
+          ) : loggedIn ? (
+            <button onClick={handleLogout} className="relative group ...">
+              Log Out
+              <span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
+            </button>
+          ) : (
+            <button onClick={handleLogin} className="relative group ...">
+              Login
+              <span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
+            </button>
+          )}
+        </div>
     </nav>
     </div>
   );

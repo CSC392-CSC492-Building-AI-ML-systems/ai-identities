@@ -1,59 +1,64 @@
-import { NextRequest, NextResponse } from 'next/server';
-import axios from 'axios';
+import { NextResponse } from "next/server";
 
-export async function POST(req: NextRequest) {
+const BASE_URL = "http://159.203.20.200:8080";
+const WIKI = "xwiki";
+const SPACE = "XWiki";
+const AUTH = "Basic " + Buffer.from("ahmed33033:ahmed2003").toString("base64");
+
+export async function POST(req: Request) {
   try {
-    const { username, password, email, firstName, lastName } = await req.json();
+    const { username, email, password, firstName, lastName } = await req.json();
 
-    // Basic validation
-    if (!username || !password || !email) {
-      return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
+    if (!username || !password) {
+      return NextResponse.json({ error: "Username and password are required" }, { status: 400 });
     }
 
-    // Basic auth header for XWiki admin account
-    const authHeader = 'Basic ' + Buffer.from('ahmed33033:ahmed33033').toString('base64');
-
-    const response = await axios.post(
-      'http://159.203.20.200:8080/bin/view/XWiki/API/RegisterUser/WebHome?xpage=plain',
-      {
-        username,
-        password,
-        email,
-        firstName,
-        lastName,
-      },
-      {
-        headers: {
-          'Authorization': authHeader,
-          'Content-Type': 'application/json',
-          'Accept': '*/*',
-          'User-Agent': 'Next.js XWiki Client',
-          'Connection': 'keep-alive',
-        },
-        maxRedirects: 0, // Don't follow login redirects
-        validateStatus: () => true, // Accept all status codes for inspection
-      }
-    );
-
-    const textResponse = typeof response.data === 'string'
-      ? response.data
-      : JSON.stringify(response.data);
-
-    if (!textResponse.toLowerCase().includes('created successfully')) {
-      return NextResponse.json({
-        message: 'User creation failed',
-        response: textResponse.slice(0, 300),
-      }, { status: 400 });
-    }
-
-    return NextResponse.json({
-      message: 'User created successfully',
-      username,
+    // 1. Create page
+    const pageUrl = `${BASE_URL}/rest/wikis/${WIKI}/spaces/${SPACE}/pages/${username}`;
+    const createPage = await fetch(pageUrl, {
+      method: "PUT",
+      headers: { "Content-Type": "application/xml", Authorization: AUTH },
+      body: `<page xmlns="http://www.xwiki.org"><title>${username}</title><content>Created via API</content></page>`,
     });
+
+    if (!createPage.ok) {
+      return NextResponse.json({ error: `Failed to create page: ${await createPage.text()}` }, { status: 400 });
+    }
+
+    // 2. Create user object
+    const objectsUrl = `${BASE_URL}/rest/wikis/${WIKI}/spaces/${SPACE}/pages/${username}/objects`;
+    const createObject = await fetch(objectsUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/xml", Authorization: AUTH },
+      body: `<object xmlns="http://www.xwiki.org"><className>XWiki.XWikiUsers</className></object>`,
+    });
+
+    if (!createObject.ok) {
+      return NextResponse.json({ error: `Failed to create object: ${await createObject.text()}` }, { status: 400 });
+    }
+
+    // 3. Update properties
+    const properties = [
+      { name: "first_name", value: firstName || "" },
+      { name: "last_name", value: lastName || "" },
+      { name: "email", value: email || "" },
+      { name: "password", value: password },
+    ];
+
+    for (const prop of properties) {
+      const propUrl = `${BASE_URL}/rest/wikis/${WIKI}/spaces/${SPACE}/pages/${username}/objects/XWiki.XWikiUsers/0/properties/${prop.name}`;
+      const res = await fetch(propUrl, {
+        method: "PUT",
+        headers: { "Content-Type": "text/plain", Authorization: AUTH },
+        body: prop.value,
+      });
+      if (!res.ok) {
+        return NextResponse.json({ error: `Failed to set ${prop.name}: ${await res.text()}` }, { status: 400 });
+      }
+    }
+
+    return NextResponse.json({ message: "User created successfully" }, { status: 201 });
   } catch (err: any) {
-    console.error('Register error:', err?.response?.data || err.message);
-    return NextResponse.json({
-      message: err?.response?.data || 'Internal server error',
-    }, { status: 500 });
+    return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
   }
 }
