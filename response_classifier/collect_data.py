@@ -24,6 +24,8 @@ def parse_arguments():
                         help="Single model name to process (e.g., Qwen/Qwen3-235B-A22B)")
     parser.add_argument('--all', action='store_true',
                         help="Process all models from llm_set1.json where data_collected is false")
+    parser.add_argument('--recollect-missing-data', type=str,
+                        help="Recollect only missing data points (where response is null) for specified model. Provide a model name.")
     parser.add_argument('--prevent-cache', action='store_true',
                         help="Add unique ID to prompts to prevent potential caching")
     parser.add_argument('--max-tokens', type=int, default=3500,
@@ -187,6 +189,47 @@ def process_model(model, args, prompts, temps_list, openai_client, json_lock):
             json.dump(updated_model_data, f, indent=4)
 
 
+def recollect_missing_for_model(model, args, openai_client):
+    """
+    Recollect only missing data points (where response is null) for a single model.
+    """
+    model_filename = model.replace('/', '_') + '.json'
+    output_file = os.path.join(BASE_DIR, model_filename)
+
+    if not os.path.exists(output_file):
+        print(f"Skipping {model}: no existing data file for recollection.")
+        return
+
+    existing_responses = load_json_file(output_file)
+
+    tasks = []
+    for i, data_point in enumerate(existing_responses):
+        if data_point['response'] is None:
+            missing_data_point = (i, data_point['prompt'], data_point['temperature'])
+            tasks.append(missing_data_point)
+
+    if not tasks:
+        print(f"No missing data for {model}.")
+        return
+
+    # Use ThreadPoolExecutor for parallelism
+    new_results = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=args.max_workers) as executor:
+        future_to_task = {executor.submit(process_prompt, p, t, model, args, openai_client): (idx, p, t) for idx, p, t in tasks}
+        for future in tqdm(concurrent.futures.as_completed(future_to_task),
+                           total=len(tasks), desc=f"Recollecting missing data for {model}", leave=False):
+            idx, _, _ = future_to_task[future]
+            new_results.append((idx, future.result()))
+
+    # Update response_map with new results
+    for idx, result in new_results:
+        existing_responses[idx] = result
+
+    # Save updated responses
+    with open(output_file, 'w') as f:
+        json.dump(existing_responses, f, indent=4)
+
+
 def main():
     """
     Main entry point for the script.
@@ -194,8 +237,11 @@ def main():
     args = parse_arguments()
     if args.model and args.all:
         raise ValueError("Cannot use both --model and --all")
-    if not args.model and not args.all:
-        raise ValueError("Specify --model <name> or --all")
+    if not args.model and not args.all and not args.recollect_missing_data:
+        raise ValueError("Specify --model <model-name> or --all or --recollect-missing-data <model-name>")
+    if args.force and args.recollect_missing_data:
+        raise ValueError("Cannot use --force with --recollect-missing-data")
+
 
     openai_client = load_environment()
 
@@ -207,7 +253,9 @@ def main():
     if args.all:
         models = [entry['model_name'] for entry in model_data
                   if (not entry.get('data_collected', False) or args.force)]
-    else:
+    elif args.recollect_missing_data:
+        models = [args.recollect_missing_data]
+    elif args.model:
         models = [args.model]
 
     if not models:
@@ -219,12 +267,19 @@ def main():
     temps_list = generate_temps_list(args)  # Generate llm temperature list
 
     # Model executor for parallelizing across models
-    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as model_executor:  # Adjust workers for rate limits
-        future_to_model = {
-            model_executor.submit(
-                process_model, model, args, prompts, temps_list, openai_client, model_json_lock
-            ): model for model in models
-        }
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as model_executor:
+        if args.recollect_missing_data:
+            future_to_model = {
+                model_executor.submit(
+                    recollect_missing_for_model, model, args, openai_client
+                ): model for model in models
+            }
+        else:
+            future_to_model = {
+                model_executor.submit(
+                    process_model, model, args, prompts, temps_list, openai_client, model_json_lock
+                ): model for model in models
+            }
         for future in tqdm(concurrent.futures.as_completed(future_to_model), total=len(models), desc="Processing models", leave=True):
             future.result()  # Wait for completion
 
