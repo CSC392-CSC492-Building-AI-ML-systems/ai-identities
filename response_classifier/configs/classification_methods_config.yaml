@@ -1,0 +1,30 @@
+word_freq:
+  - name: raw_freq_unigram
+    vectorizer: CountVectorizer
+    metric: cosine_similarity  # Primary; use --eval_both for both
+    ngram_range: [1, 1]
+    normalize_vectors: false
+  - name: raw_freq_trigram
+    vectorizer: CountVectorizer
+    metric: cosine_similarity
+    ngram_range: [3, 3]
+    normalize_vectors: false
+  - name: tfidf_unigram
+    vectorizer: TfidfVectorizer
+    metric: cosine_similarity
+    ngram_range: [1, 1]
+    normalize_vectors: false
+  - name: tfidf_trigram
+    vectorizer: TfidfVectorizer
+    metric: cosine_similarity
+    ngram_range: [3, 3]
+    normalize_vectors: false
+embeddings:
+  - name: nomic
+    model: nomic-ai/nomic-embed-text-v1.5
+    metric: cosine_similarity
+    normalize_vectors: false  # Recommended off for embeddings
+  - name: gte
+    model: Alibaba-NLP/gte-multilingual-base
+    metric: cosine_similarity
+    normalize_vectors: false
