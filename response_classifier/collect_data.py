@@ -12,7 +12,7 @@ from tqdm import tqdm
 
 MODEL_JSON = 'llm_set1.json'
 PROMPT_JSON = 'user_prompt_set.json'
-BASE_DIR = 'model_selection_dataset/raw_data'
+BASE_DIR = 'data/raw_data'
 
 
 def parse_arguments():
@@ -204,7 +204,7 @@ def recollect_missing_for_model(model, args, openai_client):
 
     tasks = []
     for i, data_point in enumerate(existing_responses):
-        if data_point['response'] is None:
+        if data_point['response'] is None or data_point['response'] == "":
             missing_data_point = (i, data_point['prompt'], data_point['temperature'])
             tasks.append(missing_data_point)
 
