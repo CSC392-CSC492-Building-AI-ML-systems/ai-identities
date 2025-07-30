@@ -3,27 +3,27 @@ word_freq:
     vectorizer: CountVectorizer
     metric: cosine_similarity  # Primary; use --eval_both for both
     ngram_range: [1, 1]
-    normalize_vectors: false
+    normalize_vectors: true
   - name: raw_freq_trigram
     vectorizer: CountVectorizer
     metric: cosine_similarity
     ngram_range: [3, 3]
-    normalize_vectors: false
+    normalize_vectors: true
   - name: tfidf_unigram
     vectorizer: TfidfVectorizer
     metric: cosine_similarity
     ngram_range: [1, 1]
-    normalize_vectors: false
+    normalize_vectors: true
   - name: tfidf_trigram
     vectorizer: TfidfVectorizer
     metric: cosine_similarity
     ngram_range: [3, 3]
-    normalize_vectors: false
+    normalize_vectors: true
 embeddings:
   - name: nomic
     model: nomic-ai/nomic-embed-text-v1.5
     metric: cosine_similarity
-    normalize_vectors: false  # Recommended off for embeddings
+    normalize_vectors: false
   - name: gte
     model: Alibaba-NLP/gte-multilingual-base
     metric: cosine_similarity

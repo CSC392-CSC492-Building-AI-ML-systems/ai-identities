@@ -10,6 +10,7 @@ def validate_splits(train: dict[str, pd.DataFrame], test: dict[str, pd.DataFrame
     Validate splits: check sizes, bin presence, and ratios.
     """
     all_llms = set(train.keys()) | set(test.keys()) | set(held_out.keys())
+    total_number_of_prompts = 20
     # For each LLM in our dataset
     for model in all_llms:
         if model in held_out:
@@ -22,10 +23,12 @@ def validate_splits(train: dict[str, pd.DataFrame], test: dict[str, pd.DataFrame
         for bin_name, bin_info in bins.items():
             train_bin = train_df[train_df['temp_bin'] == bin_name]
             test_bin = test_df[test_df['temp_bin'] == bin_name]
-            expected_train = int(bin_info['num_points'] * split_ratio / (split_ratio + 1))
-            expected_test = int(bin_info['num_points'] / (split_ratio + 1))
+            expected_train = total_number_of_prompts * int(bin_info['num_points'] * split_ratio / (split_ratio + 1))
+            expected_test = total_number_of_prompts * int(bin_info['num_points'] / (split_ratio + 1))
             if len(train_bin) != expected_train or len(test_bin) != expected_test:
                 print(f"Size mismatch for {model}, {bin_name}")
+                print(f"Expected train: {expected_train}, actual train: {len(train_bin)}")
+                print(f"Expected test: {expected_test}, actual test: {len(test_bin)}")
                 return False
 
             if len(train_bin) == 0 or len(test_bin) == 0:

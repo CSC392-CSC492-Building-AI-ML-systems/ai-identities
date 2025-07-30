@@ -3,6 +3,16 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity, euclidean_distances
 from typing import Callable
 from sklearn.preprocessing import normalize
+from scipy.sparse import vstack as sparse_vstack
+import scipy.sparse
+
+
+def _as_ndarray(x) -> np.ndarray:
+    """Convert numpy.matrix or sparse mean result to (1, dim) ndarray."""
+    x = np.asarray(x)          # kills numpy.matrix
+    if x.ndim == 1:            # flatten → row-vector
+        x = x.reshape(1, -1)
+    return x
 
 
 def compute_library_averages(library: dict[str, pd.DataFrame],
@@ -21,15 +31,41 @@ def compute_library_averages(library: dict[str, pd.DataFrame],
     for model, df in library.items():
         # Per-bin averages
         for (prompt, bin_name), group in df.groupby(['prompt', 'temp_bin']):
-            avg_vec = np.mean(np.array(group[vector_col].tolist()), axis=0)
+            if len(group) == 0:
+                continue
+            avg_vec = get_avg_vec(group, vector_col)
             averages[(model, prompt, bin_name)] = avg_vec
 
         # Overall average per (model, prompt) across all temps
         for prompt, group in df.groupby('prompt'):
-            avg_vec = np.mean(np.array(group[vector_col].tolist()), axis=0)
+            if len(group) == 0:
+                continue
+            avg_vec = get_avg_vec(group, vector_col)
             averages[(model, prompt, 'overall')] = avg_vec
 
     return averages
+
+
+def get_avg_vec(group: pd.DataFrame, vector_col: str) -> np.ndarray:
+    """
+    Compute average vector for a group, handling both sparse and dense vectors.
+
+    :param group: Pandas DataFrame group.
+    :param vector_col: String name of the vector column.
+    :return: Average vector as 2D NumPy array (1, dim).
+    """
+    vectors = group[vector_col].tolist()
+    if vectors and isinstance(vectors[0], scipy.sparse.csr_matrix):
+        stacked = sparse_vstack(vectors)
+        mean_arr = np.asarray(stacked.mean(axis=0))  # ndarray
+        avg_vec = mean_arr.reshape(1, -1)
+    else:
+        if vectors:
+            stacked = np.array(vectors)
+            avg_vec = np.mean(stacked, axis=0, keepdims=True)
+        else:
+            avg_vec = np.array([]).reshape(1, 0)  # Handle empty
+    return avg_vec
 
 
 def predict_unknown(unknown_data: dict[str, pd.DataFrame], library_avgs: dict,
@@ -57,9 +93,12 @@ def predict_unknown(unknown_data: dict[str, pd.DataFrame], library_avgs: dict,
         for prompt, group in df.groupby('prompt'):
             if len(group) == 0:
                 continue
-            avg_vec = np.mean(np.array(group[vector_col].tolist()), axis=0)
+            sparse_group = group[vector_col].tolist()
+            stacked = sparse_vstack(sparse_group)
+            avg_vec = stacked.mean(axis=0)  # Sparse (1 x dim)
+            avg_vec = _as_ndarray(avg_vec)
             if do_normalize:
-                avg_vec = normalize(avg_vec.reshape(1, -1), norm='l2')[0]
+                avg_vec = normalize(avg_vec, norm='l2')
 
             # Collect best score per known llm (across its bins + overall for this prompt)
             known_llm_scores = {}
@@ -69,18 +108,18 @@ def predict_unknown(unknown_data: dict[str, pd.DataFrame], library_avgs: dict,
                 for bin_name in ['low', 'medium', 'high', 'overall']:
                     key = (known_llm, prompt, bin_name)
                     if key in library_avgs:
-                        lib_vec = library_avgs[key]
+                        lib_vec = library_avgs[key]  # Sparse (1, dim)
+                        lib_vec = _as_ndarray(lib_vec)
                         if do_normalize:
-                            lib_vec = normalize(lib_vec.reshape(1, -1), norm='l2')[0]
+                            lib_vec = normalize(lib_vec, norm='l2')
 
-                        score = metric(avg_vec.reshape(1, -1), lib_vec.reshape(1, -1))[0][0]
+                        score = metric(avg_vec, lib_vec)[0][0]
                         if is_similarity:
                             best_score = max(best_score, score)
                         else:
                             best_score = min(best_score, score)
 
-                if known_llm not in known_llm_scores:
-                    known_llm_scores[known_llm] = best_score
+                known_llm_scores[known_llm] = best_score
 
             # Sort models by best score (desc for sim, asc for dist)
             if known_llm_scores:

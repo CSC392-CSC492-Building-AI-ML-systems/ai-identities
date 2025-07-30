@@ -1,5 +1,4 @@
 import os
-import json
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sentence_transformers import SentenceTransformer
@@ -35,11 +34,12 @@ def process_word_freq(data: dict[str, pd.DataFrame], config: dict,
 
     # Default to unigrams; use config value if present
     ngram_range = tuple(config.get('ngram_range', (1, 1)))
-    vectorizer = vectorizer_class(ngram_range=ngram_range)
+    max_features = config.get('max_features', None)
+    vectorizer = vectorizer_class(ngram_range=ngram_range, max_features=max_features)
 
     do_fit = fitted_vectorizer is None
     if not do_fit:
-        vectorizer = fitted_vectorizer  # Use provided
+        vectorizer = fitted_vectorizer
 
     # Fit on all responses across models for consistent vocabulary (if do_fit)
     all_responses = pd.concat([df['response'] for df in data.values()])
@@ -51,22 +51,24 @@ def process_word_freq(data: dict[str, pd.DataFrame], config: dict,
         os.makedirs(output_path, exist_ok=True)
 
     for llm_name, df in data.items():
-        vectors = vectorizer.transform(df['response']).toarray().tolist()  # list of lists
+        sparse_vectors = vectorizer.transform(df['response'])
+        response_vectors = [sparse_vectors[i] for i in range(sparse_vectors.shape[0])]
         processed_df = df.copy()
-        processed_df['response_vector'] = vectors
+        processed_df['response_vector'] = response_vectors  # list of csr_matrix
         processed_df = processed_df.drop(columns=['response'])
         processed_data[llm_name] = processed_df
 
         if output_path:
-            with open(os.path.join(output_path, f"{llm_name}.json"), 'w') as f:
-                json.dump(processed_df.to_dict(orient='records'), f)
+            # Save as pickle instead of JSON; JSON can't handle sparse matrix
+            with open(os.path.join(output_path, f"{llm_name}.pkl"), 'wb') as f:
+                pickle.dump(processed_df, f)
 
     # If we fitted and output_path provided, save the vectorizer
     if do_fit and output_path:
         with open(os.path.join(output_path, 'vectorizer.pkl'), 'wb') as f:
             pickle.dump(vectorizer, f)
 
-    return processed_data, vectorizer if do_fit else None  # NEW: Return vectorizer if fitted
+    return processed_data, vectorizer if do_fit else None
 
 
 def process_embeddings(data: dict[str, pd.DataFrame], config: dict,
@@ -90,8 +92,8 @@ def process_embeddings(data: dict[str, pd.DataFrame], config: dict,
         processed_data[llm_name] = processed_df
 
         if output_path:
-            with open(os.path.join(output_path, f"{llm_name}.json"), 'w') as f:
-                json.dump(processed_df.to_dict(orient='records'), f)
+            with open(os.path.join(output_path, f"{llm_name}.pkl"), 'wb') as f:
+                pickle.dump(processed_df, f)
 
     return processed_data
 
@@ -109,7 +111,7 @@ def process_and_save(split_data: dict[str, pd.DataFrame], clf_config: dict,
             fitted_vectorizer = load_fitted_vectorizer(clf_method_name, 'train')
             if fitted_vectorizer is None:
                 raise FileNotFoundError(f"Fitted vectorizer from train not found for {clf_method_name}")
-        processed, _ = process_word_freq(split_data, clf_config, output_path, fitted_vectorizer)  # NEW: Ignore returned vectorizer
+        processed, _ = process_word_freq(split_data, clf_config, output_path, fitted_vectorizer)
         return processed
     else:
         return process_embeddings(split_data, clf_config, output_path)
@@ -127,12 +129,11 @@ def load_processed(clf_method_name: str, split_name: str) -> dict[str, pd.DataFr
 
     data = {}
     for file in os.listdir(input_path):
-        if file.endswith('.json'):
-            model_name = file.replace('.json', '')
-            with open(os.path.join(input_path, file), 'r') as f:
-                raw_list = json.load(f)
-            df = pd.DataFrame(raw_list)
-            df['model'] = model_name
-            data[model_name] = df
+        if file.endswith('.pkl'):
+            llm_name = file.replace('.pkl', '')
+            with open(os.path.join(input_path, file), 'rb') as f:
+                df = pickle.load(f)
+            df['model'] = llm_name
+            data[llm_name] = df
 
     return data

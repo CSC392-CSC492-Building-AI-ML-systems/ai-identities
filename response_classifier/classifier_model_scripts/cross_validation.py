@@ -1,12 +1,14 @@
-from sklearn.model_selection import KFold
+from sklearn.model_selection import StratifiedKFold
 import pandas as pd
 import numpy as np
 from evaluator import compute_metrics
 from classifier_model import compute_library_averages, predict_unknown, get_metric_func
-from data_processor import process_word_freq, process_embeddings, process_and_save, load_processed
+from data_processor import process_word_freq, process_and_save, load_processed
 import json
 from sklearn.preprocessing import normalize
 import time
+from tqdm import tqdm
+import os
 
 
 def perform_5fold_cv_for_method(train_data: dict[str, pd.DataFrame], clf_method: dict,
@@ -25,23 +27,31 @@ def perform_5fold_cv_for_method(train_data: dict[str, pd.DataFrame], clf_method:
     # Sort keys for consistent concat order
     sorted_keys = sorted(train_data.keys())
     all_train_raw = pd.concat([train_data[key].assign(model=key) for key in sorted_keys])
-    kf = KFold(n_splits=5, shuffle=True, random_state=42)
+    all_train_raw['stratum'] = (
+            all_train_raw['model'] + '|' +
+            all_train_raw['prompt'] + '|' +
+            all_train_raw['temp_bin']
+    )
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
     # Pre-process the full train once for embeddings to avoid recomputing per fold (efficient)
     # For word freq, we'll process per fold later to fit only on train_fold
     full_processed = None
+    embedding_preprocessing_time = 0.0
     if 'vectorizer' not in clf_method:  # Embeddings only
         process_start = time.time()
         try:
             full_processed = load_processed(clf_method_name, 'train')
         except FileNotFoundError:
             full_processed = process_and_save(train_data, clf_method, clf_method_name, 'train')
-        time.time() - process_start  # Pre-processing time (not per-fold; note for embeddings, per-fold time below is just subsetting)
+        embedding_preprocessing_time = time.time() - process_start
 
     fold_metrics_dict = {}  # Keyed by metric name (e.g., 'cosine', 'euclidean')
     fold_times = []  # Per-fold times
 
-    for fold_num, (train_idx, val_idx) in enumerate(kf.split(all_train_raw)):
+    for fold_num, (train_idx, val_idx) in enumerate(
+            tqdm(skf.split(all_train_raw, all_train_raw['stratum']),
+                 total=skf.get_n_splits(), desc=f"CV: {clf_method_name}", unit="fold")):
         fold_start = time.time()
 
         train_fold_raw = all_train_raw.iloc[train_idx]
@@ -108,7 +118,7 @@ def perform_5fold_cv_for_method(train_data: dict[str, pd.DataFrame], clf_method:
         fold_time = time.time() - fold_start
         fold_times.append({
             'fold': fold_num + 1,
-            'processing_time': processing_time,  # Per fold now
+            'processing_time': [embedding_preprocessing_time, processing_time],
             'avg_computation_time': avg_time,
             'prediction_time': pred_time_total,
             'metrics_time': metrics_time_total,
@@ -135,6 +145,11 @@ def perform_5fold_cv_for_method(train_data: dict[str, pd.DataFrame], clf_method:
         'total_cv_time': time.time() - start_total
     }
     avg_results['times'] = avg_times
+
+    # Create output directory if it doesn't exist
+    output_dir = os.path.dirname(output_file)
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
 
     # Write all results
     with open(output_file, 'a') as f:

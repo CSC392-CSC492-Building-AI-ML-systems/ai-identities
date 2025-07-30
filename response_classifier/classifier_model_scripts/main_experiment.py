@@ -46,8 +46,8 @@ def main(args):
         if not args.method:
             raise ValueError("For 'cross_validation' action, --method is required (e.g., nomic_cosine)")
 
-        classification_method = next((m for m in methods_cfg['embeddings'] + methods_cfg['word_freq'] if
-                       m['name'] == args.method), None)
+        classification_method = next((m for m in methods_cfg['embeddings'] + methods_cfg['word_freq']
+                                      if m['name'] == args.method), None)
         if not classification_method:
             raise ValueError(f"Method '{args.method}' not found in config")
         with open('../data/splits/train.pkl', 'rb') as f:
@@ -58,8 +58,8 @@ def main(args):
         if not args.method:
             raise ValueError("For 'evaluate' action, --method is required (e.g., nomic_cosine)")
 
-        classification_method = next((m for m in methods_cfg['embeddings'] + methods_cfg['word_freq'] if
-                       m['name'] == args.method), None)
+        classification_method = next((m for m in methods_cfg['embeddings'] + methods_cfg['word_freq']
+                                      if m['name'] == args.method), None)
         if not classification_method:
             raise ValueError(f"Method '{args.method}' not found in config")
 

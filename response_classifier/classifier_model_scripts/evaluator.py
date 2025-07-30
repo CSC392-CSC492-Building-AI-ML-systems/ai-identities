@@ -8,6 +8,7 @@ import json
 from classifier_model import compute_library_averages, predict_unknown, get_metric_func
 from data_processor import process_and_save, load_processed, process_word_freq, process_embeddings, load_fitted_vectorizer
 from sklearn.preprocessing import normalize
+import os
 
 
 def compute_metrics(predictions: dict[str, dict[str, list[str]]]) -> dict:
@@ -137,6 +138,11 @@ def evaluate_final_model(selected_method: dict, train_data: dict, test_data: dic
     held_out_preds = predict_unknown(held_out_processed, library_avgs, metric_func,
                                      top_k=3, do_normalize=do_normalize)
     held_out_metrics = compute_metrics(held_out_preds)
+
+    # Create output directory if it doesn't exist
+    output_dir = os.path.dirname(output_file)
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
 
     results = {'test': test_metrics, 'held_out': held_out_metrics}
     with open(output_file, 'w') as f:

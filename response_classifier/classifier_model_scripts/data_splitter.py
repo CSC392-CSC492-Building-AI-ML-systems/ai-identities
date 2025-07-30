@@ -19,12 +19,9 @@ def bin_temperatures(df: pd.DataFrame, bins: dict) -> pd.DataFrame:
     :return: A modified DataFrame with an additional 'temp_bin' column.
     """
     conditions = [
-        (df['temperature'] >= bins['low']['min']) & (
-                    df['temperature'] < bins['low']['max']),
-        (df['temperature'] >= bins['medium']['min']) & (
-                    df['temperature'] < bins['medium']['max']),
-        (df['temperature'] >= bins['high']['min']) & (
-                    df['temperature'] < bins['high']['max'])
+        (df['temperature'] >= bins['low']['min']) & (df['temperature'] < bins['low']['max']),
+        (df['temperature'] >= bins['medium']['min']) & (df['temperature'] < bins['medium']['max']),
+        (df['temperature'] >= bins['high']['min']) & (df['temperature'] < bins['high']['max'])
     ]
     choices = ['low', 'medium', 'high']
     df['temp_bin'] = np.select(conditions, choices, default='unknown')
