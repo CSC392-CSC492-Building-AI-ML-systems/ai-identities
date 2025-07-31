@@ -93,10 +93,9 @@ def predict_unknown(unknown_data: dict[str, pd.DataFrame], library_avgs: dict,
         for prompt, group in df.groupby('prompt'):
             if len(group) == 0:
                 continue
-            sparse_group = group[vector_col].tolist()
-            stacked = sparse_vstack(sparse_group)
-            avg_vec = stacked.mean(axis=0)  # Sparse (1 x dim)
-            avg_vec = _as_ndarray(avg_vec)
+
+            # Use the existing helper function that handles both sparse and dense vectors
+            avg_vec = get_avg_vec(group, vector_col)
             if do_normalize:
                 avg_vec = normalize(avg_vec, norm='l2')
 

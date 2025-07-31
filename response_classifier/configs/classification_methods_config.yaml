@@ -19,12 +19,17 @@ word_freq:
     metric: cosine_similarity
     ngram_range: [3, 3]
     normalize_vectors: true
+    max_features: 20000
 embeddings:
-  - name: nomic
-    model: nomic-ai/nomic-embed-text-v1.5
+  - name: gte_emb
+    model: Alibaba-NLP/gte-multilingual-base
     metric: cosine_similarity
     normalize_vectors: false
-  - name: gte
-    model: Alibaba-NLP/gte-multilingual-base
+  - name: jina_emb
+    model: jinaai/jina-embeddings-v3
+    metric: cosine_similarity
+    normalize_vectors: false
+  - name: potion_emb
+    model: minishlab/potion-multilingual-128M
     metric: cosine_similarity
     normalize_vectors: false

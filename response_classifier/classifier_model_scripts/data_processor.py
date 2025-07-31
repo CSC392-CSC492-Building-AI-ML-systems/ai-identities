@@ -3,6 +3,8 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sentence_transformers import SentenceTransformer
 import pickle
+from tqdm import tqdm
+
 
 VECTORIZER_MAP = {
     'CountVectorizer': CountVectorizer,
@@ -78,13 +80,13 @@ def process_embeddings(data: dict[str, pd.DataFrame], config: dict,
     If output_path provided, also saves.
     """
     embedding_model_name = config['model']
-    embedding_model = SentenceTransformer(embedding_model_name)
+    embedding_model = SentenceTransformer(embedding_model_name, trust_remote_code=True)
 
     processed_data = {}
     if output_path:
         os.makedirs(output_path, exist_ok=True)
 
-    for llm_name, df in data.items():
+    for llm_name, df in tqdm(data.items(), desc="Processing LLMs", unit="model", leave=True):
         vectors = embedding_model.encode(df['response'].tolist()).tolist()  # list of lists
         processed_df = df.copy()
         processed_df['response_vector'] = vectors
