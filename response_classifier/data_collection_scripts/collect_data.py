@@ -10,8 +10,8 @@ from openai import OpenAI
 from tqdm import tqdm
 
 
-MODEL_JSON = 'llm_set1.json'
-PROMPT_JSON = 'user_prompt_set.json'
+MODEL_JSON = 'llm_set.json'
+PROMPT_JSON = 'user_prompts.json'
 BASE_DIR = 'data/raw_data'
 
 
@@ -20,30 +20,42 @@ def parse_arguments():
     Parse command-line arguments.
     """
     parser = argparse.ArgumentParser(description="Collect LLM responses from Deepinfra")
-    parser.add_argument('--model', type=str,
-                        help="Single model name to process (e.g., Qwen/Qwen3-235B-A22B)")
+    # File path arguments
+    parser.add_argument('--llm-file', type=str, required=True,
+                        help="Path to the JSON file containing model names and metadata.")
+    parser.add_argument('--prompt-file', type=str, required=True,
+                        help="Path to the JSON file containing user prompts.")
+    parser.add_argument('--output-dir', type=str, required=True,
+                        help="Directory to save the output JSON files.")
+    parser.add_argument('--system-prompt-file', type=str, default=None,
+                        help="Optional: Path to a JSON file with system prompts. If provided, collection will run for each system prompt.")
+
+    # Data collection control arguments
+    parser.add_argument('--llm', type=str,
+                        help="Single LLM name to process from the LLM file (e.g., Qwen/Qwen3-235B-A22B).")
     parser.add_argument('--all', action='store_true',
-                        help="Process all models from llm_set1.json where data_collected is false")
+                        help="Process all LLMs from the LLM file where data_collected is false")
     parser.add_argument('--recollect-missing-data', type=str,
-                        help="Recollect only missing data points (where response is null) for specified model. Provide a model name.")
+                        help="Recollect only missing data points (where response is null) for specified LLM. Provide an LLM name.")
     parser.add_argument('--prevent-cache', action='store_true',
                         help="Add unique ID to prompts to prevent potential caching")
+    parser.add_argument('--force', action='store_true',
+                        help="Force collection even if data exists or data_collected is true")
+    parser.add_argument('--max-workers', type=int, default=125,
+                        help="Max concurrent threads (default: 125; adjust for rate limits)")
+
+    # Data collection parameter arguments
     parser.add_argument('--max-tokens', type=int, default=3500,
                         help="Max tokens for responses (default: 3500)")
     parser.add_argument('--temperature', type=float, default=0.7,
                         help="Temperature for generation when data_point_num=1 (default: 0.7)")
-    parser.add_argument('--system-prompt', type=str, default="",
-                        help="Optional system prompt (e.g., 'You are a helpful assistant')")
-    parser.add_argument('--max-workers', type=int, default=125,
-                        help="Max concurrent threads (default: 125; adjust for rate limits)")
-    parser.add_argument('--force', action='store_true',
-                        help="Force collection even if data exists or data_collected is true")
     parser.add_argument('--low-bin-num', type=int, default=0,
                         help="Number of data points in low temp bin [0.0, 0.4) (must be multiple of 6 if >0; default is 0)")
     parser.add_argument('--med-bin-num', type=int, default=0,
                         help="Number of data points in med temp bin [0.4, 0.8) (must be multiple of 6 if >0; default is 0)")
     parser.add_argument('--high-bin-num', type=int, default=0,
                         help="Number of data points in high temp bin [0.8, 1.2) (must be multiple of 6 if >0; default is 0)")
+
     return parser.parse_args()
 
 
@@ -75,11 +87,8 @@ def generate_llm_temperatures(low, high, num) -> list[float]:
     """
     Generate evenly spaced temperatures for a bin.
     """
-    if num == 0:
-        return []
-    if num == 1:
-        return [low]  # Start of the bin for single point
-
+    if num == 0: return []
+    if num == 1: return [low]
     step = (high - low) / num
     temps = [round(low + i * step, 2) for i in range(num)]
     return temps
@@ -103,9 +112,10 @@ def generate_temps_list(args) -> list[float]:
         return low_temps + med_temps + high_temps
 
 
-def process_prompt(prompt, temperature, model, args, openai_client) -> dict:
+def process_prompt(model, prompt, temperature, system_prompt, args, openai_client) -> dict:
     """
-    Processes a single prompt at a specific temperature.
+    Processes a single prompt at a specific temperature, optionally with a
+    system prompt.
     """
     if args.prevent_cache:
         unique_id = str(uuid.uuid4())
@@ -114,8 +124,8 @@ def process_prompt(prompt, temperature, model, args, openai_client) -> dict:
         modified_prompt = prompt
 
     messages = [{"role": "user", "content": modified_prompt}]
-    if args.system_prompt:
-        messages.insert(0, {"role": "system", "content": args.system_prompt})
+    if system_prompt:
+        messages.insert(0, {"role": "system", "content": system_prompt})
 
     max_retries = 3
     for attempt in range(max_retries):
@@ -126,12 +136,12 @@ def process_prompt(prompt, temperature, model, args, openai_client) -> dict:
                 max_tokens=args.max_tokens,
                 temperature=temperature
             )
-            generated_text = response.choices[0].message.content.strip()
             return {
                 'prompt': prompt,
                 'modified_prompt': modified_prompt if args.prevent_cache else None,
-                'response': generated_text,
+                'response': response.choices[0].message.content.strip(),
                 'temperature': temperature,
+                'system_prompt': system_prompt,
                 'timestamp': time.time(),
                 'error': None,
                 'attempt': attempt + 1
@@ -143,6 +153,7 @@ def process_prompt(prompt, temperature, model, args, openai_client) -> dict:
                     'modified_prompt': modified_prompt if args.prevent_cache else None,
                     'response': None,
                     'temperature': temperature,
+                    'system_prompt': system_prompt,
                     'timestamp': time.time(),
                     'error': str(e),
                     'attempt': attempt + 1
@@ -150,42 +161,49 @@ def process_prompt(prompt, temperature, model, args, openai_client) -> dict:
             time.sleep(2 ** attempt)
 
 
-def process_model(model, args, prompts, temps_list, openai_client, json_lock):
+def process_model(model_name, model_meta_path, args, prompts, temps_list, system_prompts,
+                  openai_client, json_lock):
     """
     Process data collection for a single model.
     """
     # Note that Deepinfra model names contain `/` so we replace it with `_`
-    model_filename = model.replace('/', '_') + '.json'
-    output_file = os.path.join(BASE_DIR, model_filename)
+    model_filename = model_name.replace('/', '_') + '.json'
+    output_file = os.path.join(args.output_dir, model_filename)
 
     # Skip if data exists and --force is not set
     if os.path.exists(output_file) and not args.force:
-        print(f"Skipping {model} (data already exists at {output_file}). Use --force to re-collect.")
+        print(f"Skipping {model_name} (data already exists at {output_file}). Use --force to re-collect.")
         return
 
     # Store responses from `model`
     responses = []
+    tasks = []
+    # If system prompts are provided, iterate through them. Otherwise, use a single placeholder.
+    active_system_prompts = system_prompts if system_prompts else [None]
+    for sys_prompt in active_system_prompts:
+        for user_prompt in prompts:
+            for temp in temps_list:
+                tasks.append((model_name, user_prompt, temp, sys_prompt))
 
     # Use ThreadPoolExecutor for parallelism on (prompt, temperature) pairs
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.max_workers) as executor:
-        tasks = [(prompt, temp) for prompt in prompts for temp in temps_list]
-        future_to_task = {executor.submit(process_prompt, p, t, model, args, openai_client): (p, t) for p, t in tasks}
+        future_to_task = {executor.submit(process_prompt, *task, args, openai_client): task for task in tasks}
         for future in tqdm(concurrent.futures.as_completed(future_to_task),
-                           total=len(tasks), desc=f"Collecting response data for {model}", leave=False):
+                           total=len(tasks), desc=f"Collecting response data for {model_name}", leave=False):
             responses.append(future.result())
 
     # Save LLM response data for `model` to JSON file
     with open(output_file, 'w') as f:
         json.dump(responses, f, indent=4)
 
-    # Update llm_set1.json to set data_collected=True for `model`
+    # Update the JSON file storing the set of LLMs. Set data_collected=True for `model`.
     with json_lock:
-        updated_model_data = load_json_file(MODEL_JSON)
+        updated_model_data = load_json_file(model_meta_path)
         for entry in updated_model_data:
-            if entry['model_name'] == model:
+            if entry['model_name'] == model_name:
                 entry['data_collected'] = True
                 break
-        with open(MODEL_JSON, 'w') as f:
+        with open(model_meta_path, 'w') as f:
             json.dump(updated_model_data, f, indent=4)
 
 
@@ -235,6 +253,8 @@ def main():
     Main entry point for the script.
     """
     args = parse_arguments()
+    openai_client = load_environment()
+
     if args.model and args.all:
         raise ValueError("Cannot use both --model and --all")
     if not args.model and not args.all and not args.recollect_missing_data:
@@ -242,27 +262,25 @@ def main():
     if args.force and args.recollect_missing_data:
         raise ValueError("Cannot use --force with --recollect-missing-data")
 
-
-    openai_client = load_environment()
-
-    # Load user prompts and model data
+    # Load user prompts, LLM set, and system prompts
     prompts = load_json_file(PROMPT_JSON)
     model_data = load_json_file(MODEL_JSON)
+    system_prompts = load_json_file(args.system_prompt_file) if args.system_prompt_file else None
 
     # Create a list of models to process and collect data from
     if args.all:
-        models = [entry['model_name'] for entry in model_data
+        models_to_process = [entry['model_name'] for entry in model_data
                   if (not entry.get('data_collected', False) or args.force)]
     elif args.recollect_missing_data:
-        models = [args.recollect_missing_data]
+        models_to_process = [args.recollect_missing_data]
     elif args.model:
-        models = [args.model]
+        models_to_process = [args.model]
 
-    if not models:
+    if not models_to_process:
         print("No models to process (all data already collected or invalid selection).")
         return
 
-    os.makedirs(BASE_DIR, exist_ok=True)  # Ensure base dir exists
+    os.makedirs(args.output_dir, exist_ok=True)  # Ensure base dir exists
     model_json_lock = threading.Lock()  # Lock for thread-safe JSON updates
     temps_list = generate_temps_list(args)  # Generate llm temperature list
 
@@ -271,19 +289,20 @@ def main():
         if args.recollect_missing_data:
             future_to_model = {
                 model_executor.submit(
-                    recollect_missing_for_model, model, args, openai_client
-                ): model for model in models
+                    recollect_missing_for_model, model_name, args, openai_client
+                ): model_name for model_name in models_to_process
             }
         else:
             future_to_model = {
-                model_executor.submit(
-                    process_model, model, args, prompts, temps_list, openai_client, model_json_lock
-                ): model for model in models
+                model_executor.submit(process_model, model_name, args.model_file,
+                                      args, prompts, temps_list, system_prompts,
+                                      openai_client, model_json_lock): model_name
+                for model_name in models_to_process
             }
-        for future in tqdm(concurrent.futures.as_completed(future_to_model), total=len(models), desc="Processing models", leave=True):
+        for future in tqdm(concurrent.futures.as_completed(future_to_model), total=len(models_to_process), desc="Processing models", leave=True):
             future.result()  # Wait for completion
 
-    print(f"Data collection complete. Saved responses to {BASE_DIR}")
+    print(f"Data collection complete. Saved responses to {args.output_dir}")
 
 
 if __name__ == "__main__":
