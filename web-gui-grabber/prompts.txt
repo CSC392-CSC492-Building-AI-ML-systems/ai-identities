@@ -1,0 +1,7 @@
+[
+  "Write me a basic homepage in pure html, NO CSS OR JAVAASCRIPT",
+  "Write me a basic TODO react app",
+  "How does blockchain work?",
+  "Explain why we can't go faster than light",
+  "How did we discover the quadratic equation?" 
+]
