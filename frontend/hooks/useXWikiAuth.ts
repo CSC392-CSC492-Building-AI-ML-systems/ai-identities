@@ -1,53 +1,52 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export function useXWikiAuth() {
-  const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
+  const [loggedIn, setLoggedIn] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function checkAuth() {
-      console.log('[useXWikiAuth] Running checkAuth()...');
-
+    const checkAuth = async () => {
       try {
-        const res = await fetch(
-          `/api/xwiki-proxy?path=bin/view/XWiki/CurrentUser?xpage=plain`,
-          { credentials: 'include' }
-        );
+        const res = await fetch('http://159.203.20.200:8080/bin/view/XWiki/CurrentUser', {
+          method: 'GET',
+          credentials: 'include',
+          redirect: 'manual',
+        });
 
-        console.log('[useXWikiAuth] Response status:', res.status, res.statusText);
+        if (res.status === 200) {
+          const text = await res.text();
 
-        const text = (await res.text()).trim();
-        const cleanText = text.replace(/<[^>]+>/g, '').trim(); // strip HTML tags
-        console.log('[useXWikiAuth] Raw response text:', text);
-        console.log('[useXWikiAuth] Clean response text:', cleanText);
+          // Parse the HTML using DOMParser (safer than regex)
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(text, 'text/html');
 
-        if (!res.ok) {
-          console.error('[useXWikiAuth] Request failed. Treating as logged out.');
-          setLoggedIn(false);
-          setUsername(null);
-          return;
-        }
+          const htmlEl = doc.querySelector('html');
+          const userRef = htmlEl?.getAttribute('data-xwiki-user-reference');
 
-        if (text.includes('XWikiGuest')) {
-          console.log('[useXWikiAuth] Detected guest user.');
-          setLoggedIn(false);
-          setUsername(null);
+          if (userRef && userRef.startsWith('xwiki:XWiki.')) {
+            const username = userRef.split('xwiki:XWiki.')[1];
+            setUsername(username);
+            setLoggedIn(true);
+          } else {
+            setUsername(null);
+            setLoggedIn(false);
+          }
         } else {
-          console.log('[useXWikiAuth] Detected logged-in user:', text);
-          setLoggedIn(true);
-          setUsername(text.replace('XWiki.', '').trim());
+          setUsername(null);
+          setLoggedIn(false);
         }
-      } catch (error) {
-        console.error('[useXWikiAuth] Error fetching CurrentUser:', error);
-        setLoggedIn(false);
+      } catch (err) {
+        console.error('Auth check failed:', err);
         setUsername(null);
+        setLoggedIn(false);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
     checkAuth();
   }, []);
 
-  return { loggedIn, username, loading: loggedIn === null };
+  return { loggedIn, username, loading };
 }

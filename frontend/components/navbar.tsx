@@ -16,6 +16,7 @@ export default function Navbar() {
   const router = useRouter(); 
   const pathname = usePathname();  // To track the current route
 
+  console.log(loggedIn, "     ", username, "    ", loading)
   const checkAuth = () => {
     const token = localStorage.getItem("accessToken");
     setIsAuthenticated(!!token); // Convert to boolean
@@ -63,12 +64,12 @@ export default function Navbar() {
 
   const handleLogin = () => {
     const redirectUrl = encodeURIComponent('http://159.203.20.200:8080/bin/view/redir');
-    window.location.href = `/bin/login/XWiki/XWikiLogin?xredirect=${redirectUrl}`;
+    window.location.href = `http://159.203.20.200:8080/bin/login/XWiki/XWikiLogin?xredirect=${redirectUrl}`;
   };
 
   const handleLogout = () => {
     const redirectUrl = encodeURIComponent('http://159.203.20.200:8080/bin/view/redir');
-    window.location.href = `/bin/logout/XWiki/XWikiLogout?xredirect=${redirectUrl}`;
+    window.location.href = `http://159.203.20.200:8080/bin/logout/XWiki/XWikiLogout?xredirect=${redirectUrl}`;
   };
 
   return (
