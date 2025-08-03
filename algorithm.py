@@ -8,7 +8,10 @@ def main():
     result = {
         "chatgpt": 60,
         "gemini": 30,
-        "claude": 10
+        "claude": 9,
+        "llama": 8,
+        "mistral": 6,
+        "gpt4": 4
     }
     print(json.dumps(result))
 

@@ -14,10 +14,20 @@ export default function IdentifyPage() {
     type: "success" | "error" | null;
     message: string;
   }>({ type: null, message: "" });
-  // store analysis results
+  // store analysis results, persisted in localStorage
   const [results, setResults] = useState<{
     [key: string]: number;
-  } | null>(null);
+  } | null>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('identify_results');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {}
+      }
+    }
+    return null;
+  });
   // store the uploaded file before analysis
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
@@ -50,6 +60,9 @@ export default function IdentifyPage() {
           message: `File \"${result.filename}\" analyzed successfully!`,
         });
         setResults(result.analysis);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('identify_results', JSON.stringify(result.analysis));
+        }
       } else {
         setUploadStatus({
           type: "error",
@@ -123,23 +136,34 @@ export default function IdentifyPage() {
 
       {/* Show only results after upload */}
       {results && !uploading && (
-        <div className="mt-32 w-full max-w-2xl bg-[#2D2A5A] rounded-2xl p-10 shadow-lg">
-          <h2 className="text-4xl font-bold text-[#F3F3FF] mb-8 text-center">Identification Results</h2>
-          <div className="space-y-8">
-            {Object.entries(results).map(([name, percent]) => (
-              <AnimatedBar key={name} name={name} percent={percent} />
-            ))}
+        <>
+          <div className="mt-32 w-full max-w-2xl bg-[#2D2A5A] rounded-2xl p-10 shadow-lg">
+            <h2 className="text-4xl font-bold text-[#F3F3FF] mb-8 text-center">Identification Results</h2>
+            <div className="space-y-8">
+              {Object.entries(results).slice(0, 3).map(([name, percent]) => (
+                <AnimatedBar key={name} name={name} percent={percent} />
+              ))}
+            </div>
+            <div className="flex items-center gap-3 mt-12 justify-center">
+              <span className="text-[#F3F3FF] text-base font-medium">Download Advanced Results</span>
+              <DownloadAdvancedResultsButton results={results} />
+            </div>
           </div>
-          <button
-            className="mt-12 w-full bg-[#23204a] text-[#F3F3FF] px-8 py-4 rounded-xl text-2xl font-bold hover:bg-[#1a1833] transition"
+          <Button
+            className="mt-8 !bg-[#2D2A5A] text-white hover:outline hover:outline-2 hover:outline-[#F3F3FF] border-none transition-transform duration-300 hover:scale-105"
+            style={{ backgroundColor: '#2D2A5A', alignSelf: 'center', display: 'block' }}
             onClick={() => {
               setResults(null);
               setUploadStatus({ type: null, message: "" });
+              if (typeof window !== 'undefined') {
+                localStorage.removeItem('identify_results');
+              }
             }}
+            disabled={uploading}
           >
             New Identification
-          </button>
-        </div>
+          </Button>
+        </>
       )}
     </main>
   );
@@ -174,9 +198,9 @@ function FilePreview({ file }: { file: File }) {
 function FilePreviewToggle({ file }: { file: File }) {
   const [open, setOpen] = React.useState(false);
   return (
-    <div className="mt-6 w-full max-w-xl mx-auto animate-fade-in-up">
+    <div className="mt-6 w-full max-w-xl mx-auto animate-fade-in-up flex flex-col items-center">
       <button
-        className="w-full bg-[#18163a] text-[#F3F3FF] rounded-lg p-4 shadow-inner font-semibold flex items-center justify-between hover:bg-[#23204a] transition mb-1"
+        className="max-w-md w-auto bg-[#18163a] text-[#F3F3FF] rounded-lg p-4 shadow-inner font-semibold flex items-center justify-between hover:bg-[#23204a] transition mb-1 mx-auto"
         onClick={() => setOpen((v) => !v)}
         type="button"
       >
@@ -239,16 +263,55 @@ function AnimatedBar({ name, percent }: { name: string; percent: number }) {
   return (
     <div className="flex items-center gap-8">
       <div className="w-40 text-[#F3F3FF] text-2xl font-bold capitalize">{name}</div>
-      <div className="flex-1 h-12 flex items-center min-w-[300px]">
-        <div className="w-full h-full bg-[#050a1f] rounded-lg relative overflow-hidden border-4 border-[#050a1f]">
-          <div
-            className="h-full rounded-lg transition-all duration-1000 ease-out absolute top-0 left-0"
-            style={{ width: `${displayPercent}%`, background: barColor }}
-          ></div>
+      <div className="flex-1 h-12 flex items-center min-w-[400px] max-w-[700px]">
+        <div className="w-full h-full flex items-center justify-center">
+          <div className="bg-[#2D2A5A] rounded-xl w-full flex items-center justify-between border-4 border-[#050a1f]" style={{ minWidth: '400px', maxWidth: '700px', height: '48px' }}>
+            <div className="w-full h-10 bg-[#050a1f] rounded-l-lg relative overflow-hidden border-4 border-[#050a1f]">
+              <div
+                className="h-full rounded-lg transition-all duration-1000 ease-out absolute top-0 left-0"
+                style={{ width: `${displayPercent}%`, background: barColor }}
+              ></div>
+            </div>
+            <span className="text-[#F3F3FF] text-2xl font-bold ml-2 mr-1.5 w-16 min-w-[48px] flex items-center justify-center">{displayPercent}%</span>
+          </div>
         </div>
       </div>
-      <div className="w-24 text-[#F3F3FF] text-2xl font-bold text-right">{displayPercent}%</div>
     </div>
+  );
+}
+
+// Download button for advanced results (top 6)
+function DownloadAdvancedResultsButton({ results }: { results: { [key: string]: number } }) {
+  function handleDownload() {
+    if (!results) return;
+    // Get top 6 entries
+    const top6 = Object.entries(results)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .reduce((acc, [k, v]) => { acc[k] = v; return acc; }, {} as { [key: string]: number });
+    const blob = new Blob([
+      JSON.stringify(top6, null, 2)
+    ], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'advanced_results.txt';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 100);
+  }
+  return (
+    <Button
+      className="!bg-[#2D2A5A] text-white hover:outline hover:outline-2 hover:outline-[#F3F3FF] border-none transition-transform duration-300 hover:scale-105 px-6 py-3 text-base font-semibold"
+      style={{ backgroundColor: '#2D2A5A', alignSelf: 'center', minWidth: 0, display: 'inline-block' }}
+      onClick={handleDownload}
+      disabled={!results}
+    >
+      Download
+    </Button>
   );
 }
 
