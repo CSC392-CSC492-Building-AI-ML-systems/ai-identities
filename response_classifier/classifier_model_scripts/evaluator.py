@@ -9,7 +9,7 @@ import json
 import os
 from classifier_model import compute_library_averages, predict_unknown, get_metric_func
 from data_processor import load_processed, load_fitted_vectorizer, process_word_freq, process_embeddings
-from response_classifier.classifier_model_scripts.llm_meta_data import load_llm_meta_data, get_llm_family_and_branch
+from llm_meta_data import load_llm_meta_data, get_llm_family_and_branch
 
 
 def compute_metrics(predictions: dict[str, dict[str, list[str]]]) -> dict:

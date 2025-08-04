@@ -1,4 +1,4 @@
-raw_data_path: ../data/raw_data/
+raw_data_path: ../data/base_dataset_raw_data/
 temp_bins:
   low: {min: 0.0, max: 0.4, num_points: 12}
   medium: {min: 0.4, max: 0.8, num_points: 24}

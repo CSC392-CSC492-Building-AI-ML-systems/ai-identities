@@ -147,9 +147,6 @@ def log_cot_analysis(data, model_stats, special_models, total_responses):
 
 
 if __name__ == '__main__':
-    data, model_stats, special_models, total_responses = load_raw_data('../data/raw_data/')
-    # log_cot_analysis(data, model_stats, special_models, total_responses)
-    df = data['google_gemma-3-12b-it']
-    print(df.info())
-    print(df.head())
-    print(df['prompt'])
+    data, model_stats, special_models, total_responses = load_raw_data(
+        '../data/base_dataset_raw_data/')
+    log_cot_analysis(data, model_stats, special_models, total_responses)

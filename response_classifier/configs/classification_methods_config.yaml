@@ -1,13 +1,8 @@
 word_freq:
   - name: raw_freq_unigram
     vectorizer: CountVectorizer
-    metric: cosine_similarity  # Primary; use --eval_both for both
-    ngram_range: [1, 1]
-    normalize_vectors: true
-  - name: raw_freq_trigram
-    vectorizer: CountVectorizer
     metric: cosine_similarity
-    ngram_range: [3, 3]
+    ngram_range: [1, 1]
     normalize_vectors: true
   - name: tfidf_unigram
     vectorizer: TfidfVectorizer
@@ -21,14 +16,6 @@ word_freq:
     normalize_vectors: true
     max_features: 20000
 embeddings:
-  - name: gte_emb
-    model: Alibaba-NLP/gte-multilingual-base
-    metric: cosine_similarity
-    normalize_vectors: false
-  - name: jina_emb
-    model: jinaai/jina-embeddings-v3
-    metric: cosine_similarity
-    normalize_vectors: false
   - name: potion_emb
     model: minishlab/potion-multilingual-128M
     metric: cosine_similarity
