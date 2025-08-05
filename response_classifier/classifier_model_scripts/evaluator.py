@@ -12,29 +12,32 @@ from data_processor import load_processed, load_fitted_vectorizer, process_word_
 from llm_meta_data import load_llm_meta_data, get_llm_family_and_branch
 
 
-def compute_metrics(predictions: dict[str, dict[str, list[str]]]) -> dict:
+def compute_metrics(predictions: dict[str, dict]) -> dict:
     """
     Compute metrics: top1/top3 acc, f1, etc. + confusion matrix.
-    Assumes predictions are nested: {llm: {prompt: top-k list}}.
-    Flattens to per (llm, prompt) predictions.
+    Assumes predictions are nested: {llm: {group_key: top-k list}}, where
+    group_key is str or tuple. Flattens to per unique group for metrics.
     """
-    # For each (llm, user prompt) pairs
+    # For each (llm, group_key) pairs (group_key could be str or tuple)
     true_labels = []
     top1_pred_labels = []
     top3_pred_lists = []
-    for llm, prompt_preds in predictions.items():
-        for prompt, pred_list in prompt_preds.items():
+    for llm, group_preds in predictions.items():
+        for group_key, pred_list in group_preds.items():
             true_labels.append(llm)
-            top1_pred_labels.append(pred_list[0])
-            top3_pred_lists.append(pred_list)
+            if pred_list:
+                top1_pred_labels.append(pred_list[0])
+                top3_pred_lists.append(pred_list)
+            else:
+                top1_pred_labels.append('unknown')
+                top3_pred_lists.append([])
 
     top1_acc = accuracy_score(true_labels, top1_pred_labels)
     top3_acc = np.mean([true in top3 for true, top3 in zip(true_labels, top3_pred_lists)])
-    f1 = f1_score(true_labels, top1_pred_labels, average='macro')
-    precision = precision_score(true_labels, top1_pred_labels, average='macro')
-    recall = recall_score(true_labels, top1_pred_labels, average='macro')
+    f1 = f1_score(true_labels, top1_pred_labels, average='macro', zero_division=0)
+    precision = precision_score(true_labels, top1_pred_labels, average='macro', zero_division=0)
+    recall = recall_score(true_labels, top1_pred_labels, average='macro', zero_division=0)
 
-    # Modified: Include all unique labels from true and pred to avoid ValueError
     all_labels = sorted(set(true_labels) | set(top1_pred_labels))
     cm = confusion_matrix(true_labels, top1_pred_labels, labels=all_labels)
     return {

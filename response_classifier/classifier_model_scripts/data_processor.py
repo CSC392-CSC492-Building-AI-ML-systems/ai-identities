@@ -131,11 +131,15 @@ def load_processed(clf_method_name: str, split_name: str) -> dict[str, pd.DataFr
 
     data = {}
     for file in os.listdir(input_path):
-        if file.endswith('.pkl'):
+        if file.endswith('.pkl') and file != 'vectorizer.pkl':
             llm_name = file.replace('.pkl', '')
             with open(os.path.join(input_path, file), 'rb') as f:
                 df = pickle.load(f)
             df['model'] = llm_name
             data[llm_name] = df
+
+    if not data:
+        # This can happen if the directory exists but is empty or only contains a vectorizer
+        raise FileNotFoundError(f"No processed data files found for {clf_method_name}/{split_name}")
 
     return data

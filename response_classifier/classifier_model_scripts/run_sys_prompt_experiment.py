@@ -124,7 +124,7 @@ def generate_detailed_report(output_path: str, results_df: pd.DataFrame,
         f.write("--- Overall Classifier Performance Summary ---\n")
         overall_df = pd.DataFrame(overall_metrics).T.sort_values(by='top1_accuracy', ascending=False)
         cols = ['top1_accuracy', 'top3_accuracy', 'f1_score', 'precision', 'recall']
-        f.write(overall_df[cols].to_string(float_format="%.4f"))
+        f.write(overall_df[cols].to_string(float_format='{:.4f}'.format))
         f.write("\n\n")
 
         # Section 2: Neutralization Technique Effectiveness
@@ -186,7 +186,7 @@ def run_evaluation(args):
 
     all_results = []
     overall_metrics = {}
-    for clf_method in tqdm(all_methods, desc="Evaluating Classifiers on System Prompts"):
+    for clf_method in tqdm(all_methods, desc="Evaluating Classifiers on System Prompts", position=0):
         clf_method_name = clf_method['name']
 
         # Build Library from Training Data (base dataset)
@@ -222,36 +222,41 @@ def run_evaluation(args):
         if args.eval_both_metrics:
             metrics_to_eval = ['cosine_similarity', 'euclidean_distances']
 
-        for metric_name in metrics_to_eval:
+        for metric_name in tqdm(metrics_to_eval, desc="Metrics", leave=False, position=1):
             classifier_id = f"{clf_method_name}_{metric_name.split('_')[0]}"
-            print(f"  Evaluating: {classifier_id}")
-
             metric_func = get_metric_func(metric_name)
             predictions = predict_unknown(test_processed, library_avgs, metric_func, top_k=3)
             overall_metrics[classifier_id] = compute_metrics(predictions)
-
-            for true_model, prompt_preds in predictions.items():
-                for prompt_text, pred_list in prompt_preds.items():
-                    original_rows = raw_dataset_sys_prompt[
-                        (raw_dataset_sys_prompt['model'] == true_model) &
-                        (raw_dataset_sys_prompt['base_user_prompt'] == prompt_text)
-                    ]
-                    for _, original_row in original_rows.iterrows():
-                        all_results.append({
-                            'classifier': classifier_id,
-                            'true_model': true_model,
-                            'base_prompt': original_row['base_user_prompt'],
-                            'system_prompt': original_row['system_prompt'],
-                            'neutralization_technique': original_row.get(
-                                'neutralization_technique', 'none'),
-                            'top1_prediction': pred_list[0] if pred_list else None,
-                            'top3_predictions': pred_list,
-                        })
+            total_examples = sum(len(combo_preds) for combo_preds in predictions.values())
+            with tqdm(total=total_examples, desc=f"Results", leave=False, position=2,
+                      mininterval=0.5, smoothing=0.05) as ex_pbar:
+                for true_model, combo_preds in predictions.items():
+                    for combo, pred_list in combo_preds.items():
+                        prompt_text, sys_prompt, technique = combo
+                        original_rows = raw_dataset_sys_prompt[
+                            (raw_dataset_sys_prompt['model'] == true_model) &
+                            (raw_dataset_sys_prompt['base_user_prompt'] == prompt_text) &
+                            (raw_dataset_sys_prompt['system_prompt'] == sys_prompt) &
+                            (raw_dataset_sys_prompt['neutralization_technique'] == technique)
+                        ]
+                        for _, original_row in original_rows.iterrows():
+                            all_results.append({
+                                'classifier': classifier_id,
+                                'true_model': true_model,
+                                'base_user_prompt': original_row['base_user_prompt'],
+                                'system_prompt': original_row.get('system_prompt', sys_prompt),
+                                'neutralization_technique': original_row.get(
+                                    'neutralization_technique', technique),
+                                'top1_prediction': pred_list[0] if pred_list else None,
+                                'top3_predictions': pred_list,
+                            })
+                        ex_pbar.update(1)
 
     # Analyze Results and Generate Reports
     print("Analyzing results and generating reports...")
     results_df = pd.DataFrame(all_results)
-    results_df['is_correct_top1'] = results_df['true_model'] == results_df['top1_prediction']
+    if not results_df.empty:
+        results_df['is_correct_top1'] = results_df['true_model'] == results_df['top1_prediction']
     results_df.to_csv(os.path.join(output_dir, 'sys_prompt_dataset_clf_results.csv'), index=False)
 
     generate_detailed_report(

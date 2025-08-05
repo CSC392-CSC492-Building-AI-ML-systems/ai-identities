@@ -5,11 +5,12 @@ from typing import Callable
 from sklearn.preprocessing import normalize
 from scipy.sparse import vstack as sparse_vstack
 import scipy.sparse
+from tqdm import tqdm
 
 
 def _as_ndarray(x) -> np.ndarray:
     """Convert numpy.matrix or sparse mean result to (1, dim) ndarray."""
-    x = np.asarray(x)          # kills numpy.matrix
+    x = np.asarray(x)
     if x.ndim == 1:            # flatten → row-vector
         x = x.reshape(1, -1)
     return x
@@ -70,7 +71,7 @@ def get_avg_vec(group: pd.DataFrame, vector_col: str) -> np.ndarray:
 
 def predict_unknown(unknown_data: dict[str, pd.DataFrame], library_avgs: dict,
                     metric: Callable, vector_col: str = 'response_vector', top_k: int = 3,
-                    do_normalize: bool = False) -> dict[str, dict[str, list[str]]]:
+                    do_normalize: bool = False) -> dict[str, dict]:
     """
     Predict top-k models for each (unknown_model, prompt) in unknown_data by averaging unknown vectors per prompt
     and comparing to library averages (per bin and overall for same prompt).
@@ -81,16 +82,22 @@ def predict_unknown(unknown_data: dict[str, pd.DataFrame], library_avgs: dict,
     :param vector_col: String name of the vector column.
     :param top_k: Number of top predictions to return per (unknown_model, prompt).
     :param do_normalize: If True, apply L2 normalization to vectors before comparison.
-    :return: A nested dict structured `{unknown_llm: {prompt: [top_k predicted LLMs]}}`.
+    :return: A nested dict structured `{unknown_llm: {group_key: [top_k predicted LLMs]}}`,
+        where group_key is a tuple (prompt, system_prompt, technique) if those columns
+        exist, else just the prompt str.
     """
     predictions = {}
     is_similarity = 'similarity' in metric.__name__
 
     # For each (unknown_llm, user prompt) pair
-    for unknown_llm, df in unknown_data.items():
+    for unknown_llm, df in tqdm(unknown_data.items(), desc="Making predictions for unknown LLMs", leave=False):
         predictions[unknown_llm] = {}
+        group_cols = ['prompt']
+        if 'system_prompt' in df.columns and 'neutralization_technique' in df.columns:
+            group_cols.extend(['system_prompt', 'neutralization_technique'])
+
         # Average unknown vectors per prompt
-        for prompt, group in df.groupby('prompt'):
+        for combo, group in df.groupby(group_cols):
             if len(group) == 0:
                 continue
 
@@ -101,6 +108,9 @@ def predict_unknown(unknown_data: dict[str, pd.DataFrame], library_avgs: dict,
 
             # Collect best score per known llm (across its bins + overall for this prompt)
             known_llm_scores = {}
+            # Extract prompt. If `combo` is tuple (full group), it's `combo[0]`.
+            # Otherwise, it's the str itself
+            prompt = combo[0] if isinstance(combo, tuple) else combo
             known_llms = set(m for (m, p, b) in library_avgs if p == prompt)
             for known_llm in known_llms:
                 best_score = -np.inf if is_similarity else np.inf
@@ -124,9 +134,9 @@ def predict_unknown(unknown_data: dict[str, pd.DataFrame], library_avgs: dict,
             if known_llm_scores:
                 sorted_llms = sorted(known_llm_scores, key=known_llm_scores.get,
                                        reverse=is_similarity)
-                predictions[unknown_llm][prompt] = sorted_llms[:top_k]
+                predictions[unknown_llm][combo] = sorted_llms[:top_k]
             else:
-                predictions[unknown_llm][prompt] = []
+                predictions[unknown_llm][combo] = []
 
     return predictions
 
