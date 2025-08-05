@@ -70,14 +70,14 @@ def compute_held_out_llm_metrics(predictions: dict, meta_map: dict) -> dict:
             true_family, true_branch = get_llm_family_and_branch(true_llm, meta_map)
             if true_family == 'unknown': continue  # Skip if true model has no defined family
 
-            # Top-1 Taxonomy Check
+            # Top-1 LLM family and branch check
             pred_family_top1, pred_branch_top1 = get_llm_family_and_branch(pred_list[0], meta_map)
             if true_family == pred_family_top1:
                 family_matches_top1 += 1
             if true_branch == pred_branch_top1:
                 branch_matches_top1 += 1
 
-            # Top-3 Taxonomy Check
+            # Top-3 LLM family and branch check
             top3_families = {get_llm_family_and_branch(p, meta_map)[0] for p in pred_list}
             top3_branches = {get_llm_family_and_branch(p, meta_map)[1] for p in pred_list}
             if true_family in top3_families:
