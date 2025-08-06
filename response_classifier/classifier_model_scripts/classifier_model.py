@@ -141,6 +141,65 @@ def predict_unknown(unknown_data: dict[str, pd.DataFrame], library_avgs: dict,
     return predictions
 
 
+def predict_with_scores(unknown_responses: list[str],
+                        library_prompt_averages: dict[tuple[str, str], np.ndarray],
+                        vectorizer: object, metric: Callable, top_k: int = 3,
+                        do_normalize: bool = False) -> tuple[list[tuple[str, float]], dict[str, float]]:
+    """
+    Predicts top-k models for a list of unknown responses against pre-computed library averages for a single prompt.
+
+    :param unknown_responses: A list of response strings from an unknown LLM.
+    :param library_prompt_averages: A dict mapping (model, temp_bin) to its average vector for the specific prompt.
+    :param vectorizer: The pre-fitted TF-IDF vectorizer.
+    :param metric: A callable similarity/distance function.
+    :param top_k: The number of top predictions to return.
+    :param do_normalize: Whether to L2 normalize vectors.
+    :return: A tuple containing:
+             - A list of top-k (model, score) tuples.
+             - A dictionary of all (model, score) pairs.
+    """
+    is_similarity = 'similarity' in metric.__name__
+
+    # Vectorize the unknown responses and compute the average
+    unknown_vectors = vectorizer.transform(unknown_responses)
+    avg_unknown_vec = np.asarray(unknown_vectors.mean(axis=0))
+    if do_normalize:
+        avg_unknown_vec = normalize(avg_unknown_vec, norm='l2')
+
+    # Compare against the library averages for the prompt
+    known_llm_scores = {}
+    known_llms = sorted(
+        list(set(model for model, bin_name in library_prompt_averages.keys()))
+    )
+
+    for known_llm in known_llms:
+        best_score = -np.inf if is_similarity else np.inf
+        for bin_name in ['low', 'medium', 'high', 'overall']:
+            key = (known_llm, bin_name)
+            if key in library_prompt_averages:
+                lib_vec = _as_ndarray(library_prompt_averages[key])
+                if do_normalize:
+                    lib_vec = normalize(lib_vec, norm='l2')
+
+                score = metric(avg_unknown_vec, lib_vec)[0][0]
+
+                if is_similarity:
+                    best_score = max(best_score, score)
+                else:
+                    best_score = min(best_score, score)
+
+        known_llm_scores[known_llm] = best_score
+
+    # Sort models by the best score found across temp bins
+    sorted_scores = sorted(known_llm_scores.items(), key=lambda item: item[1],
+                           reverse=is_similarity)
+
+    top_k_predictions = sorted_scores[:top_k]
+    all_predictions = dict(sorted_scores)
+
+    return top_k_predictions, all_predictions
+
+
 def get_metric_func(metric_name: str) -> Callable:
     if metric_name == 'cosine_similarity':
         return cosine_similarity
