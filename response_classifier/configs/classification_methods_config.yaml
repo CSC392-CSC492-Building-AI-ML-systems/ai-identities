@@ -1,0 +1,22 @@
+word_freq:
+  - name: raw_freq_unigram
+    vectorizer: CountVectorizer
+    metric: cosine_similarity
+    ngram_range: [1, 1]
+    normalize_vectors: true
+  - name: tfidf_unigram
+    vectorizer: TfidfVectorizer
+    metric: cosine_similarity
+    ngram_range: [1, 1]
+    normalize_vectors: true
+  - name: tfidf_trigram
+    vectorizer: TfidfVectorizer
+    metric: cosine_similarity
+    ngram_range: [3, 3]
+    normalize_vectors: true
+    max_features: 20000
+embeddings:
+  - name: potion_emb
+    model: minishlab/potion-multilingual-128M
+    metric: cosine_similarity
+    normalize_vectors: false
