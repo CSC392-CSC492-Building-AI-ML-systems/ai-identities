@@ -110,8 +110,8 @@ if __name__ == '__main__':
 
     print("--- Running Inference ---")
     try:
-        result = identify_llm(sample_responses_from_unknown_llm, threshold=CONFIDENCE_THRESHOLD)
-        print(json.dumps(result, indent=2))
+        result = identify_llm(sample_responses_from_unknown_llm)
+        print(json.dumps(result, indent=4))
     except FileNotFoundError as e:
         print(f"Error: {e}")
         sys.exit(1)
