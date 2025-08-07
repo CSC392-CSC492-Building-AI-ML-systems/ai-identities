@@ -1,0 +1,155 @@
+[
+    {
+        "model_name": "Qwen/Qwen3-235B-A22B",
+        "model_family": "Qwen",
+        "model_branch": "Qwen3",
+        "in_cost": 0.13,
+        "out_cost": 0.6,
+        "cost_unit": "Mtoken",
+        "data_collected": true
+    },
+    {
+        "model_name": "Qwen/Qwen2.5-72B-Instruct",
+        "model_family": "Qwen",
+        "model_branch": "Qwen2.5",
+        "in_cost": 0.12,
+        "out_cost": 0.39,
+        "cost_unit": "Mtoken",
+        "data_collected": true
+    },
+    {
+        "model_name": "Qwen/Qwen2.5-7B-Instruct",
+        "model_family": "Qwen",
+        "model_branch": "Qwen2.5",
+        "in_cost": 0.04,
+        "out_cost": 0.1,
+        "cost_unit": "Mtoken",
+        "data_collected": true
+    },
+    {
+        "model_name": "Qwen/Qwen2.5-Coder-32B-Instruct",
+        "model_family": "Qwen",
+        "model_branch": "Qwen2.5",
+        "in_cost": 0.06,
+        "out_cost": 0.15,
+        "cost_unit": "Mtoken",
+        "data_collected": true
+    },
+    {
+        "model_name": "google/gemma-3-4b-it",
+        "model_family": "google",
+        "model_branch": "gemma-3",
+        "in_cost": 0.02,
+        "out_cost": 0.04,
+        "cost_unit": "Mtoken",
+        "data_collected": true
+    },
+    {
+        "model_name": "google/gemini-2.0-flash-001",
+        "model_family": "google",
+        "model_branch": "gemini-2.0",
+        "in_cost": 0.1,
+        "out_cost": 0.4,
+        "cost_unit": "Mtoken",
+        "data_collected": true
+    },
+    {
+        "model_name": "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
+        "model_family": "meta-llama",
+        "model_branch": "Llama-4",
+        "in_cost": 0.15,
+        "out_cost": 0.6,
+        "cost_unit": "Mtoken",
+        "data_collected": true
+    },
+    {
+        "model_name": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+        "model_family": "meta-llama",
+        "model_branch": "Llama-4",
+        "in_cost": 0.08,
+        "out_cost": 0.3,
+        "cost_unit": "Mtoken",
+        "data_collected": true
+    },
+    {
+        "model_name": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+        "model_family": "meta-llama",
+        "model_branch": "Llama-3.3",
+        "in_cost": 0.038,
+        "out_cost": 0.12,
+        "cost_unit": "Mtoken",
+        "data_collected": true
+    },
+    {
+        "model_name": "meta-llama/Llama-3.2-3B-Instruct",
+        "model_family": "meta-llama",
+        "model_branch": "Llama-3.2",
+        "in_cost": 0.003,
+        "out_cost": 0.006,
+        "cost_unit": "Mtoken",
+        "data_collected": true
+    },
+    {
+        "model_name": "meta-llama/Meta-Llama-3-8B-Instruct",
+        "model_family": "meta-llama",
+        "model_branch": "Meta-Llama-3",
+        "in_cost": 0.03,
+        "out_cost": 0.06,
+        "cost_unit": "Mtoken",
+        "data_collected": true
+    },
+    {
+        "model_name": "microsoft/Phi-4-multimodal-instruct",
+        "model_family": "microsoft",
+        "model_branch": "Phi-4",
+        "in_cost": 0.05,
+        "out_cost": 0.1,
+        "cost_unit": "Mtoken",
+        "data_collected": true
+    },
+    {
+        "model_name": "mistralai/Devstral-Small-2507",
+        "model_family": "mistralai",
+        "model_branch": "Devstral",
+        "in_cost": 0.07,
+        "out_cost": 0.28,
+        "cost_unit": "Mtoken",
+        "data_collected": true
+    },
+    {
+        "model_name": "mistralai/Mistral-Nemo-Instruct-2407",
+        "model_family": "mistralai",
+        "model_branch": "Mistral",
+        "in_cost": 0.008,
+        "out_cost": 0.001,
+        "cost_unit": "Mtoken",
+        "data_collected": true
+    },
+    {
+        "model_name": "mistralai/Mistral-Small-3.1-24B-Instruct-2503",
+        "model_family": "mistralai",
+        "model_branch": "Mistral",
+        "in_cost": 0.05,
+        "out_cost": 0.1,
+        "cost_unit": "Mtoken",
+        "data_collected": true
+    },
+    {
+        "model_name": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+        "model_family": "mistralai",
+        "model_branch": "Mixtral",
+        "in_cost": 0.08,
+        "out_cost": 0.24,
+        "cost_unit": "Mtoken",
+        "data_collected": true
+    },
+    {
+        "model_name": "deepseek-ai/DeepSeek-V3-0324",
+        "model_family": "deepseek-ai",
+        "model_branch": "DeepSeek-V3",
+        "in_cost": 0.28,
+        "out_cost": 0.88,
+        "cost_unit": "Mtoken",
+        "data_collected": true
+    }
+]

@@ -272,7 +272,7 @@ function AnimatedBar({ name, percent }: { name: string; percent: number }) {
                 style={{ width: `${displayPercent}%`, background: barColor }}
               ></div>
             </div>
-            <span className="text-[#F3F3FF] text-2xl font-bold ml-2 mr-1.5 w-16 min-w-[48px] flex items-center justify-center">{displayPercent}%</span>
+            <span className="text-[#F3F3FF] text-2xl font-bold mx-2 w-16 min-w-[48px] flex items-center justify-center text-center">{displayPercent}%</span>
           </div>
         </div>
       </div>
