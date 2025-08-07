@@ -55,10 +55,6 @@ def identify_llm(responses: list[str]) -> dict:
         top_k=3
     )
 
-    if not top_k_preds:
-        return {"prediction": "unknown",
-                "reason": "No models in library to compare against."}
-
     # Decision logic
     top_prediction, top_score = top_k_preds[0]
     if top_score >= CONFIDENCE_THRESHOLD:
