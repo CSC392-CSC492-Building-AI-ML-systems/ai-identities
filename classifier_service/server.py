@@ -7,7 +7,6 @@ app = FastAPI(title="LLM Classifier Service")
 async def predict(responses: list[str] = Body(..., description="List of responses from the unknown LLM")):
     """
     Endpoint to identify an LLM based on responses.
-    Expects a JSON body like: {"responses": ["response1", "response2"]}
     """
     try:
         result = identify_llm(responses)

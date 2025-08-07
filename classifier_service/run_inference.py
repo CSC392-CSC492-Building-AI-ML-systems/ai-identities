@@ -8,7 +8,6 @@ from sklearn.preprocessing import normalize
 from sklearn.metrics.pairwise import cosine_similarity
 
 
-# Paths are relative to the project root, where the script is executed from.
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 ASSETS_DIR = os.path.join(SCRIPT_DIR, 'resources')
 VECTORIZER_PATH = os.path.join(ASSETS_DIR, 'vectorizer.pkl')
