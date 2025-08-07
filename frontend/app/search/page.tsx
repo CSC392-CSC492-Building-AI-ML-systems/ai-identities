@@ -1,20 +1,35 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from '../../lib/muiTheme';
 import {
-  TextField,
-  Button,
-  Menu,
-  MenuItem,
-  Checkbox,
-  ListItemText,
-  IconButton,
-  Box
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  Select, MenuItem,
+  Typography, FormGroup, FormControlLabel, Checkbox, Chip,
+  TextField, Button, Box
 } from '@mui/material';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import { resolve } from 'node:dns';
+
+type TagMap = { [group: string]: string[] };
+
+const MODES = {
+  llms: {
+    label: 'LLM Pages',
+    className: 'LLM Wiki.Code.LLM WikiClass',
+    nameProp: 'llm',
+    url: 'LLM Wiki',
+    tagGroups: ['useCases', 'limitations', 'risks'] as const,
+  },
+  llm_apps: {
+    label: 'LLM Apps Pages',
+    className: 'LLM-Apps Wiki.Code.LLM-Apps WikiClass',
+    nameProp: 'llm app',
+    url: 'LLM-Apps Wiki',
+    tagGroups: ['useCases', 'limitations', 'risks'] as const,
+  },
+};
+type ModeKey = keyof typeof MODES;
 
 export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -26,87 +41,92 @@ export default function HomePage() {
   });
   const [results, setResults] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const open = Boolean(anchorEl);
+  // Dialog state for filters
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [draftSelected, setDraftSelected] = useState<{ [group: string]: string[] }>({});
+
+  // add state
+  const [mode, setMode] = useState<ModeKey>('llms');
+
+  // reset tag containers when mode changes (so UI doesn’t show old groups)
+  useEffect(() => {
+    const groups = Object.fromEntries(MODES[mode].tagGroups.map(g => [g, []]));
+    setSelectedTags(groups as TagMap);
+    setAvailableTags(groups as TagMap);
+  }, [mode]);
 
   // Load tags from XWiki
   useEffect(() => {
     const fetchTags = async () => {
+      const { className, tagGroups } = MODES[mode];
+
       const query = `
         where doc.fullName in (
           select obj.name from BaseObject obj 
-          where obj.className = 'LLM Wiki.Code.LLM WikiClass'
+          where obj.className = '${className}'
         )
       `.replace(/\s+/g, " ").trim();
 
-      const url = `http://159.203.20.200:8080/rest/wikis/xwiki/query?q=${encodeURIComponent(query)}&type=xwql&media=json&number=1000&distinct=1&className=${encodeURIComponent('LLM Wiki.Code.LLM WikiClass')}`;
+      const url = `http://159.203.20.200:8080/rest/wikis/xwiki/query?q=${encodeURIComponent(query)}&type=xwql&media=json&number=1000&distinct=1&className=${encodeURIComponent(className)}`;
 
       try {
-        const res = await fetch(url, { headers: { 'Accept': 'application/json', "Authorization": "Basic " + btoa("ahmed33033:ahmed2003") } });
+        const res = await fetch(url, { headers: { 'Accept': 'application/json', "Authorization": "Basic " + btoa('ahmed33033:ahmed2003') } });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        const groupedTags: { [key: string]: Set<string> } = {
-          useCases: new Set(),
-          limitations: new Set(),
-          risks: new Set()
-        };
 
-        data.searchResults.forEach((result: any) => {
-          const object = result.object;
-          if (!object?.properties) return;
+        const grouped: { [key: string]: Set<string> } =
+          Object.fromEntries(tagGroups.map(g => [g, new Set<string>()]));
 
-          object.properties.forEach((prop: any) => {
-            const key = prop.name.trim();
-            const val = prop.value;
-
-            if (!groupedTags[key] || typeof val !== 'string') return;
-
+        data.searchResults?.forEach((result: any) => {
+          const props = result.object?.properties || [];
+          props.forEach((p: any) => {
+            const key = p.name?.trim();
+            const val = p.value;
+            if (!key || !grouped[key] || typeof val !== 'string') return;
             val.split(',').forEach((tag: string) => {
-              const trimmed = tag.trim().toLowerCase();
-              if (trimmed) groupedTags[key].add(trimmed);
+              const t = tag.trim().toLowerCase();
+              if (t) grouped[key].add(t);
             });
           });
         });
 
-        const flatTags: { [group: string]: string[] } = {};
-        for (const group in groupedTags) {
-          flatTags[group] = Array.from(groupedTags[group]).sort();
-        }
-
-        setAvailableTags(flatTags);
-        console.log("HHHHHHHHHHHHHHHHHHHHH", flatTags)
+        const flat: TagMap = {};
+        for (const g of tagGroups) flat[g] = Array.from(grouped[g] || []).sort();
+        setAvailableTags(flat);
       } catch (err) {
         console.error("Failed to fetch tags:", err);
       }
     };
 
     fetchTags();
-  }, []);
+  }, [mode]);
 
   const handleToggle = (group: string, value: string) => {
     setSelectedTags((prev) => {
       const current = prev[group] || [];
-      const newGroup = current.includes(value)
+      const next = current.includes(value)
         ? current.filter((v) => v !== value)
         : [...current, value];
-
-      return { ...prev, [group]: newGroup };
+      return { ...prev, [group]: next };
     });
   };
 
   const searchPages = async () => {
+    const { className} = MODES[mode];
+
     let joins = "select obj.name from BaseObject obj";
-    const conditions = ["obj.className = 'LLM Wiki.Code.LLM WikiClass'"];
+    const conditions = [`obj.className = '${className}'`];
     let spIndex = 1;
 
     for (const group in selectedTags) {
-      for (const value of selectedTags[group]) {
+      for (const value of selectedTags[group] || []) {
         const alias = `sp${spIndex++}`;
         joins += `, StringProperty ${alias}`;
         conditions.push(
           `obj.id = ${alias}.id.id`,
           `${alias}.name = '${group}'`,
-          `lower(${alias}.value) like '%${value.replace(/'/g, "''")}%'`
+          `lower(${alias}.value) like '%${value.replace(/'/g, "''").toLowerCase()}%'`
         );
       }
     }
@@ -116,7 +136,7 @@ export default function HomePage() {
     if (searchTerm) {
       query += ` and doc.fullName in (
         select objn.name from BaseObject objn, StringProperty spn
-        where objn.className = 'LLM Wiki.Code.LLM WikiClass'
+        where objn.className = '${className}'
         and objn.id = spn.id.id
         and spn.name = 'name'
         and lower(spn.value) like '%${searchTerm.replace(/'/g, "''").toLowerCase()}%'
@@ -124,6 +144,7 @@ export default function HomePage() {
     }
 
     query += " and doc.fullName <> 'LLM Wiki.Code.LLM WikiTemplate'";
+    query += " and doc.fullName <> 'LLM-Apps Wiki.Code.LLM-Apps WikiTemplate'";
     query = query.replace(/\s+/g, " ").trim();
 
     const fullUrl = "http://159.203.20.200:8080/rest/wikis/xwiki/query" +
@@ -132,87 +153,159 @@ export default function HomePage() {
 
     try {
       const res = await fetch(fullUrl, { headers: { "Accept": "application/json", "Authorization": "Basic " + btoa("ahmed33033:ahmed2003")} });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      console.log("SEARCH RESULT: ", res);
-      console.log("SEARCH DATA: ", data);
       setResults(data.searchResults || []);
       setError(null);
     } catch (err: any) {
-      setError("Error: " + err.message);
+      setError("Failed to fetch search data: " + (err?.message || String(err)));
       setResults([]);
     }
   };
+
+  // ---- Filters dialog helpers ----
+  const openFilters = () => setFiltersOpen(true);
+  const closeFilters = () => setFiltersOpen(false);
+  const clearGroup = (group: string) =>
+    setSelectedTags(prev => ({ ...prev, [group]: [] }));
+  const clearAll = () => setSelectedTags({});
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
 
-        <Box sx={{ maxWidth: 800, margin: '2rem auto', padding: '1rem', paddingTop: '80px' }}>
-        <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-            <TextField
-            label="Search by page name"
+      <Box sx={{ maxWidth: 1200, margin: '2rem auto', padding: '1rem', paddingTop: '80px' }}>
+        {/* Search Bar + Filters Button */}
+        <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center' }}>
+          <Select
+            size="small"
+            value={mode}
+            onChange={(e) => setMode(e.target.value as ModeKey)}
+            sx={{ minWidth: 180 }}
+          >
+            {Object.entries(MODES).map(([k, m]) => (
+              <MenuItem key={k} value={k}>{m.label}</MenuItem>
+            ))}
+          </Select>
+
+          <TextField
+            label={`Search by ${MODES[mode].nameProp}`}
             variant="outlined"
             fullWidth
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            />
-
-            <IconButton onClick={(e) => setAnchorEl(e.currentTarget)}>
-            <FilterListIcon />
-            </IconButton>
-
-            <Button variant="contained" onClick={searchPages}>
-            Search
-            </Button>
+          />
+          <Button variant="outlined" onClick={openFilters}>Filters</Button>
+          <Button variant="contained" onClick={searchPages}>Search</Button>
         </Box>
 
-        <Menu anchorEl={anchorEl} open={open} onClose={() => setAnchorEl(null)}>
-            {Object.entries(availableTags).map(([group, values]) => (
-                <Box key={group} sx={{ px: 2, py: 1 }}>
-                <strong style={{ textTransform: 'capitalize' }}>{group}</strong>
-                {Array.from(values).sort().map((tag) => (
-                    <MenuItem key={tag} onClick={() => handleToggle(group, tag)}>
-                    <Checkbox checked={selectedTags[group]?.includes(tag) || false} />
-                    <ListItemText primary={tag} />
-                    </MenuItem>
-                ))}
-                </Box>
-            ))}
-        </Menu>
+        {/* Selected Filter Chips */}
+        <Box sx={{ mt: 2 }}>
+          {Object.entries(selectedTags).flatMap(([group, tags]) =>
+            (tags || []).map((tag) => (
+              <Chip
+                key={`${group}-${tag}`}
+                label={`${group}: ${tag}`}
+                onDelete={() => handleToggle(group, tag)}
+                sx={{ mr: 1, mb: 1 }}
+              />
+            ))
+          )}
+        </Box>
 
+        {/* Error Message */}
         {error && <pre style={{ color: 'red' }}>{error}</pre>}
 
+        {/* Search Results */}
         <ul>
-            {results.length === 0 ? (
-                <li>No results found.</li>
-            ) : (
-                results.map((r, index) => {
-                const space = r.space || "";
-                const pageName = r.pageName || "";
-                const title = r.title || pageName || space;
+          {results.length === 0 ? (
+            <li>No results found.</li>
+          ) : (
+            results.map((r, index) => {
+              const space = r.space || "";
+              const pageName = r.pageName || "";
+              const title = r.title || pageName || space;
+              const appName = r.title || r.pageName || r.space;
+              const encodedName = encodeURIComponent(appName.trim());
+              const viewUrl = `/wiki/${MODES[mode].url}/${encodedName}`;
 
-                // Convert space like "LLM Wiki.Claude Opus 4" → "LLM Wiki/Claude Opus 4"
-                const spacePath = space.replace(/\./g, "/");
-                const appName = r.title || r.pageName || r.space;
-                const encodedName = encodeURIComponent(appName.trim());
-                const viewUrl = `/wiki/LLM Wiki/${encodedName}`;
-
-                return (
-                    <li key={index}>
-                    <a
-                        href={viewUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ color: "#F3F3FF", textDecoration: "underline" }}
-                    >
-                        {title}
-                    </a>
-                    </li>
-                );
-                })
-            )}
+              return (
+                <li key={index}>
+                  <Link href={viewUrl} style={{ color: "#F3F3FF", textDecoration: "underline" }}>
+                    {title}
+                  </Link>
+                </li>
+              );
+            })
+          )}
         </ul>
-        </Box>
+      </Box>
+
+      {/* Filters Dialog */}
+      <Dialog open={filtersOpen} onClose={closeFilters} fullWidth maxWidth="md">
+        <DialogTitle>Filters</DialogTitle>
+        <DialogContent dividers>
+          {/* Live-selected chips */}
+          <Box sx={{ mb: 2 }}>
+            {Object.entries(selectedTags).flatMap(([group, tags]) =>
+              (tags || []).map((tag) => (
+                <Chip
+                  key={`${group}-${tag}`}
+                  label={`${group}: ${tag}`}
+                  onDelete={() => handleToggle(group, tag)}  // live toggle
+                  sx={{ mr: 1, mb: 1 }}
+                />
+              ))
+            )}
+          </Box>
+
+          {/* Groups */}
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+            {Object.entries(availableTags).map(([group, values]) => (
+              <Box
+                key={group}
+                sx={{
+                  width: 260,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 1,
+                  p: 1.5,
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography sx={{ textTransform: 'capitalize', fontWeight: 600 }}>{group}</Typography>
+                  <Button size="small" onClick={() => clearGroup(group)}>Clear</Button>
+                </Box>
+
+                <Box sx={{ maxHeight: 240, overflowY: 'auto', pr: 1 }}>
+                  <FormGroup>
+                    {values.map((tag) => (
+                      <FormControlLabel
+                        key={tag}
+                        control={
+                          <Checkbox
+                            checked={selectedTags[group]?.includes(tag) || false}
+                            onChange={() => handleToggle(group, tag)}  // live toggle
+                          />
+                        }
+                        label={tag}
+                      />
+                    ))}
+                  </FormGroup>
+                </Box>
+              </Box>
+            ))}
+          </Box>
+        </DialogContent>
+
+        {/* Optional tiny footer: just Close + Clear All */}
+        {/* Remove this whole block if you want literally no buttons */}
+        <DialogActions>
+          <Button onClick={clearAll}>Clear All</Button>
+          <Box sx={{ flexGrow: 1 }} />
+          <Button onClick={closeFilters}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </ThemeProvider>
   );
 }
