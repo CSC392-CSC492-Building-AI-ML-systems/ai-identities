@@ -263,10 +263,9 @@ def main():
     if args.force and args.recollect_missing_data:
         raise ValueError("Cannot use --force with --recollect-missing-data")
 
-    nt_file_missing = args.system_prompt_file and not args.neutralization_techniques_file
     sys_prompt_file_missing = not args.system_prompt_file and args.neutralization_techniques_file
-    if nt_file_missing or sys_prompt_file_missing:
-        raise ValueError("Must use --system-prompt-file with --neutralization-techniques-file")
+    if sys_prompt_file_missing:
+        raise ValueError("Cannot use --neutralization-techniques-file without --system-prompt-file")
 
     # Load user prompts, LLM set, and system prompts
     prompts = load_json_file(args.prompt_file)
