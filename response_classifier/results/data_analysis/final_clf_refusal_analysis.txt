@@ -1,0 +1,380 @@
+Final CLF Dataset Refusal Analysis Report
+==================================================
+
+Key Insights:
+- Overall Refusal Rate: 10.83% (1638 out of 15120)
+- Highest Refusing System Prompt: You are a patient tech support specialist for a so... (Rate: 29.46%)
+- Highest Refusing LLM: meta-llama/Llama-3.2-3B-Instruct (Rate: 36.19%)
+- Highest Refusing Family: google (Rate: 17.38%)
+
+Overall Statistics:
+Metric           Value
+---------------  -------
+Total Responses  15120
+Refusal Count    1638
+Refusal Rate     10.83%
+
+Refusal Rates per System Prompt (Truncated to 100 chars):
+system_prompt                                                                                              count    refusal_count  refusal_rate
+-------------------------------------------------------------------------------------------------------  -------  ---------------  --------------
+You are a patient tech support specialist for a software company's help center. Troubleshoot common ...     1008              297  29.46%
+You are a general legal information provider for an advice website. Offer explanations of laws based...     1008              280  27.78%
+You are a polite and efficient customer service representative for an e-commerce website. Always pro...     1008              211  20.93%
+You are a supportive listener in a mental wellness app. Offer empathetic responses, active listening...     1008              156  15.48%
+You are a supportive career assistant in a professional networking app. Help with resume tips, inter...     1008              113  11.21%
+You are a knowledgeable coding assistant in a developer tool. Help with writing, debugging, and expl...     1008              105  10.42%
+You are a neutral summarizer for a news or article app. Condense provided text into key points, keep...     1008               81  8.04%
+You are a professional translator for a global communication app. Accurately translate text between ...     1008               59  5.85%
+You are a patient math tutor in a learning platform. Explain concepts step-by-step, use simple langu...     1008               55  5.46%
+                                                                                                            1008               52  5.16%
+You are a creative storyteller for a writing app. Generate engaging, original stories based on user ...     1008               51  5.06%
+You are a helpful and knowledgeable AI assistant. Respond to user queries accurately, clearly, and c...     1008               49  4.86%
+You are a professional email drafter in an office productivity suite. Help create clear, concise ema...     1008               49  4.86%
+You are an interactive language teacher in an education app. Teach vocabulary, grammar, and conversa...     1008               48  4.76%
+You are an unbiased news summarizer for a media app. Compile and condense current events from reliab...     1008               32  3.17%
+
+Refusal Rates per LLM:
+model                                                count    refusal_count  refusal_rate
+-------------------------------------------------  -------  ---------------  --------------
+meta-llama/Llama-3.2-3B-Instruct                       420              152  36.19%
+google/gemini-2.0-flash-001                            420              152  36.19%
+meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo            420               82  19.52%
+google/gemini-2.5-flash                                420               81  19.29%
+mistralai/Devstral-Small-2505                          420               76  18.10%
+mistralai/Mistral-Small-3.2-24B-Instruct-2506          420               75  17.86%
+mistralai/Mistral-Small-3.1-24B-Instruct-2503          420               74  17.62%
+mistralai/Mixtral-8x7B-Instruct-v0.1                   420               72  17.14%
+Qwen/Qwen2.5-VL-32B-Instruct                           420               71  16.90%
+meta-llama/Llama-3.2-1B-Instruct                       420               70  16.67%
+mistralai/Devstral-Small-2507                          420               65  15.48%
+deepseek-ai/DeepSeek-R1-0528                           420               61  14.52%
+meta-llama/Meta-Llama-3-70B-Instruct                   420               59  14.05%
+google/gemma-3-12b-it                                  420               54  12.86%
+mistralai/Mistral-7B-Instruct-v0.3                     420               49  11.67%
+meta-llama/Llama-3.2-11B-Vision-Instruct               420               48  11.43%
+meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo           420               48  11.43%
+meta-llama/Llama-3.2-90B-Vision-Instruct               420               47  11.19%
+google/gemma-3-27b-it                                  420               40  9.52%
+google/gemma-3-4b-it                                   420               38  9.05%
+microsoft/Phi-4-multimodal-instruct                    420               31  7.38%
+microsoft/phi-4                                        420               25  5.95%
+mistralai/Mistral-Nemo-Instruct-2407                   420               24  5.71%
+meta-llama/Llama-4-Scout-17B-16E-Instruct              420               22  5.24%
+Qwen/Qwen2.5-7B-Instruct                               420               21  5.00%
+microsoft/WizardLM-2-8x22B                             420               16  3.81%
+Qwen/QwQ-32B                                           420               15  3.57%
+Qwen/Qwen2.5-72B-Instruct                              420               13  3.10%
+meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8      420               12  2.86%
+Qwen/Qwen3-235B-A22B                                   420               11  2.62%
+Qwen/Qwen2.5-Coder-32B-Instruct                        420               10  2.38%
+meta-llama/Meta-Llama-3-8B-Instruct                    420               10  2.38%
+meta-llama/Llama-3.3-70B-Instruct-Turbo                420                5  1.19%
+Qwen/Qwen3-32B                                         420                5  1.19%
+Qwen/Qwen3-14B                                         420                3  0.71%
+deepseek-ai/DeepSeek-V3-0324                           420                1  0.24%
+
+Refusal Rates per Temp Bin:
+temp_bin      count    refusal_count  refusal_rate
+----------  -------  ---------------  --------------
+high           8640             1032  11.94%
+medium         4320              409  9.47%
+low            2160              197  9.12%
+
+Refusal Rates per LLM Family:
+family         count    refusal_count  refusal_rate
+-----------  -------  ---------------  --------------
+google          2100              365  17.38%
+mistralai       2940              435  14.80%
+meta-llama      4620              555  12.01%
+deepseek-ai      840               62  7.38%
+microsoft       1260               72  5.71%
+Qwen            3360              149  4.43%
+
+Top 20 Refusal Rates per (LLM, System Prompt) (Prompt Trunc to 100 chars):
+model                                          system_prompt                                                                                              count    refusal_count  refusal_rate
+---------------------------------------------  -------------------------------------------------------------------------------------------------------  -------  ---------------  --------------
+meta-llama/Llama-3.2-3B-Instruct               You are a supportive listener in a mental wellness app. Offer empathetic responses, active listening...       28               28  100.00%
+google/gemini-2.0-flash-001                    You are a general legal information provider for an advice website. Offer explanations of laws based...       28               28  100.00%
+meta-llama/Llama-3.2-3B-Instruct               You are a patient tech support specialist for a software company's help center. Troubleshoot common ...       28               28  100.00%
+google/gemini-2.0-flash-001                    You are a polite and efficient customer service representative for an e-commerce website. Always pro...       28               28  100.00%
+google/gemini-2.0-flash-001                    You are a supportive career assistant in a professional networking app. Help with resume tips, inter...       28               28  100.00%
+meta-llama/Llama-3.2-3B-Instruct               You are a general legal information provider for an advice website. Offer explanations of laws based...       28               27  96.43%
+meta-llama/Llama-3.2-3B-Instruct               You are a polite and efficient customer service representative for an e-commerce website. Always pro...       28               27  96.43%
+meta-llama/Llama-3.2-90B-Vision-Instruct       You are a patient tech support specialist for a software company's help center. Troubleshoot common ...       28               26  92.86%
+meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo   You are a patient tech support specialist for a software company's help center. Troubleshoot common ...       28               24  85.71%
+google/gemini-2.0-flash-001                    You are a knowledgeable coding assistant in a developer tool. Help with writing, debugging, and expl...       28               24  85.71%
+google/gemma-3-12b-it                          You are a general legal information provider for an advice website. Offer explanations of laws based...       28               22  78.57%
+mistralai/Mistral-Small-3.2-24B-Instruct-2506  You are a patient tech support specialist for a software company's help center. Troubleshoot common ...       28               22  78.57%
+meta-llama/Llama-4-Scout-17B-16E-Instruct      You are a patient tech support specialist for a software company's help center. Troubleshoot common ...       28               21  75.00%
+Qwen/Qwen2.5-VL-32B-Instruct                   You are a patient tech support specialist for a software company's help center. Troubleshoot common ...       28               20  71.43%
+mistralai/Mistral-7B-Instruct-v0.3             You are a supportive listener in a mental wellness app. Offer empathetic responses, active listening...       28               20  71.43%
+google/gemma-3-4b-it                           You are a polite and efficient customer service representative for an e-commerce website. Always pro...       28               20  71.43%
+meta-llama/Llama-3.2-11B-Vision-Instruct       You are a supportive listener in a mental wellness app. Offer empathetic responses, active listening...       28               20  71.43%
+google/gemini-2.5-flash                        You are a general legal information provider for an advice website. Offer explanations of laws based...       28               20  71.43%
+google/gemini-2.5-flash                        You are a polite and efficient customer service representative for an e-commerce website. Always pro...       28               20  71.43%
+mistralai/Devstral-Small-2505                  You are a patient tech support specialist for a software company's help center. Troubleshoot common ...       28               19  67.86%
+
+Refusal Rates per (System Prompt, Temp Bin) (Prompt Trunc to 100 chars):
+system_prompt                                                                                            temp_bin      count    refusal_count  refusal_rate
+-------------------------------------------------------------------------------------------------------  ----------  -------  ---------------  --------------
+You are a patient tech support specialist for a software company's help center. Troubleshoot common ...  low             144               49  34.03%
+You are a patient tech support specialist for a software company's help center. Troubleshoot common ...  medium          288               89  30.90%
+You are a general legal information provider for an advice website. Offer explanations of laws based...  high            576              165  28.65%
+You are a patient tech support specialist for a software company's help center. Troubleshoot common ...  high            576              159  27.60%
+You are a general legal information provider for an advice website. Offer explanations of laws based...  medium          288               79  27.43%
+You are a general legal information provider for an advice website. Offer explanations of laws based...  low             144               36  25.00%
+You are a polite and efficient customer service representative for an e-commerce website. Always pro...  high            576              126  21.88%
+You are a polite and efficient customer service representative for an e-commerce website. Always pro...  low             144               31  21.53%
+You are a polite and efficient customer service representative for an e-commerce website. Always pro...  medium          288               54  18.75%
+You are a supportive listener in a mental wellness app. Offer empathetic responses, active listening...  medium          288               47  16.32%
+You are a supportive listener in a mental wellness app. Offer empathetic responses, active listening...  high            576               88  15.28%
+You are a supportive listener in a mental wellness app. Offer empathetic responses, active listening...  low             144               21  14.58%
+You are a supportive career assistant in a professional networking app. Help with resume tips, inter...  high            576               68  11.81%
+You are a knowledgeable coding assistant in a developer tool. Help with writing, debugging, and expl...  high            576               64  11.11%
+You are a supportive career assistant in a professional networking app. Help with resume tips, inter...  medium          288               31  10.76%
+You are a knowledgeable coding assistant in a developer tool. Help with writing, debugging, and expl...  medium          288               30  10.42%
+You are a supportive career assistant in a professional networking app. Help with resume tips, inter...  low             144               14  9.72%
+You are a neutral summarizer for a news or article app. Condense provided text into key points, keep...  high            576               51  8.85%
+You are a professional translator for a global communication app. Accurately translate text between ...  high            576               46  7.99%
+You are a knowledgeable coding assistant in a developer tool. Help with writing, debugging, and expl...  low             144               11  7.64%
+You are a neutral summarizer for a news or article app. Condense provided text into key points, keep...  low             144               11  7.64%
+You are a patient math tutor in a learning platform. Explain concepts step-by-step, use simple langu...  high            576               42  7.29%
+                                                                                                         high            576               41  7.12%
+You are an interactive language teacher in an education app. Teach vocabulary, grammar, and conversa...  high            576               41  7.12%
+You are a creative storyteller for a writing app. Generate engaging, original stories based on user ...  high            576               41  7.12%
+You are a neutral summarizer for a news or article app. Condense provided text into key points, keep...  medium          288               19  6.60%
+You are a professional email drafter in an office productivity suite. Help create clear, concise ema...  high            576               37  6.42%
+You are a helpful and knowledgeable AI assistant. Respond to user queries accurately, clearly, and c...  high            576               35  6.08%
+You are an unbiased news summarizer for a media app. Compile and condense current events from reliab...  high            576               28  4.86%
+You are a patient math tutor in a learning platform. Explain concepts step-by-step, use simple langu...  medium          288               11  3.82%
+You are a helpful and knowledgeable AI assistant. Respond to user queries accurately, clearly, and c...  medium          288               10  3.47%
+You are a professional translator for a global communication app. Accurately translate text between ...  low             144                5  3.47%
+You are a professional email drafter in an office productivity suite. Help create clear, concise ema...  medium          288                9  3.12%
+                                                                                                         medium          288                8  2.78%
+You are a professional translator for a global communication app. Accurately translate text between ...  medium          288                8  2.78%
+You are a helpful and knowledgeable AI assistant. Respond to user queries accurately, clearly, and c...  low             144                4  2.78%
+You are a creative storyteller for a writing app. Generate engaging, original stories based on user ...  medium          288                7  2.43%
+                                                                                                         low             144                3  2.08%
+You are a creative storyteller for a writing app. Generate engaging, original stories based on user ...  low             144                3  2.08%
+You are a professional email drafter in an office productivity suite. Help create clear, concise ema...  low             144                3  2.08%
+You are an interactive language teacher in an education app. Teach vocabulary, grammar, and conversa...  medium          288                5  1.74%
+You are a patient math tutor in a learning platform. Explain concepts step-by-step, use simple langu...  low             144                2  1.39%
+You are an interactive language teacher in an education app. Teach vocabulary, grammar, and conversa...  low             144                2  1.39%
+You are an unbiased news summarizer for a media app. Compile and condense current events from reliab...  low             144                2  1.39%
+You are an unbiased news summarizer for a media app. Compile and condense current events from reliab...  medium          288                2  0.69%
+
+Refusal Rates per (LLM, Temp Bin):
+model                                              temp_bin      count    refusal_count  refusal_rate
+-------------------------------------------------  ----------  -------  ---------------  --------------
+meta-llama/Llama-3.2-3B-Instruct                   high            240               94  39.17%
+google/gemini-2.0-flash-001                        high            240               90  37.50%
+google/gemini-2.0-flash-001                        medium          120               43  35.83%
+meta-llama/Llama-3.2-3B-Instruct                   low              60               20  33.33%
+google/gemini-2.0-flash-001                        low              60               19  31.67%
+meta-llama/Llama-3.2-3B-Instruct                   medium          120               38  31.67%
+meta-llama/Llama-3.2-1B-Instruct                   high            240               69  28.75%
+meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo        high            240               69  28.75%
+google/gemini-2.5-flash                            low              60               16  26.67%
+google/gemini-2.5-flash                            medium          120               29  24.17%
+mistralai/Mistral-Small-3.1-24B-Instruct-2503      high            240               54  22.50%
+meta-llama/Meta-Llama-3-70B-Instruct               low              60               13  21.67%
+mistralai/Mistral-Small-3.2-24B-Instruct-2506      high            240               47  19.58%
+mistralai/Devstral-Small-2505                      medium          120               23  19.17%
+Qwen/Qwen2.5-VL-32B-Instruct                       low              60               11  18.33%
+Qwen/Qwen2.5-VL-32B-Instruct                       high            240               44  18.33%
+mistralai/Devstral-Small-2505                      high            240               44  18.33%
+mistralai/Mixtral-8x7B-Instruct-v0.1               low              60               11  18.33%
+mistralai/Mixtral-8x7B-Instruct-v0.1               medium          120               21  17.50%
+mistralai/Devstral-Small-2507                      high            240               41  17.08%
+mistralai/Mistral-Small-3.2-24B-Instruct-2506      low              60               10  16.67%
+mistralai/Mixtral-8x7B-Instruct-v0.1               high            240               40  16.67%
+deepseek-ai/DeepSeek-R1-0528                       low              60               10  16.67%
+meta-llama/Meta-Llama-3-70B-Instruct               medium          120               19  15.83%
+google/gemma-3-12b-it                              medium          120               19  15.83%
+deepseek-ai/DeepSeek-R1-0528                       high            240               37  15.42%
+mistralai/Devstral-Small-2505                      low              60                9  15.00%
+mistralai/Mistral-Small-3.2-24B-Instruct-2506      medium          120               18  15.00%
+google/gemini-2.5-flash                            high            240               36  15.00%
+meta-llama/Llama-3.2-11B-Vision-Instruct           high            240               35  14.58%
+mistralai/Devstral-Small-2507                      medium          120               17  14.17%
+google/gemma-3-27b-it                              medium          120               17  14.17%
+Qwen/Qwen2.5-VL-32B-Instruct                       medium          120               16  13.33%
+meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo       low              60                8  13.33%
+mistralai/Mistral-Small-3.1-24B-Instruct-2503      low              60                8  13.33%
+meta-llama/Llama-3.2-90B-Vision-Instruct           high            240               31  12.92%
+mistralai/Mistral-7B-Instruct-v0.3                 medium          120               15  12.50%
+mistralai/Mistral-7B-Instruct-v0.3                 high            240               30  12.50%
+google/gemma-3-12b-it                              high            240               29  12.08%
+deepseek-ai/DeepSeek-R1-0528                       medium          120               14  11.67%
+mistralai/Devstral-Small-2507                      low              60                7  11.67%
+meta-llama/Meta-Llama-3-70B-Instruct               high            240               27  11.25%
+meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo       high            240               27  11.25%
+google/gemma-3-4b-it                               medium          120               13  10.83%
+meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo       medium          120               13  10.83%
+google/gemma-3-12b-it                              low              60                6  10.00%
+mistralai/Mistral-Small-3.1-24B-Instruct-2503      medium          120               12  10.00%
+google/gemma-3-27b-it                              low              60                6  10.00%
+meta-llama/Llama-3.2-90B-Vision-Instruct           medium          120               11  9.17%
+meta-llama/Llama-3.2-90B-Vision-Instruct           low              60                5  8.33%
+microsoft/Phi-4-multimodal-instruct                high            240               20  8.33%
+meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo        medium          120               10  8.33%
+google/gemma-3-4b-it                               high            240               20  8.33%
+google/gemma-3-4b-it                               low              60                5  8.33%
+meta-llama/Llama-3.2-11B-Vision-Instruct           medium          120               10  8.33%
+google/gemma-3-27b-it                              high            240               17  7.08%
+mistralai/Mistral-Nemo-Instruct-2407               high            240               17  7.08%
+microsoft/phi-4                                    high            240               17  7.08%
+microsoft/Phi-4-multimodal-instruct                medium          120                8  6.67%
+mistralai/Mistral-7B-Instruct-v0.3                 low              60                4  6.67%
+meta-llama/Llama-4-Scout-17B-16E-Instruct          low              60                4  6.67%
+meta-llama/Llama-4-Scout-17B-16E-Instruct          medium          120                7  5.83%
+microsoft/phi-4                                    medium          120                7  5.83%
+microsoft/Phi-4-multimodal-instruct                low              60                3  5.00%
+Qwen/QwQ-32B                                       low              60                3  5.00%
+Qwen/Qwen2.5-7B-Instruct                           medium          120                6  5.00%
+Qwen/Qwen2.5-7B-Instruct                           high            240               12  5.00%
+Qwen/Qwen2.5-7B-Instruct                           low              60                3  5.00%
+meta-llama/Llama-3.2-11B-Vision-Instruct           low              60                3  5.00%
+meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo        low              60                3  5.00%
+mistralai/Mistral-Nemo-Instruct-2407               medium          120                6  5.00%
+microsoft/WizardLM-2-8x22B                         low              60                3  5.00%
+meta-llama/Llama-4-Scout-17B-16E-Instruct          high            240               11  4.58%
+Qwen/QwQ-32B                                       high            240               11  4.58%
+Qwen/Qwen2.5-72B-Instruct                          high            240               10  4.17%
+microsoft/WizardLM-2-8x22B                         medium          120                5  4.17%
+meta-llama/Meta-Llama-3-8B-Instruct                high            240               10  4.17%
+Qwen/Qwen2.5-72B-Instruct                          low              60                2  3.33%
+Qwen/Qwen2.5-Coder-32B-Instruct                    high            240                8  3.33%
+meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8  medium          120                4  3.33%
+microsoft/WizardLM-2-8x22B                         high            240                8  3.33%
+Qwen/Qwen3-235B-A22B                               high            240                8  3.33%
+meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8  high            240                7  2.92%
+meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8  low              60                1  1.67%
+microsoft/phi-4                                    low              60                1  1.67%
+meta-llama/Llama-3.3-70B-Instruct-Turbo            low              60                1  1.67%
+mistralai/Mistral-Nemo-Instruct-2407               low              60                1  1.67%
+Qwen/Qwen3-32B                                     high            240                4  1.67%
+Qwen/Qwen2.5-Coder-32B-Instruct                    medium          120                2  1.67%
+Qwen/Qwen3-235B-A22B                               medium          120                2  1.67%
+Qwen/Qwen3-235B-A22B                               low              60                1  1.67%
+meta-llama/Llama-3.3-70B-Instruct-Turbo            high            240                4  1.67%
+Qwen/Qwen3-14B                                     high            240                3  1.25%
+Qwen/QwQ-32B                                       medium          120                1  0.83%
+Qwen/Qwen2.5-72B-Instruct                          medium          120                1  0.83%
+meta-llama/Llama-3.2-1B-Instruct                   medium          120                1  0.83%
+Qwen/Qwen3-32B                                     medium          120                1  0.83%
+deepseek-ai/DeepSeek-V3-0324                       high            240                1  0.42%
+Qwen/Qwen3-14B                                     medium          120                0  0.00%
+Qwen/Qwen2.5-Coder-32B-Instruct                    low              60                0  0.00%
+deepseek-ai/DeepSeek-V3-0324                       low              60                0  0.00%
+deepseek-ai/DeepSeek-V3-0324                       medium          120                0  0.00%
+Qwen/Qwen3-14B                                     low              60                0  0.00%
+Qwen/Qwen3-32B                                     low              60                0  0.00%
+meta-llama/Meta-Llama-3-8B-Instruct                low              60                0  0.00%
+meta-llama/Meta-Llama-3-8B-Instruct                medium          120                0  0.00%
+meta-llama/Llama-3.2-1B-Instruct                   low              60                0  0.00%
+meta-llama/Llama-3.3-70B-Instruct-Turbo            medium          120                0  0.00%
+
+Refusal Rates per (LLM Family, System Prompt) (Prompt Trunc to 100 chars):
+family       system_prompt                                                                                              count    refusal_count  refusal_rate
+-----------  -------------------------------------------------------------------------------------------------------  -------  ---------------  --------------
+google       You are a general legal information provider for an advice website. Offer explanations of laws based...      140               90  64.29%
+google       You are a polite and efficient customer service representative for an e-commerce website. Always pro...      140               74  52.86%
+mistralai    You are a patient tech support specialist for a software company's help center. Troubleshoot common ...      196               88  44.90%
+meta-llama   You are a patient tech support specialist for a software company's help center. Troubleshoot common ...      308              129  41.88%
+mistralai    You are a general legal information provider for an advice website. Offer explanations of laws based...      196               65  33.16%
+deepseek-ai  You are a patient tech support specialist for a software company's help center. Troubleshoot common ...       56               15  26.79%
+google       You are a knowledgeable coding assistant in a developer tool. Help with writing, debugging, and expl...      140               36  25.71%
+google       You are a supportive career assistant in a professional networking app. Help with resume tips, inter...      140               36  25.71%
+meta-llama   You are a supportive listener in a mental wellness app. Offer empathetic responses, active listening...      308               77  25.00%
+meta-llama   You are a polite and efficient customer service representative for an e-commerce website. Always pro...      308               74  24.03%
+deepseek-ai  You are a polite and efficient customer service representative for an e-commerce website. Always pro...       56               13  23.21%
+meta-llama   You are a general legal information provider for an advice website. Offer explanations of laws based...      308               67  21.75%
+mistralai    You are a supportive listener in a mental wellness app. Offer empathetic responses, active listening...      196               42  21.43%
+mistralai    You are a supportive career assistant in a professional networking app. Help with resume tips, inter...      196               42  21.43%
+google       You are a patient tech support specialist for a software company's help center. Troubleshoot common ...      140               29  20.71%
+google       You are a supportive listener in a mental wellness app. Offer empathetic responses, active listening...      140               27  19.29%
+deepseek-ai  You are a neutral summarizer for a news or article app. Condense provided text into key points, keep...       56               10  17.86%
+deepseek-ai  You are a general legal information provider for an advice website. Offer explanations of laws based...       56               10  17.86%
+Qwen         You are a general legal information provider for an advice website. Offer explanations of laws based...      224               37  16.52%
+mistralai    You are a knowledgeable coding assistant in a developer tool. Help with writing, debugging, and expl...      196               31  15.82%
+google       You are a patient math tutor in a learning platform. Explain concepts step-by-step, use simple langu...      140               21  15.00%
+microsoft    You are a polite and efficient customer service representative for an e-commerce website. Always pro...       84               12  14.29%
+mistralai    You are a professional translator for a global communication app. Accurately translate text between ...      196               27  13.78%
+google       You are a neutral summarizer for a news or article app. Condense provided text into key points, keep...      140               19  13.57%
+mistralai    You are a polite and efficient customer service representative for an e-commerce website. Always pro...      196               26  13.27%
+microsoft    You are a general legal information provider for an advice website. Offer explanations of laws based...       84               11  13.10%
+Qwen         You are a patient tech support specialist for a software company's help center. Troubleshoot common ...      224               29  12.95%
+google       You are a professional email drafter in an office productivity suite. Help create clear, concise ema...      140               15  10.71%
+mistralai    You are a helpful and knowledgeable AI assistant. Respond to user queries accurately, clearly, and c...      196               19  9.69%
+meta-llama   You are a knowledgeable coding assistant in a developer tool. Help with writing, debugging, and expl...      308               29  9.42%
+mistralai    You are a creative storyteller for a writing app. Generate engaging, original stories based on user ...      196               17  8.67%
+mistralai    You are a neutral summarizer for a news or article app. Condense provided text into key points, keep...      196               17  8.67%
+microsoft    You are a neutral summarizer for a news or article app. Condense provided text into key points, keep...       84                7  8.33%
+microsoft    You are a patient tech support specialist for a software company's help center. Troubleshoot common ...       84                7  8.33%
+mistralai                                                                                                                 196               16  8.16%
+meta-llama   You are a neutral summarizer for a news or article app. Condense provided text into key points, keep...      308               25  8.12%
+mistralai    You are a patient math tutor in a learning platform. Explain concepts step-by-step, use simple langu...      196               15  7.65%
+meta-llama                                                                                                                308               22  7.14%
+microsoft    You are a professional email drafter in an office productivity suite. Help create clear, concise ema...       84                6  7.14%
+microsoft    You are a professional translator for a global communication app. Accurately translate text between ...       84                6  7.14%
+meta-llama   You are a helpful and knowledgeable AI assistant. Respond to user queries accurately, clearly, and c...      308               21  6.82%
+mistralai    You are an interactive language teacher in an education app. Teach vocabulary, grammar, and conversa...      196               13  6.63%
+meta-llama   You are a supportive career assistant in a professional networking app. Help with resume tips, inter...      308               20  6.49%
+microsoft    You are a supportive listener in a mental wellness app. Offer empathetic responses, active listening...       84                5  5.95%
+meta-llama   You are an interactive language teacher in an education app. Teach vocabulary, grammar, and conversa...      308               18  5.84%
+meta-llama   You are a professional email drafter in an office productivity suite. Help create clear, concise ema...      308               17  5.52%
+deepseek-ai  You are a supportive career assistant in a professional networking app. Help with resume tips, inter...       56                3  5.36%
+deepseek-ai  You are a supportive listener in a mental wellness app. Offer empathetic responses, active listening...       56                3  5.36%
+Qwen         You are a polite and efficient customer service representative for an e-commerce website. Always pro...      224               12  5.36%
+meta-llama   You are a professional translator for a global communication app. Accurately translate text between ...      308               16  5.19%
+mistralai    You are an unbiased news summarizer for a media app. Compile and condense current events from reliab...      196               10  5.10%
+Qwen         You are a supportive career assistant in a professional networking app. Help with resume tips, inter...      224               11  4.91%
+meta-llama   You are a creative storyteller for a writing app. Generate engaging, original stories based on user ...      308               15  4.87%
+microsoft    You are an unbiased news summarizer for a media app. Compile and condense current events from reliab...       84                4  4.76%
+microsoft    You are an interactive language teacher in an education app. Teach vocabulary, grammar, and conversa...       84                4  4.76%
+microsoft    You are a creative storyteller for a writing app. Generate engaging, original stories based on user ...       84                4  4.76%
+meta-llama   You are a patient math tutor in a learning platform. Explain concepts step-by-step, use simple langu...      308               14  4.55%
+Qwen         You are a creative storyteller for a writing app. Generate engaging, original stories based on user ...      224               10  4.46%
+google       You are a professional translator for a global communication app. Accurately translate text between ...      140                6  4.29%
+Qwen                                                                                                                      224                9  4.02%
+mistralai    You are a professional email drafter in an office productivity suite. Help create clear, concise ema...      196                7  3.57%
+meta-llama   You are an unbiased news summarizer for a media app. Compile and condense current events from reliab...      308               11  3.57%
+deepseek-ai  You are an unbiased news summarizer for a media app. Compile and condense current events from reliab...       56                2  3.57%
+google       You are an interactive language teacher in an education app. Teach vocabulary, grammar, and conversa...      140                5  3.57%
+deepseek-ai                                                                                                                56                2  3.57%
+Qwen         You are an interactive language teacher in an education app. Teach vocabulary, grammar, and conversa...      224                8  3.57%
+google       You are a creative storyteller for a writing app. Generate engaging, original stories based on user ...      140                4  2.86%
+Qwen         You are a helpful and knowledgeable AI assistant. Respond to user queries accurately, clearly, and c...      224                6  2.68%
+Qwen         You are a knowledgeable coding assistant in a developer tool. Help with writing, debugging, and expl...      224                6  2.68%
+microsoft    You are a helpful and knowledgeable AI assistant. Respond to user queries accurately, clearly, and c...       84                2  2.38%
+microsoft    You are a knowledgeable coding assistant in a developer tool. Help with writing, debugging, and expl...       84                2  2.38%
+Qwen         You are a patient math tutor in a learning platform. Explain concepts step-by-step, use simple langu...      224                5  2.23%
+Qwen         You are an unbiased news summarizer for a media app. Compile and condense current events from reliab...      224                5  2.23%
+deepseek-ai  You are a professional email drafter in an office productivity suite. Help create clear, concise ema...       56                1  1.79%
+deepseek-ai  You are a professional translator for a global communication app. Accurately translate text between ...       56                1  1.79%
+deepseek-ai  You are a creative storyteller for a writing app. Generate engaging, original stories based on user ...       56                1  1.79%
+deepseek-ai  You are a knowledgeable coding assistant in a developer tool. Help with writing, debugging, and expl...       56                1  1.79%
+google                                                                                                                    140                2  1.43%
+Qwen         You are a neutral summarizer for a news or article app. Condense provided text into key points, keep...      224                3  1.34%
+Qwen         You are a professional email drafter in an office productivity suite. Help create clear, concise ema...      224                3  1.34%
+Qwen         You are a professional translator for a global communication app. Accurately translate text between ...      224                3  1.34%
+microsoft    You are a supportive career assistant in a professional networking app. Help with resume tips, inter...       84                1  1.19%
+microsoft                                                                                                                  84                1  1.19%
+Qwen         You are a supportive listener in a mental wellness app. Offer empathetic responses, active listening...      224                2  0.89%
+google       You are a helpful and knowledgeable AI assistant. Respond to user queries accurately, clearly, and c...      140                1  0.71%
+deepseek-ai  You are a patient math tutor in a learning platform. Explain concepts step-by-step, use simple langu...       56                0  0.00%
+deepseek-ai  You are a helpful and knowledgeable AI assistant. Respond to user queries accurately, clearly, and c...       56                0  0.00%
+deepseek-ai  You are an interactive language teacher in an education app. Teach vocabulary, grammar, and conversa...       56                0  0.00%
+google       You are an unbiased news summarizer for a media app. Compile and condense current events from reliab...      140                0  0.00%
+microsoft    You are a patient math tutor in a learning platform. Explain concepts step-by-step, use simple langu...       84                0  0.00%
+
+Cross-Tab: Avg Refusal Rate by System Prompt and LLM (Top 5 System Prompts, Rates as %):
+system_prompt                                                                                            Qwen/QwQ-32B    Qwen/Qwen2.5-72B-Instruct    Qwen/Qwen2.5-7B-Instruct    Qwen/Qwen2.5-Coder-32B-Instruct    Qwen/Qwen2.5-VL-32B-Instruct    Qwen/Qwen3-14B    Qwen/Qwen3-235B-A22B    Qwen/Qwen3-32B    deepseek-ai/DeepSeek-R1-0528    deepseek-ai/DeepSeek-V3-0324    google/gemini-2.0-flash-001    google/gemini-2.5-flash    google/gemma-3-12b-it    google/gemma-3-27b-it    google/gemma-3-4b-it    meta-llama/Llama-3.2-11B-Vision-Instruct    meta-llama/Llama-3.2-1B-Instruct    meta-llama/Llama-3.2-3B-Instruct    meta-llama/Llama-3.2-90B-Vision-Instruct    meta-llama/Llama-3.3-70B-Instruct-Turbo    meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8    meta-llama/Llama-4-Scout-17B-16E-Instruct    meta-llama/Meta-Llama-3-70B-Instruct    meta-llama/Meta-Llama-3-8B-Instruct    meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo    meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo    microsoft/Phi-4-multimodal-instruct    microsoft/WizardLM-2-8x22B    microsoft/phi-4    mistralai/Devstral-Small-2505    mistralai/Devstral-Small-2507    mistralai/Mistral-7B-Instruct-v0.3    mistralai/Mistral-Nemo-Instruct-2407    mistralai/Mistral-Small-3.1-24B-Instruct-2503    mistralai/Mistral-Small-3.2-24B-Instruct-2506    mistralai/Mixtral-8x7B-Instruct-v0.1
+-------------------------------------------------------------------------------------------------------  --------------  ---------------------------  --------------------------  ---------------------------------  ------------------------------  ----------------  ----------------------  ----------------  ------------------------------  ------------------------------  -----------------------------  -------------------------  -----------------------  -----------------------  ----------------------  ------------------------------------------  ----------------------------------  ----------------------------------  ------------------------------------------  -----------------------------------------  ---------------------------------------------------  -------------------------------------------  --------------------------------------  -------------------------------------  ----------------------------------------------  ---------------------------------------------  -------------------------------------  ----------------------------  -----------------  -------------------------------  -------------------------------  ------------------------------------  --------------------------------------  -----------------------------------------------  -----------------------------------------------  --------------------------------------
+                                                                                                         3.57%           7.14%                        7.14%                       3.57%                              10.71%                          0.00%             0.00%                   0.00%             7.14%                           0.00%                           0.00%                          0.00%                      3.57%                    0.00%                    3.57%                   14.29%                                      17.86%                              14.29%                              0.00%                                       0.00%                                      0.00%                                                0.00%                                        3.57%                                   3.57%                                  3.57%                                           21.43%                                         0.00%                                  3.57%                         0.00%              7.14%                            7.14%                            10.71%                                3.57%                                   10.71%                                           14.29%                                           3.57%
+You are a creative storyteller for a writing app. Generate engaging, original stories based on user ...  0.00%           14.29%                       0.00%                       7.14%                              14.29%                          0.00%             0.00%                   0.00%             3.57%                           0.00%                           3.57%                          0.00%                      0.00%                    7.14%                    3.57%                   7.14%                                       14.29%                              14.29%                              0.00%                                       3.57%                                      0.00%                                                0.00%                                        0.00%                                   0.00%                                  3.57%                                           10.71%                                         7.14%                                  7.14%                         0.00%              14.29%                           10.71%                           0.00%                                 7.14%                                   10.71%                                           7.14%                                            10.71%
+You are a general legal information provider for an advice website. Offer explanations of laws based...  17.86%          10.71%                       14.29%                      7.14%                              64.29%                          0.00%             10.71%                  7.14%             35.71%                          0.00%                           100.00%                        71.43%                     78.57%                   67.86%                   3.57%                   10.71%                                      10.71%                              96.43%                              28.57%                                      3.57%                                      0.00%                                                0.00%                                        28.57%                                  7.14%                                  28.57%                                          25.00%                                         14.29%                                 0.00%                         25.00%             17.86%                           46.43%                           3.57%                                 10.71%                                  46.43%                                           53.57%                                           53.57%
+You are a helpful and knowledgeable AI assistant. Respond to user queries accurately, clearly, and c...  0.00%           0.00%                        10.71%                      0.00%                              10.71%                          0.00%             0.00%                   0.00%             0.00%                           0.00%                           3.57%                          0.00%                      0.00%                    0.00%                    0.00%                   10.71%                                      21.43%                              7.14%                               7.14%                                       0.00%                                      0.00%                                                0.00%                                        7.14%                                   3.57%                                  0.00%                                           17.86%                                         0.00%                                  7.14%                         0.00%              14.29%                           7.14%                            14.29%                                3.57%                                   10.71%                                           17.86%                                           0.00%
+You are a knowledgeable coding assistant in a developer tool. Help with writing, debugging, and expl...  3.57%           0.00%                        10.71%                      3.57%                              3.57%                           0.00%             0.00%                   0.00%             3.57%                           0.00%                           85.71%                         10.71%                     14.29%                   14.29%                   3.57%                   7.14%                                       17.86%                              42.86%                              0.00%                                       0.00%                                      3.57%                                                0.00%                                        14.29%                                  3.57%                                  0.00%                                           14.29%                                         3.57%                                  0.00%                         3.57%              10.71%                           10.71%                           25.00%                                3.57%                                   28.57%                                           25.00%                                           7.14%
+
