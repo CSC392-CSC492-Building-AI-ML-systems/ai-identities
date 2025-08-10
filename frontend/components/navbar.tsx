@@ -3,72 +3,24 @@
 import Link from "next/link";
 import Pill from "@/components/pill";
 import { useEffect, useState } from "react";
-import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation'; // Import for path change detection
 import Image from "next/image";
 import { useXWikiAuth } from '../hooks/useXWikiAuth';
 
 
 export default function Navbar() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const { loggedIn, username, loading } = useXWikiAuth();
-  const router = useRouter(); 
-  const pathname = usePathname();  // To track the current route
+  const redirectPath = usePathname();  // To track the current route
 
   console.log(loggedIn, "     ", username, "    ", loading)
-  const checkAuth = () => {
-    const token = localStorage.getItem("accessToken");
-    setIsAuthenticated(!!token); // Convert to boolean
-  };
-
-  const fetchNotificationCount = async () => {
-    if (!isAuthenticated) return; // Only fetch if user is logged in
-
-    try {
-      const token = localStorage.getItem("accessToken");
-      const userId = localStorage.getItem("userId");
-
-      // Ensure userId is a valid string
-      const headers: HeadersInit = {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-      };
-
-      if (userId) {
-        headers["userid"] = userId;  // Add userId only if it's a valid string
-      }
-    } catch (error) {
-      console.error("Failed to fetch notification count:", error);
-    }
-  };
-
-  useEffect(() => {
-    // Check auth status on component mount
-    checkAuth();
-  }, []);
-
-  useEffect(() => {
-    // Re-check auth status on route change
-    checkAuth();
-    fetchNotificationCount();
-  }, [pathname]); // Re-run when pathname changes
-
-  // Poll for notifications every 30 seconds
-  useEffect(() => {
-    if (isAuthenticated) {
-      const interval = setInterval(fetchNotificationCount, 30000);
-      return () => clearInterval(interval);
-    }
-  }, [isAuthenticated]);
 
   const handleLogin = () => {
-    const redirectUrl = encodeURIComponent('http://159.203.20.200:8080/bin/view/redir');
+    const redirectUrl = encodeURIComponent(`http://159.203.20.200:8080/bin/view/redir?next=${redirectPath}`);
     window.location.href = `http://159.203.20.200:8080/bin/login/XWiki/XWikiLogin?xredirect=${redirectUrl}`;
   };
 
   const handleLogout = () => {
-    const redirectUrl = encodeURIComponent('http://159.203.20.200:8080/bin/view/redir');
+    const redirectUrl = encodeURIComponent(`http://159.203.20.200:8080/bin/view/redir?next=${redirectPath}`);
     window.location.href = `http://159.203.20.200:8080/bin/logout/XWiki/XWikiLogout?xredirect=${redirectUrl}`;
   };
 
@@ -89,6 +41,10 @@ export default function Navbar() {
             </Link>
           <Link href="/wiki" className="relative group text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2">
             Wiki
+            <span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
+          </Link>
+          <Link href="/search" className="relative group text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2">
+            Search
             <span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
           </Link>
         </div>

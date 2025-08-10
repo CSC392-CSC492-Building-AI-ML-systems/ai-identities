@@ -31,6 +31,26 @@ const MODES = {
 };
 type ModeKey = keyof typeof MODES;
 
+const EXTRA_TAG_FIELDS: Record<ModeKey, string[]> = {
+  llms: ['useCases', 'limitations', 'risks', 'modelType'],
+  llm_apps: ['useCases', 'limitations', 'risks', 'llms', 'llmsGuess'],
+};
+
+// helper functions to display search results
+const propsToMap = (r: any) => {
+  const map: Record<string, any> = {};
+  (r.object?.properties || []).forEach((p: any) => {
+    map[p.name?.trim()] = p.value;
+  });
+  return map;
+};
+
+const splitTags = (s?: string) =>
+  (s || '')
+    .split(',')
+    .map(t => t.trim().toLowerCase())
+    .filter(Boolean);
+
 export default function HomePage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTags, setSelectedTags] = useState<{ [group: string]: string[] }>({});
@@ -44,16 +64,22 @@ export default function HomePage() {
 
   // Dialog state for filters
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [draftSelected, setDraftSelected] = useState<{ [group: string]: string[] }>({});
 
   // add state
   const [mode, setMode] = useState<ModeKey>('llms');
+  const [didSearch, setDidSearch] = useState<Boolean>(false);
 
   // reset tag containers when mode changes (so UI doesn’t show old groups)
   useEffect(() => {
     const groups = Object.fromEntries(MODES[mode].tagGroups.map(g => [g, []]));
     setSelectedTags(groups as TagMap);
     setAvailableTags(groups as TagMap);
+
+    setResults([]);
+    setError(null);
+
+    setSearchTerm('');
+    setDidSearch(false);
   }, [mode]);
 
   // Load tags from XWiki
@@ -111,7 +137,9 @@ export default function HomePage() {
       return { ...prev, [group]: next };
     });
   };
-
+  /* ------------------------------
+              SEARCH
+  ------------------------------ */
   const searchPages = async () => {
     const { className} = MODES[mode];
 
@@ -149,13 +177,16 @@ export default function HomePage() {
 
     const fullUrl = "http://159.203.20.200:8080/rest/wikis/xwiki/query" +
       "?q=" + encodeURIComponent(query) +
-      "&type=xwql&media=json&number=100";
+      `&type=xwql&media=json&number=100&className=${encodeURIComponent(className)}`;
 
     try {
       const res = await fetch(fullUrl, { headers: { "Accept": "application/json", "Authorization": "Basic " + btoa("ahmed33033:ahmed2003")} });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
+      console.log("SEARCH QUERY: ", fullUrl);
+      console.log("SEARCH DATA: ", data);
       setResults(data.searchResults || []);
+      setDidSearch(true);
       setError(null);
     } catch (err: any) {
       setError("Failed to fetch search data: " + (err?.message || String(err)));
@@ -217,28 +248,75 @@ export default function HomePage() {
         {error && <pre style={{ color: 'red' }}>{error}</pre>}
 
         {/* Search Results */}
-        <ul>
+        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 2 }}>
           {results.length === 0 ? (
-            <li>No results found.</li>
+            didSearch === false || error !== null ? (
+              <Typography variant="body2" sx={{ opacity: 0.8 }}></Typography>
+              ) : (
+              <Typography variant="body2" sx={{ opacity: 0.8 }}>No results found.</Typography>)
           ) : (
             results.map((r, index) => {
-              const space = r.space || "";
-              const pageName = r.pageName || "";
-              const title = r.title || pageName || space;
-              const appName = r.title || r.pageName || r.space;
-              const encodedName = encodeURIComponent(appName.trim());
+              const props = propsToMap(r);
+
+              // Name / title
+              const name =
+                props.name ||
+                r.title ||
+                r.pageName ||
+                r.space ||
+                'Untitled';
+
+              // Creator + Release date
+              const creator = props.creatorName || 'Unknown';
+              const release =
+                props.releaseDate
+                  ? new Date(props.releaseDate).toLocaleDateString()
+                  : undefined;
+
+              // collect tag chips (groups + a couple mode-specific extras)
+              const tagFields = Array.from(
+                new Set([...(MODES[mode].tagGroups as readonly string[]), ...EXTRA_TAG_FIELDS[mode]])
+              );
+
+              const chips = tagFields.flatMap((field) =>
+                splitTags(String(props[field] ?? '')).map((t) => ({ field, t }))
+              );
+
+              // view URL
+              const appName = name;
+              const encodedName = encodeURIComponent(String(appName).trim());
               const viewUrl = `/wiki/${MODES[mode].url}/${encodedName}`;
 
               return (
-                <li key={index}>
-                  <Link href={viewUrl} style={{ color: "#F3F3FF", textDecoration: "underline" }}>
-                    {title}
+                <Box key={index} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2 }}>
+                  <Link href={viewUrl}>
+                    <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', mb: 1 }}>
+                      <Typography variant="h6" sx={{ mr: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {name}
+                      </Typography>
+                      <Link href={viewUrl} style={{ textDecoration: 'none' }}>
+                        <Button size="small" variant="outlined">Open</Button>
+                      </Link>
+                    </Box>
+
+                    <Typography variant="body2" sx={{ mb: 1.5 }}>
+                      Creator: <strong>{creator}</strong>
+                      {release ? <> • Released: <strong>{release}</strong></> : null}
+                    </Typography>
+
+                    {chips.length > 0 && (
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
+                        {chips.map(({ field, t }, i) => (
+                          <Chip key={`${field}-${t}-${i}`} label={`${field}: ${t}`} size="small" />
+                        ))}
+                      </Box>
+                    )}
                   </Link>
-                </li>
+                </Box>
               );
             })
           )}
-        </ul>
+        </Box>
       </Box>
 
       {/* Filters Dialog */}
