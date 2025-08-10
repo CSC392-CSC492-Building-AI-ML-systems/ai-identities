@@ -4,11 +4,12 @@ import Link from 'next/link';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from '../../lib/muiTheme';
+import SearchIcon from '@mui/icons-material/Search';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
   Select, MenuItem,
   Typography, FormGroup, FormControlLabel, Checkbox, Chip,
-  TextField, Button, Box
+  Button, Box, Paper, InputBase, IconButton, ToggleButtonGroup, ToggleButton
 } from '@mui/material';
 
 type TagMap = { [group: string]: string[] };
@@ -17,14 +18,14 @@ const MODES = {
   llms: {
     label: 'LLM Pages',
     className: 'LLM Wiki.Code.LLM WikiClass',
-    nameProp: 'llm',
+    nameProp: 'llms',
     url: 'LLM Wiki',
     tagGroups: ['useCases', 'limitations', 'risks'] as const,
   },
   llm_apps: {
     label: 'LLM Apps Pages',
     className: 'LLM-Apps Wiki.Code.LLM-Apps WikiClass',
-    nameProp: 'llm app',
+    nameProp: 'llm apps',
     url: 'LLM-Apps Wiki',
     tagGroups: ['useCases', 'limitations', 'risks'] as const,
   },
@@ -207,25 +208,32 @@ export default function HomePage() {
 
       <Box sx={{ maxWidth: 1200, margin: '2rem auto', padding: '1rem', paddingTop: '80px' }}>
         {/* Search Bar + Filters Button */}
-        <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center' }}>
-          <Select
-            size="small"
-            value={mode}
-            onChange={(e) => setMode(e.target.value as ModeKey)}
-            sx={{ minWidth: 180 }}
-          >
-            {Object.entries(MODES).map(([k, m]) => (
-              <MenuItem key={k} value={k}>{m.label}</MenuItem>
-            ))}
-          </Select>
+        <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center', justifyContent: 'center',}}>
+          <Paper variant="outlined" sx={{ width: '60%', display: 'flex', alignItems: 'center', justifyContent: 'flex-start', px: 2, py: 0.5, gap: 1 }}>
+            <ToggleButtonGroup size="small" exclusive value={mode}
+              sx={{
+                border: '1px solid', borderColor: 'divider', borderRadius: 1, overflow: 'hidden',
+                '& .MuiToggleButton-root': { border: 0, px: 1.25, py: 0.25, fontSize: 12 },
+                '& .Mui-selected': { bgcolor: 'action.selected' },
+              }}
+              onChange={(_, v) => { if (v) { setMode(v as ModeKey); setResults([]); setError(null); } }}
+            >
+              <ToggleButton value="llms">LLMs</ToggleButton>
+              <ToggleButton value="llm_apps">Apps</ToggleButton>
+            </ToggleButtonGroup>
 
-          <TextField
-            label={`Search by ${MODES[mode].nameProp}`}
-            variant="outlined"
-            fullWidth
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+            <InputBase
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') { e.preventDefault(); searchPages(); }
+              }}
+              sx={{ ml: 1, flex: 1 }}
+              placeholder={`Search by ${MODES[mode].nameProp}`}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <IconButton onClick={searchPages}><SearchIcon /></IconButton>
+          </Paper>
+
           <Button variant="outlined" onClick={openFilters}>Filters</Button>
           <Button variant="contained" onClick={searchPages}>Search</Button>
         </Box>
@@ -294,9 +302,6 @@ export default function HomePage() {
                       <Typography variant="h6" sx={{ mr: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {name}
                       </Typography>
-                      <Link href={viewUrl} style={{ textDecoration: 'none' }}>
-                        <Button size="small" variant="outlined">Open</Button>
-                      </Link>
                     </Box>
 
                     <Typography variant="body2" sx={{ mb: 1.5 }}>
