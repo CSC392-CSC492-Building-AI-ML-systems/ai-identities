@@ -121,8 +121,10 @@ export default function SignupPage() {
           type="submit"
           className="w-full mt-4 py-2 rounded font-semibold transition-colors"
           style={{ background: '#9290C3', color: '#F3F3FF' }}
-          onMouseOver={e => e.currentTarget.style.background = '#535C91'}
-          onMouseOut={e => e.currentTarget.style.background = '#9290C3'}
+          onMouseEnter={e => (e.currentTarget.style.background = '#535C91')}
+          onFocus={e => (e.currentTarget.style.background = '#535C91')}
+          onMouseLeave={e => (e.currentTarget.style.background = '#9290C3')}
+          onBlur={e => (e.currentTarget.style.background = '#9290C3')}
           disabled={loading}
         >
           {loading ? "Signing up..." : "Sign Up"}
