@@ -69,6 +69,9 @@ export default function HomePage() {
   // add state
   const [mode, setMode] = useState<ModeKey>('llms');
   const [didSearch, setDidSearch] = useState<Boolean>(false);
+  
+  // keep track of link clicked
+  const [linkClicked, setLinkClicked] = useState<string | null>(null);
 
   // reset tag containers when mode changes (so UI doesn’t show old groups)
   useEffect(() => {
@@ -192,6 +195,9 @@ export default function HomePage() {
     } catch (err: any) {
       setError("Failed to fetch search data: " + (err?.message || String(err)));
       setResults([]);
+    } finally {
+      setDidSearch(true);
+      setLinkClicked(null);
     }
   };
 
@@ -256,48 +262,61 @@ export default function HomePage() {
         {error && <pre style={{ color: 'red' }}>{error}</pre>}
 
         {/* Search Results */}
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 2 }}>
-          {results.length === 0 ? (
-            didSearch === false || error !== null ? (
-              <Typography variant="body2" sx={{ opacity: 0.8 }}></Typography>
-              ) : (
-              <Typography variant="body2" sx={{ opacity: 0.8 }}>No results found.</Typography>)
-          ) : (
-            results.map((r, index) => {
-              const props = propsToMap(r);
+          {/* display the xwiki page using an iframe*/}
+        {linkClicked !== null ? (
+          <div className="w-full flex-1 flex justify-center">
+            <iframe
+              src={linkClicked}
+              title={`Wiki: ${linkClicked}`}
+              className="w-full max-w-7xl h-[80vh] rounded-xl border-2 border-[#2D2A5A] bg-white"
+              style={{ minHeight: 400 }}
+            />
+          </div>
+        ) : /* display the search results otherwise */ (
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 2 }}>
+            {results.length === 0 ? ( // check if the user did a search with results
+              didSearch === false || error !== null ? (
+                <Typography variant="body2" sx={{ opacity: 0.8 }}></Typography>
+                ) : (
+                <Typography variant="body2" sx={{ opacity: 0.8 }}>No results found.</Typography>)
+            ) : (
+              results.map((r, index) => {
+                const props = propsToMap(r);
 
-              // Name / title
-              const name =
-                props.name ||
-                r.title ||
-                r.pageName ||
-                r.space ||
-                'Untitled';
+                // Name / title
+                const name =
+                  r.title ||
+                  props.name ||
+                  r.pageName ||
+                  r.space ||
+                  'Untitled';
 
-              // Creator + Release date
-              const creator = props.creatorName || 'Unknown';
-              const release =
-                props.releaseDate
-                  ? new Date(props.releaseDate).toLocaleDateString()
-                  : undefined;
+                // Creator + Release date
+                const creator = props.creatorName || 'Unknown';
+                const release =
+                  props.releaseDate
+                    ? new Date(props.releaseDate).toLocaleDateString()
+                    : undefined;
 
-              // collect tag chips (groups + a couple mode-specific extras)
-              const tagFields = Array.from(
-                new Set([...(MODES[mode].tagGroups as readonly string[]), ...EXTRA_TAG_FIELDS[mode]])
-              );
+                // collect tag chips (groups + a couple mode-specific extras)
+                const tagFields = Array.from(
+                  new Set([...(MODES[mode].tagGroups as readonly string[]), ...EXTRA_TAG_FIELDS[mode]])
+                );
 
-              const chips = tagFields.flatMap((field) =>
-                splitTags(String(props[field] ?? '')).map((t) => ({ field, t }))
-              );
+                const chips = tagFields.flatMap((field) =>
+                  splitTags(String(props[field] ?? '')).map((t) => ({ field, t }))
+                );
 
-              // view URL
-              const appName = name;
-              const encodedName = encodeURIComponent(String(appName).trim());
-              const viewUrl = `/wiki/${MODES[mode].url}/${encodedName}`;
+                // view URL
+                const appName = name;
+                const encodedName = encodeURIComponent(String(appName).trim());
 
-              return (
-                <Box key={index} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2 }}>
-                  <Link href={viewUrl}>
+                // display box for each result
+                return (
+                  <Box 
+                  key={index} 
+                  sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2 }} 
+                  onClick={() => setLinkClicked(`http://159.203.20.200:8080/bin/view/${MODES[mode].url}/${encodedName}`)}>
                     <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', mb: 1 }}>
                       <Typography variant="h6" sx={{ mr: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {name}
@@ -316,12 +335,12 @@ export default function HomePage() {
                         ))}
                       </Box>
                     )}
-                  </Link>
-                </Box>
-              );
-            })
-          )}
-        </Box>
+                  </Box>
+                );
+              })
+            )}
+          </Box>
+        )}
       </Box>
 
       {/* Filters Dialog */}
