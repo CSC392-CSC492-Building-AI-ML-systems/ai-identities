@@ -17,7 +17,7 @@ def perform_5fold_cv_for_method(train_data: dict[str, pd.DataFrame], clf_method:
     """
     5-fold CV for a single method, appends avg metrics to text file.
     Optionally evaluates with both cosine and Euclidean metrics in one go.
-    Records processing/inference times per fold and averages.
+    Records processing/classifier_service times per fold and averages.
     """
     clf_method_name = clf_method['name']
 
