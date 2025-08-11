@@ -1,52 +1,76 @@
-import { useEffect, useState } from 'react';
+// useXWikiAuth.ts
+'use client';
 
-export function useXWikiAuth() {
+import { useEffect, useMemo, useState } from 'react';
+
+type Options = {
+  xwikiSrc?: string;
+  iframeId?: string;
+  timeoutMs?: number;
+};
+
+export function useXWikiAuth({
+  xwikiSrc = 'http://159.203.20.200:8080/bin/view/xwiki_auth_page',
+  iframeId = 'xwiki-auth-bridge',
+  timeoutMs = 5000,
+}: Options = {}) {
   const [loggedIn, setLoggedIn] = useState(false);
   const [username, setUsername] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Always compute origin from the src to avoid mismatches
+  const xwikiOrigin = useMemo(() => new URL(xwikiSrc).origin, [xwikiSrc]);
+
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await fetch('http://159.203.20.200:8080/bin/view/XWiki/CurrentUser', {
-          method: 'GET',
-          credentials: 'include',
-          redirect: 'manual',
-        });
-
-        if (res.status === 200) {
-          const text = await res.text();
-
-          // Parse the HTML using DOMParser (safer than regex)
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(text, 'text/html');
-
-          const htmlEl = doc.querySelector('html');
-          const userRef = htmlEl?.getAttribute('data-xwiki-user-reference');
-
-          if (userRef && userRef.startsWith('xwiki:XWiki.')) {
-            const username = userRef.split('xwiki:XWiki.')[1];
-            setUsername(username);
-            setLoggedIn(true);
-          } else {
-            setUsername(null);
-            setLoggedIn(false);
-          }
-        } else {
-          setUsername(null);
-          setLoggedIn(false);
-        }
-      } catch (err) {
-        console.error('Auth check failed:', err);
-        setUsername(null);
-        setLoggedIn(false);
-      } finally {
+    function onMessage(e: MessageEvent) {
+      if (e.origin !== xwikiOrigin) return; // trust only XWiki
+      const d = e.data;
+      if (d && d.type === 'xwiki-auth') {
+        setLoggedIn(Boolean(d.loggedIn));
+        setUsername(d.username ?? null);
         setLoading(false);
       }
-    };
+    }
 
-    checkAuth();
-  }, []);
+    window.addEventListener('message', onMessage);
+
+    // Ensure a single hidden iframe exists (create if missing)
+    let iframe = document.getElementById(iframeId) as HTMLIFrameElement | null;
+    if (!iframe) {
+      iframe = document.createElement('iframe');
+      iframe.id = iframeId;
+      iframe.src = xwikiSrc;
+      Object.assign(iframe.style, {
+        position: 'absolute',
+        width: '0',
+        height: '0',
+        border: '0',
+        visibility: 'hidden',
+      } as Partial<CSSStyleDeclaration>);
+      iframe.setAttribute('aria-hidden', 'true');
+      document.body.appendChild(iframe);
+    }
+
+    // Ping AFTER the iframe has navigated to XWiki (prevents the mismatch error)
+    const onLoad = () => {
+      iframe?.contentWindow?.postMessage({ type: 'xwiki-auth-request' }, xwikiOrigin);
+    };
+    iframe.addEventListener('load', onLoad, { once: true });
+
+    // Fallback: if the iframe was already loaded before this hook mounted,
+    // this won't fire 'load', so send a permissive ping that won't error.
+    // We still verify e.origin in the onMessage handler.
+    iframe.contentWindow?.postMessage({ type: 'xwiki-auth-request' }, '*');
+
+    const t = window.setTimeout(() => setLoading(false), timeoutMs);
+
+    return () => {
+      window.removeEventListener('message', onMessage);
+      iframe?.removeEventListener('load', onLoad);
+      window.clearTimeout(t);
+      // leave the iframe in DOM for reuse
+    };
+  }, [xwikiSrc, xwikiOrigin, iframeId, timeoutMs]);
 
   return { loggedIn, username, loading };
 }
