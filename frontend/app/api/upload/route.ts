@@ -42,11 +42,24 @@ export async function POST(req: NextRequest) {
     //   },
     // };
     // const result = await collection.insertOne(document);
-
+    /*
     // --- Call the Python algorithm ---
     const scriptPath = path.join(process.cwd(), "..", "algorithm.py");
     const py = spawn("python", [scriptPath]);
-
+    */
+    const id_server = 'http://localhost:8000/identify';
+    const response = await fetch(id_server, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(jsonData)
+    });
+    let output = "";
+    if (!response.ok) {
+        console.error("Python Server Error");
+    } else {
+        output = await response.text();
+    }
+    /*
     // Log any errors from the Python script
     py.stderr.on("data", (data) => {
     console.error("PYTHON ERROR:", data.toString());
@@ -59,14 +72,16 @@ export async function POST(req: NextRequest) {
     for await (const chunk of py.stdout) {
       output += chunk;
     }
-
+    */
     let analysis;
     try {
       analysis = JSON.parse(output);
     } catch {
+      console.log(response);
       return NextResponse.json({ error: "Algorithm error" }, { status: 500 });
     }
 
+    console.log(analysis)
     return NextResponse.json(
       {
         message: "File uploaded successfully",
