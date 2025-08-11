@@ -5,101 +5,255 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 import seaborn as sns
 import matplotlib.pyplot as plt
 from typing import Callable
-from classifier_model import compute_library_averages, predict_unknown, get_metric_func
+from classifier_model import predict_unknown
 from llm_meta_data import get_llm_family_and_branch
 from tqdm import tqdm
 from analyze_final_clf_dataset import detect_refusal
 
 
-def compute_metrics(predictions: dict[str, dict]) -> dict:
+def compute_metrics(predictions_with_scores: dict[str, dict], threshold: float) -> dict:
     """
     Compute metrics: top1/top3 acc, f1, etc. + confusion matrix.
     Assumes predictions are nested: {llm: {group_key: top-k list}}, where
     group_key is str or tuple. Flattens to per unique group for metrics.
+
+    Decision-level (ALL samples):
+      - top1_accuracy: accuracy over all examples, counting 'unknown' as incorrect.
+      - top3_accuracy: over all examples; if decision is 'unknown', no top-3 is credited.
+
+    Identified-only:
+      - top1_accuracy_identified, top3_accuracy_identified, f1_score, precision, recall
+        computed only on examples where score >= threshold.
+
+    Rates:
+      - unknown_rate: fraction of examples predicted as 'unknown' (abstentions).
+      - misidentification_rate: fraction of ALL examples where a wrong non-'unknown' label was predicted.
+      - identified_error_rate: fraction of identified examples that were wrong (conditional error).
     """
     # For each (llm, group_key) pairs (group_key could be str or tuple)
-    true_labels = []
-    top1_pred_labels = []
-    top3_pred_lists = []
-    for llm, group_preds in predictions.items():
-        for group_key, pred_list in group_preds.items():
+    true_labels, top1_pred_labels, top3_pred_lists = [], [], []
+    unknown_count = 0
+    total_count = 0
+    for llm, group_preds in predictions_with_scores.items():
+        for pred_list_with_scores in group_preds.values():
+            total_count += 1
             true_labels.append(llm)
-            if pred_list:
-                top1_pred_labels.append(pred_list[0][0])
-                top3_pred_lists.append([p for p, _ in pred_list])
+            if pred_list_with_scores and pred_list_with_scores[0][1] >= threshold:
+                # Confident prediction
+                top1_pred_labels.append(pred_list_with_scores[0][0])
+                top3_pred_lists.append([p for p, _ in pred_list_with_scores])
             else:
+                # Not confident, predict 'unknown'
                 top1_pred_labels.append('unknown')
-                top3_pred_lists.append([])
+                top3_pred_lists.append([])  # No top-3 prediction
+                unknown_count += 1
 
-    top1_acc = accuracy_score(true_labels, top1_pred_labels)
-    top3_acc = np.mean([true in top3 for true, top3 in zip(true_labels, top3_pred_lists)])
-    f1 = f1_score(true_labels, top1_pred_labels, average='macro', zero_division=0)
-    precision = precision_score(true_labels, top1_pred_labels, average='macro', zero_division=0)
-    recall = recall_score(true_labels, top1_pred_labels, average='macro', zero_division=0)
+    if total_count == 0:
+        return {
+            # ALL-sample decision-level accuracies:
+            'top1_accuracy_all': 0,
+            'top3_accuracy_all': 0,
 
-    all_labels = sorted(set(true_labels) | set(top1_pred_labels))
-    cm = confusion_matrix(true_labels, top1_pred_labels, labels=all_labels)
+            # Identified-only quality metrics:
+            'top1_accuracy_identified': 0,
+            'top3_accuracy_identified': 0,
+            'f1_score_identified': 0,
+            'precision_identified': 0,
+            'recall_identified': 0,
+
+            # Rates:
+            'unknown_rate': 0,
+            'misidentification_rate': 0,
+            'identified_error_rate': 0,
+
+            # Counts and CM:
+            'total_predictions': 0,
+            'total_identified': 0,
+            'confusion_matrix': []
+        }
+
+    # ALL-sample accuracies (decision-level)
+    top1_acc_all = accuracy_score(true_labels, top1_pred_labels)
+    top3_acc_all = float(np.mean(
+        [int(true_llm in top3) for true_llm, top3 in zip(true_labels, top3_pred_lists)]))
+
+    # Identified-only metrics
+    known_indices = [i for i, label in enumerate(top1_pred_labels) if label != 'unknown']
+    total_identified = len(known_indices)
+
+    # Misidentification counts
+    misidentified_count = sum(
+        1 for i in range(total_count)
+        if top1_pred_labels[i] != 'unknown' and top1_pred_labels[i] != true_labels[i]
+    )
+    misidentification_rate = misidentified_count / total_count
+    identified_error_rate = (misidentified_count / total_identified) if total_identified > 0 else 0.0
+
+    if total_identified > 0:
+        true_labels_known = [true_labels[i] for i in known_indices]
+        top1_preds_known = [top1_pred_labels[i] for i in known_indices]
+        top3_preds_known = [top3_pred_lists[i] for i in known_indices]
+
+        top1_acc_id = accuracy_score(true_labels_known, top1_preds_known)
+        top3_acc_id = float(np.mean(
+            [int(t in t3) for t, t3 in zip(true_labels_known, top3_preds_known)]))
+        f1 = f1_score(true_labels_known, top1_preds_known, average='macro',
+                      zero_division=0)
+        precision = precision_score(true_labels_known, top1_preds_known,
+                                    average='macro', zero_division=0)
+        recall = recall_score(true_labels_known, top1_preds_known, average='macro',
+                              zero_division=0)
+
+        all_labels = sorted(set(true_labels_known) | set(top1_preds_known))
+        cm = confusion_matrix(true_labels_known, top1_preds_known,
+                              labels=all_labels).tolist()
+    else:
+        top1_acc_id = 0.0
+        top3_acc_id = 0.0
+        f1 = 0.0
+        precision = 0.0
+        recall = 0.0
+        cm = []
+
     return {
-        'top1_accuracy': top1_acc,
-        'top3_accuracy': top3_acc,
-        'f1_score': f1,
-        'precision': precision,
-        'recall': recall,
-        'confusion_matrix': cm.tolist()
+        # ALL-sample decision-level accuracies:
+        'top1_accuracy_all': top1_acc_all,
+        'top3_accuracy_all': top3_acc_all,
+
+        # Identified-only quality metrics:
+        'top1_accuracy_identified': top1_acc_id,
+        'top3_accuracy_identified': top3_acc_id,
+        'f1_score_identified': f1,
+        'precision_identified': precision,
+        'recall_identified': recall,
+
+        # Rates:
+        'unknown_rate': unknown_count / total_count,
+        'misidentification_rate': misidentification_rate,
+        'identified_error_rate': identified_error_rate,
+
+        # Counts and CM:
+        'total_predictions': total_count,
+        'total_identified': total_identified,
+        'confusion_matrix': cm
     }
 
 
-def compute_held_out_llm_metrics(predictions: dict, meta_map: dict, threshold: float) -> dict:
+def compute_held_out_llm_metrics(predictions_with_scores: dict[str, dict], meta_map: dict,
+                                 threshold: float) -> dict:
     """
-    Computes top-1 and top-3 accuracy at the model family and branch levels.
+    Computes metrics for held-out data.
+    - OOD Detection Accuracy: Correctly identifying a held-out model as 'unknown'.
+    - Family/Branch Accuracy (identified-only): Computed ONLY on predictions that were NOT classified as 'unknown'.
+    - Family/Branch Accuracy (all): Computed on ALL examples, even when the prediction score < threshold.
+    Note: false_positive_rate is not applicable for held-out (all examples are OOD w.r.t. the library).
     """
     if not meta_map:
         return {"error": "Model metadata not available."}
 
-    family_matches_top1, branch_matches_top1 = 0, 0
-    family_matches_top3, branch_matches_top3 = 0, 0
-    total_preds = 0
-    ood_count = 0
+    identified_preds, unknown_preds = 0, 0
 
-    for true_llm, prompt_preds in predictions.items():
-        for pred_list in prompt_preds.values():
-            if not pred_list:
+    # Identified-only counters
+    family_matches_top1_id, branch_matches_top1_id = 0, 0
+    family_matches_top3_id, branch_matches_top3_id = 0, 0
+
+    # All-sample counters (includes those below threshold)
+    family_matches_top1_all, branch_matches_top1_all = 0, 0
+    family_matches_top3_all, branch_matches_top3_all = 0, 0
+
+    for true_llm, prompt_preds in predictions_with_scores.items():
+        for pred_list_with_scores in prompt_preds.values():
+            if not pred_list_with_scores:
+                unknown_preds += 1  # No prediction is treated as 'unknown'
                 continue
 
-            total_preds += 1
+            # Compute family/branch matches regardless of threshold (ALL)
             true_family, true_branch = get_llm_family_and_branch(true_llm, meta_map)
+            pred_llm_top1 = pred_list_with_scores[0][0]
+            pred_family_top1, pred_branch_top1 = get_llm_family_and_branch(pred_llm_top1, meta_map)
+            if true_family != 'unknown' and pred_family_top1 != 'unknown' and true_family == pred_family_top1:
+                family_matches_top1_all += 1
+            if true_branch != 'unknown' and pred_branch_top1 != 'unknown' and true_branch == pred_branch_top1:
+                branch_matches_top1_all += 1
 
-            # Top-1 LLM family and branch check
-            pred_family_top1, pred_branch_top1 = get_llm_family_and_branch(pred_list[0][0], meta_map)
-            if true_family == pred_family_top1:
-                family_matches_top1 += 1
-            if true_branch == pred_branch_top1:
-                branch_matches_top1 += 1
+            top3_families = {get_llm_family_and_branch(p, meta_map)[0] for p, _ in pred_list_with_scores}
+            top3_branches = {get_llm_family_and_branch(p, meta_map)[1] for p, _ in pred_list_with_scores}
+            if true_family != 'unknown' and 'unknown' not in top3_families and true_family in top3_families:
+                family_matches_top3_all += 1
+            if true_branch != 'unknown' and 'unknown' not in top3_branches and true_branch in top3_branches:
+                branch_matches_top3_all += 1
 
-            # Top-3 LLM family and branch check
-            top3_families = {get_llm_family_and_branch(p, meta_map)[0] for p, _ in pred_list}
-            top3_branches = {get_llm_family_and_branch(p, meta_map)[1] for p, _ in pred_list}
-            if true_family in top3_families:
-                family_matches_top3 += 1
-            if true_branch in top3_branches:
-                branch_matches_top3 += 1
-
-            max_score = max(s for _, s in pred_list) if pred_list else 0
+            # Threshold-based OOD detection and identified-only metrics
+            max_score = pred_list_with_scores[0][1]
             if max_score < threshold:
-                ood_count += 1
+                unknown_preds += 1  # Correctly flagged as OOD if truly held-out
+            else:
+                identified_preds += 1
+                if (true_family != 'unknown' and pred_family_top1 != 'unknown' and
+                        true_family == pred_family_top1):
+                    family_matches_top1_id += 1
+                if (true_branch != 'unknown' and pred_branch_top1 != 'unknown' and
+                        true_branch == pred_branch_top1):
+                    branch_matches_top1_id += 1
+                if (true_family != 'unknown' and 'unknown' not in top3_families and
+                        true_family in top3_families):
+                    family_matches_top3_id += 1
+                if (true_branch != 'unknown' and 'unknown' not in top3_branches and
+                        true_branch in top3_branches):
+                    branch_matches_top3_id += 1
 
-    if total_preds == 0: return {}
+    total_predictions = identified_preds + unknown_preds
+    if total_predictions == 0:
+        return {
+            # Identified-only
+            'top1_family_accuracy_identified': 0,
+            'top3_family_accuracy_identified': 0,
+            'top1_branch_accuracy_identified': 0,
+            'top3_branch_accuracy_identified': 0,
 
-    ood_accuracy = ood_count / total_preds
+            # All-sample metrics (requested behavior even when OOD)
+            'top1_family_accuracy_all': 0,
+            'top3_family_accuracy_all': 0,
+            'top1_branch_accuracy_all': 0,
+            'top3_branch_accuracy_all': 0,
+
+            # Counts and OOD stats
+            'total_predictions': 0,
+            'total_identified': 0,
+            'ood_detection_accuracy': 0,
+            'misidentification_rate': 0
+        }
+
+    # Identified-only ratios
+    top1_family_id_acc = family_matches_top1_id / identified_preds if identified_preds > 0 else 0
+    top3_family_id_acc = family_matches_top3_id / identified_preds if identified_preds > 0 else 0
+    top1_branch_id_acc = branch_matches_top1_id / identified_preds if identified_preds > 0 else 0
+    top3_branch_id_acc = branch_matches_top3_id / identified_preds if identified_preds > 0 else 0
+
+    # All-sample ratios
+    top1_family_all_acc = family_matches_top1_all / total_predictions
+    top3_family_all_acc = family_matches_top3_all / total_predictions
+    top1_branch_all_acc = branch_matches_top1_all / total_predictions
+    top3_branch_all_acc = branch_matches_top3_all / total_predictions
 
     return {
-        'top1_family_accuracy': family_matches_top1 / total_preds,
-        'top3_family_accuracy': family_matches_top3 / total_preds,
-        'top1_branch_accuracy': branch_matches_top1 / total_preds,
-        'top3_branch_accuracy': branch_matches_top3 / total_preds,
-        'total_predictions': total_preds,
-        'ood_detection_accuracy': ood_accuracy,
-        'ood_false_positive_rate': 1 - ood_accuracy
+        # Identified-only
+        'top1_family_accuracy_identified': top1_family_id_acc,
+        'top3_family_accuracy_identified': top3_family_id_acc,
+        'top1_branch_accuracy_identified': top1_branch_id_acc,
+        'top3_branch_accuracy_identified': top3_branch_id_acc,
+
+        # All-sample metrics (requested behavior even when OOD)
+        'top1_family_accuracy_all': top1_family_all_acc,
+        'top3_family_accuracy_all': top3_family_all_acc,
+        'top1_branch_accuracy_all': top1_branch_all_acc,
+        'top3_branch_accuracy_all': top3_branch_all_acc,
+
+        # Counts and OOD stats
+        'total_predictions': total_predictions,
+        'total_identified': identified_preds,
+        'ood_detection_accuracy': unknown_preds / total_predictions,
+        'misidentification_rate': identified_preds / total_predictions
     }
 
 
@@ -171,26 +325,36 @@ def compute_metrics_with_refusals(predictions: dict[str, dict],
                 filter_cond &= (unknown_data[llm]['neutralization_technique'] == technique)
                 
             group = unknown_data[llm][filter_cond]
-            responses = group['response'].tolist()
-            is_refusal_list = [detect_refusal(r) for r in responses]
-            # Average per combo (majority vote for refusal)
-            is_refusal = (sum(is_refusal_list) / len(is_refusal_list)) > 0.5
-            flat_rows.append({
-                'true_llm': llm,
-                'combo': combo,
-                'pred_list': pred_list,  # list of (llm, score)
-                'is_refusal': is_refusal
-            })
+            if not group.empty:
+                # detect_refusal expects raw text; ensure 'response' is present in the df
+                responses = group['response'].tolist() if 'response' in group.columns else []
+                is_refusal_list = [detect_refusal(r) for r in responses] if responses else []
+                is_refusal = (sum(is_refusal_list) / len(is_refusal_list)) > 0.5 if is_refusal_list else False
+                flat_rows.append({
+                    'true_llm': llm,
+                    'combo': combo,
+                    'pred_list': pred_list,
+                    'is_refusal': is_refusal
+                })
 
     flat_df = pd.DataFrame(flat_rows)
+    if flat_df.empty:  # Handle case with no data
+        return {'overall': {}, 'refusal': {}, 'non_refusal': {}}
 
     # Helper to compute subset metrics
     def compute_subset(df_subset, threshold):
-        subset_preds = {row['true_llm']: {row['combo']: row['pred_list']} for _, row in df_subset.iterrows()}
+        subset_preds = {}
+        for _, row in df_subset.iterrows():
+            if row['true_llm'] not in subset_preds:
+                subset_preds[row['true_llm']] = {}
+            subset_preds[row['true_llm']][row['combo']] = row['pred_list']
+
+        if not subset_preds: return {}  # Return empty dict if no predictions in subset
+
         if is_held_out:
             metrics = compute_held_out_llm_metrics(subset_preds, meta_map, threshold)
         else:
-            metrics = compute_metrics(subset_preds)
+            metrics = compute_metrics(subset_preds, threshold)
         return metrics
 
     overall_metrics = compute_subset(flat_df, threshold)

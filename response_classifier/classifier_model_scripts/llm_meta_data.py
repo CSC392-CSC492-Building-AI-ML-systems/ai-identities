@@ -1,13 +1,28 @@
 import json
 
 
-def load_llm_meta_data(model_file_path: str = '../configs/llm_set1.json') -> dict:
+def _normalize_model_name(llm_name: str) -> str:
+    """
+    Try to normalize model names to the canonical form used in llm_set.json.
+    Many pipelines use "vendor_model" (underscore), while llm_set.json uses "vendor/model" (slash).
+    This function replaces the first underscore with '/' if no slash is present.
+    """
+    if '/' in llm_name:
+        return llm_name
+    if '_' in llm_name:
+        parts = llm_name.split('_', 1)
+        if len(parts) == 2:
+            return parts[0] + '/' + parts[1]
+    return llm_name
+
+
+def load_llm_meta_data(model_file_path: str = '../configs/llm_set.json') -> dict:
     """
     Loads model metadata from a JSON file and creates a mapping from
     model_name to its metadata dictionary. Uses a cache for efficiency.
 
     :param model_file_path: The path to the model metadata JSON file.
-    :return: A dict of {model_name: {"model_family": ..., "model_branch": ...}}.
+    :return: A dict of {model_name: {"family": ..., "branch": ...}}.
     """
     try:
         with open(model_file_path, 'r') as f:
@@ -22,8 +37,7 @@ def load_llm_meta_data(model_file_path: str = '../configs/llm_set1.json') -> dic
         }
         return meta_map
     except (FileNotFoundError, json.JSONDecodeError) as e:
-        print(
-            f"Warning: Could not load model metadata from {model_file_path}. Error: {e}")
+        print(f"Warning: Could not load model metadata from {model_file_path}. Error: {e}")
         return {}
 
 
@@ -35,5 +49,6 @@ def get_llm_family_and_branch(llm_name: str, meta_map: dict) -> tuple[str, str]:
     :param meta_map: The metadata map from load_model_meta_data.
     :return: A tuple containing (family, branch).
     """
-    llm_info_dict = meta_map.get(llm_name, {'family': 'unknown', 'branch': 'unknown'})
-    return llm_info_dict['family'], llm_info_dict['branch']
+    normalized_llm_name = _normalize_model_name(llm_name)
+    info = meta_map.get(normalized_llm_name)
+    return info.get('family', 'unknown'), info.get('branch', 'unknown')

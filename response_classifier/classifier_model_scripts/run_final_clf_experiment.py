@@ -7,7 +7,7 @@ from data_loader import load_raw_data
 from data_splitter import hold_out_models, split_tuning_test
 from data_processor import process_word_freq
 from classifier_model import get_metric_func, predict_unknown
-from evaluator import compute_metrics_with_refusals, tune_threshold, apply_threshold
+from evaluator import compute_metrics_with_refusals, tune_threshold
 from llm_meta_data import load_llm_meta_data
 from tabulate import tabulate
 import matplotlib.pyplot as plt
@@ -70,6 +70,35 @@ def validate_final_clf_splits(non_held_out_tuning: dict, non_held_out_test: dict
     return True
 
 
+def _display_label_map(split_name: str) -> dict:
+    if split_name == 'non_held_out':
+        return {
+            'top1_accuracy': 'all_top1_accuracy',
+            'top3_accuracy': 'all_top3_accuracy',
+            'top1_accuracy_identified': 'identified_top1_accuracy',
+            'top3_accuracy_identified': 'identified_top3_accuracy',
+            'f1_score': 'identified_f1',
+            'precision': 'identified_precision',
+            'recall': 'identified_recall',
+            'unknown_rate': 'unknown_prediction_rate',
+            'misidentification_rate': 'misidentification_rate',
+            'identified_error_rate': 'identified_error_rate',
+            'total_predictions': 'total_predictions',
+            'total_identified': 'total_identified'
+        }
+    else:
+        return {
+            'top1_family_identification_accuracy_all': 'family_all_top1_accuracy',
+            'top3_family_identification_accuracy_all': 'family_all_top3_accuracy',
+            'top1_family_identification_accuracy': 'family_identified_top1_accuracy',
+            'top3_family_identification_accuracy': 'family_identified_top3_accuracy',
+            'ood_detection_accuracy': 'ood_detection_rate',
+            'misidentification_rate': 'misidentification_rate',
+            'total_predictions': 'total_predictions',
+            'total_identified': 'total_identified'
+        }
+
+
 def generate_final_report(output_path: str, metrics: dict or dict[float, dict],
                           phase: str, threshold: float = None):
     """
@@ -112,13 +141,29 @@ def generate_final_report(output_path: str, metrics: dict or dict[float, dict],
                     f.write(f"  {category.capitalize()} Table:\n")
                     if split_name == 'non_held_out':
                         # Common metrics for non-held-out
-                        metric_keys = ['top1_accuracy', 'top3_accuracy', 'f1_score', 'precision', 'recall']
+                        metric_keys = [
+                            'top1_accuracy_all', 'top3_accuracy_all',
+                            'top1_accuracy_identified', 'top3_accuracy_identified',
+                            'f1_score_identified', 'precision_identified',
+                            'recall_identified', 'unknown_rate', 'misidentification_rate',
+                            'identified_error_rate', 'total_predictions', 'total_identified'
+                        ]
                     else:
                         # Common metrics for held-out
                         metric_keys = [
-                            'top1_family_identification_accuracy', 'top3_family_identification_accuracy',
-                            'top1_branch_identification_accuracy', 'top3_branch_identification_accuracy',
-                            'total_predictions', 'ood_detection_accuracy', 'false_positive_rate'
+                            # Identified-only
+                            'top1_family_accuracy_identified',
+                            'top3_family_accuracy_identified',
+                            'top1_branch_accuracy_identified',
+                            'top3_branch_accuracy_identified',
+                            # All-sample
+                            'top1_family_accuracy_all',
+                            'top3_family_accuracy_all',
+                            'top1_branch_accuracy_all',
+                            'top3_branch_accuracy_all',
+                            # Counts and OOD
+                            'total_predictions', 'total_identified',
+                            'ood_detection_accuracy', 'misidentification_rate'
                         ]
                     table_str = create_big_table(collected[split_name][category], metric_keys)
                     f.write(table_str + "\n\n")
@@ -153,19 +198,116 @@ def save_confusion_matrices(non_held_metrics: dict, held_metrics: dict, output_d
     # For non_held_out: Use existing confusion_matrix from overall metrics
     if 'confusion_matrix' in non_held_metrics['overall']:
         cm_non_held = np.array(non_held_metrics['overall']['confusion_matrix'])
-        # Assume labels are all unique true and pred labels; for simplicity, we can extract from metrics or hardcode if needed
-        # MODIFIED: To make it work, we'll assume labels are sorted unique models; in practice, pass labels if available
-        labels_non_held = sorted(set(range(cm_non_held.shape[0])))  # Placeholder; replace with actual labels if computed
-        plot_cm(cm_non_held, labels_non_held, 'Non-Held-Out Test Confusion Matrix', os.path.join(output_dir, 'non_held_out_test_cm.png'))
+        labels_non_held = sorted(set(range(cm_non_held.shape[0])))  # Placeholder
+        plot_cm(
+            cm_non_held, labels_non_held,
+            'Non-Held-Out Test Confusion Matrix',
+            os.path.join(output_dir, 'non_held_out_test_cm.png')
+        )
 
-    # For held_out: Compute a custom CM, treating "unknown" as a label, and map to families/branches
-    # ADDED: Custom logic for held_out CM since original metrics don't include it
-    # Note: This requires predictions to include "unknown"; we can compute CM based on top-1 pred vs true, with "unknown" as extra class
-    # For now, placeholder: Implement actual CM computation if needed, or skip if not applicable
-    # Example placeholder:
-    # cm_held = confusion_matrix(true_labels_held, pred_labels_held, labels=labels_held)
-    # plot_cm(cm_held, labels_held, 'Held-Out Test Confusion Matrix', os.path.join(output_dir, 'held_out_test_cm.png'))
+    # Held-out CM placeholder
     print("Confusion matrix plotting for held_out is placeholder; implement if needed.")
+
+
+def generate_tuning_plots(tuning_results: dict, output_dir: str):
+    """
+    Save three single-axis plots (overall/refusal/non_refusal) where each plot contains:
+      - ood_detection_accuracy (from held-out metrics)
+      - top1_accuracy, top3_accuracy, top1_accuracy_identified, top3_accuracy_identified
+        (from non-held-out metrics)
+    """
+    os.makedirs(output_dir, exist_ok=True)
+    categories = ['overall', 'refusal', 'non_refusal']
+
+    for cat in categories:
+        thresholds = sorted(tuning_results.keys())
+
+        def series(key):
+            vals = []
+            for t in thresholds:
+                d = tuning_results[t]['held_out'].get(cat, {})
+                v = d.get(key, np.nan)
+                vals.append(float(v) if isinstance(v, (int, float, np.integer, np.floating)) else np.nan)
+            return np.array(vals, dtype=float)
+
+        ood = series('ood_detection_accuracy')
+        top1_all = series('top1_accuracy_all')
+        top3_all = series('top3_accuracy_all')
+        top1_id = series('top1_accuracy_identified')
+        top3_id = series('top3_accuracy_identified')
+
+        plt.figure(figsize=(8, 5))
+        plt.plot(thresholds, ood, label='ood_detection_accuracy', marker='o')
+        plt.plot(thresholds, top1_all, label='top1_accuracy_all', marker='o')
+        plt.plot(thresholds, top3_all, label='top3_accuracy_all', marker='o')
+        plt.plot(thresholds, top1_id, label='top1_accuracy_identified', marker='o')
+        plt.plot(thresholds, top3_id, label='top3_accuracy_identified', marker='o')
+
+        plt.title(f'Held-Out Tuning Curves: {cat}')
+        plt.xlabel('Threshold')
+        plt.ylabel('Accuracy')
+        plt.grid(True, alpha=0.3)
+        plt.legend(loc='best', fontsize=9)
+        plt.tight_layout()
+
+        out_file = os.path.join(output_dir, f'{cat}_curves.png')
+        plt.savefig(out_file, dpi=150)
+        plt.close()
+
+        os.makedirs(output_dir, exist_ok=True)
+        categories = ['overall', 'refusal', 'non_refusal']
+        thresholds = sorted(tuning_results.keys())
+
+        def series(split: str, cat: str, key: str):
+            vals = []
+            for t in thresholds:
+                d = tuning_results[t][split].get(cat, {})
+                v = d.get(key, np.nan)
+                vals.append(float(v) if isinstance(v, (
+                int, float, np.integer, np.floating)) else np.nan)
+            return np.array(vals, dtype=float)
+
+        colors = {
+            'ood_detection_accuracy': '#1f77b4',  # blue
+            'top1_accuracy_all': '#ff7f0e',  # orange
+            'top3_accuracy_all': '#2ca02c',  # green
+            'top1_accuracy_identified': '#d62728',  # red
+            'top3_accuracy_identified': '#9467bd',  # purple
+        }
+
+        for cat in categories:
+            # Held-out OOD
+            ood = series('held_out', cat, 'ood_detection_accuracy')
+
+            # Non-held-out accuracies
+            top1 = series('non_held_out', cat, 'top1_accuracy_all')
+            top3 = series('non_held_out', cat, 'top3_accuracy_all')
+            top1_id = series('non_held_out', cat, 'top1_accuracy_identified')
+            top3_id = series('non_held_out', cat, 'top3_accuracy_identified')
+
+            plt.figure(figsize=(9, 5))
+            plt.plot(thresholds, ood, label='ood_detection_accuracy',
+                     color=colors['ood_detection_accuracy'], marker='o', lw=2)
+            plt.plot(thresholds, top1, label='top1_accuracy_all',
+                     color=colors['top1_accuracy_all'], marker='o', lw=2)
+            plt.plot(thresholds, top3, label='top3_accuracy_all',
+                     color=colors['top3_accuracy_all'], marker='o', lw=2)
+            plt.plot(thresholds, top1_id, label='top1_accuracy_identified',
+                     color=colors['top1_accuracy_identified'], marker='o', lw=2)
+            plt.plot(thresholds, top3_id, label='top3_accuracy_identified',
+                     color=colors['top3_accuracy_identified'], marker='o', lw=2)
+
+            plt.title(f'Classifier performance on held-out and non-held-out tuning sets: {cat}')
+            plt.xlabel('Threshold')
+            plt.ylabel('Accuracy')
+            plt.ylim(0.0, 1.0)
+            plt.grid(True, alpha=0.3)
+            plt.legend(loc='best', fontsize=9)
+            plt.tight_layout()
+
+            out_file = os.path.join(output_dir, f'{cat}_curves.png')
+            plt.savefig(out_file, dpi=150)
+            plt.close()
 
 
 def run_final_clf_experiment(args):
@@ -276,9 +418,13 @@ def run_final_clf_experiment(args):
         tuning_results = tune_threshold(non_held_out_tuning_vec, held_out_tuning_vec,
                                         library_avgs, metric_func, meta_map, thresholds)
 
-        # Generate report with all threshold results
-        generate_final_report('../results/final_clf_tuning_report.txt',
-                              tuning_results, 'tuning')
+        tuning_out_dir = '../results/final_clf_tuning/'
+        os.makedirs(tuning_out_dir, exist_ok=True)
+        generate_final_report(
+            os.path.join(tuning_out_dir, 'final_clf_tuning_report.txt'),
+            tuning_results, 'tuning'
+        )
+        generate_tuning_plots(tuning_results, tuning_out_dir)
 
     elif args.action == 'evaluate':
         if args.threshold is None:
@@ -296,10 +442,14 @@ def run_final_clf_experiment(args):
         # Vectorize test splits
         print("Vectorizing non-held out test set")
         non_held_out_test_vec, _ = process_word_freq(non_held_out_test_raw, clf_method,
-                                                     output_path='', fitted_vectorizer=vectorizer)
+                                                     output_path='',
+                                                     fitted_vectorizer=vectorizer,
+                                                     drop_response=False)
         print("Vectorizing held out test set")
         held_out_test_vec, _ = process_word_freq(held_out_test_raw, clf_method,
-                                                 output_path='', fitted_vectorizer=vectorizer)
+                                                 output_path='',
+                                                 fitted_vectorizer=vectorizer,
+                                                 drop_response=False)
 
         # Predict with scores
         print("Evaluating on non-held out test set")

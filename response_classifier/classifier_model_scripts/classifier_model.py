@@ -98,8 +98,10 @@ def predict_unknown(unknown_data: dict[str, pd.DataFrame], library_avgs: dict,
     for unknown_llm, df in tqdm(unknown_data.items(), desc="Making predictions for unknown LLMs", leave=False):
         predictions[unknown_llm] = {}
         group_cols = ['prompt']
-        if 'system_prompt' in df.columns and 'neutralization_technique' in df.columns:
-            group_cols.extend(['system_prompt', 'neutralization_technique'])
+        if 'system_prompt' in df.columns:
+            group_cols.append('system_prompt')
+        if 'neutralization_technique' in df.columns:
+            group_cols.append('neutralization_technique')
 
         # Average unknown vectors per prompt
         for combo, group in df.groupby(group_cols):
