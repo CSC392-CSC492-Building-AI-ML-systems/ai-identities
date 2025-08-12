@@ -10,7 +10,7 @@ type Options = {
 };
 
 export function useXWikiAuth({
-  xwikiSrc = 'http://159.203.20.200:8080/bin/view/xwiki_auth_page',
+  xwikiSrc = 'https://wiki.llm.test/bin/view/xwiki_auth_page',
   iframeId = 'xwiki-auth-bridge',
   timeoutMs = 5000,
 }: Options = {}) {

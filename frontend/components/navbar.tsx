@@ -15,13 +15,13 @@ export default function Navbar() {
   console.log(loggedIn, "     ", username, "    ", loading)
 
   const handleLogin = () => {
-    const redirectUrl = encodeURIComponent(`http://159.203.20.200:8080/bin/view/redir?next=${redirectPath}`);
-    window.location.href = `http://159.203.20.200:8080/bin/login/XWiki/XWikiLogin?xredirect=${redirectUrl}`;
+    const redirectUrl = encodeURIComponent(`https://wiki.llm.test/bin/view/redir?next=${redirectPath}`);
+    window.location.href = `https://wiki.llm.test/bin/login/XWiki/XWikiLogin?xredirect=${redirectUrl}`;
   };
 
   const handleLogout = () => {
-    const redirectUrl = encodeURIComponent(`http://159.203.20.200:8080/bin/view/redir?next=${redirectPath}`);
-    window.location.href = `http://159.203.20.200:8080/bin/logout/XWiki/XWikiLogout?xredirect=${redirectUrl}`;
+    const redirectUrl = encodeURIComponent(`https://wiki.llm.test/bin/view/redir?next=${redirectPath}`);
+    window.location.href = `https://wiki.llm.test/bin/logout/XWiki/XWikiLogout?xredirect=${redirectUrl}`;
   };
 
   return (

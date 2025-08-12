@@ -1,13 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from '../../lib/muiTheme';
 import SearchIcon from '@mui/icons-material/Search';
+import Autocomplete from '@mui/material/Autocomplete';
 import {
   Dialog, DialogTitle, DialogContent, DialogActions,
-  Select, MenuItem,
   Typography, FormGroup, FormControlLabel, Checkbox, Chip,
   Button, Box, Paper, InputBase, IconButton, ToggleButtonGroup, ToggleButton
 } from '@mui/material';
@@ -20,22 +19,25 @@ const MODES = {
     className: 'LLM Wiki.Code.LLM WikiClass',
     nameProp: 'llms',
     url: 'LLM Wiki',
-    tagGroups: ['useCases', 'limitations', 'risks'] as const,
+    tagGroups: [['useCases', 'Use Cases'], ['limitations', 'Limitations'], ['risks', 'Risks']] as const,
   },
   llm_apps: {
     label: 'LLM Apps Pages',
     className: 'LLM-Apps Wiki.Code.LLM-Apps WikiClass',
     nameProp: 'llm apps',
     url: 'LLM-Apps Wiki',
-    tagGroups: ['useCases', 'limitations', 'risks'] as const,
+    tagGroups: [['useCases', 'Use Cases'], ['limitations', 'Limitations'], ['risks', 'Risks']] as const,
   },
 };
 type ModeKey = keyof typeof MODES;
 
-const EXTRA_TAG_FIELDS: Record<ModeKey, string[]> = {
-  llms: ['useCases', 'limitations', 'risks', 'modelType'],
-  llm_apps: ['useCases', 'limitations', 'risks', 'llms', 'llmsGuess'],
+const EXTRA_TAG_FIELDS: Record<ModeKey, string[][]> = {
+  llms: [['useCases', 'Use Cases'], ['limitations', 'Limitations'], ['risks', 'Risks'], ['modelType', 'Model Type']],
+  llm_apps: [['useCases', 'Use Cases'], ['limitations', 'Limitations'], ['risks', 'Risks'], ['llms', 'LLMs Used']],
 };
+
+// list for autocomplete
+const modelOptions = ['', ''];
 
 // helper functions to display search results
 const propsToMap = (r: any) => {
@@ -75,13 +77,15 @@ export default function HomePage() {
 
   // reset tag containers when mode changes (so UI doesn’t show old groups)
   useEffect(() => {
-    const groups = Object.fromEntries(MODES[mode].tagGroups.map(g => [g, []]));
+    const tuples = MODES[mode].tagGroups;
+    const keys = tuples.map(([k]) => k);
+    const groups = Object.fromEntries(keys.map(k => [k, []]));
+    
     setSelectedTags(groups as TagMap);
     setAvailableTags(groups as TagMap);
 
     setResults([]);
     setError(null);
-
     setSearchTerm('');
     setDidSearch(false);
   }, [mode]);
@@ -91,6 +95,13 @@ export default function HomePage() {
     const fetchTags = async () => {
       const { className, tagGroups } = MODES[mode];
 
+      // tuples -> keys
+      const keys = tagGroups.map(([k]) => k);
+
+      // grouped sets by key
+      const grouped: Record<string, Set<string>> =
+        Object.fromEntries(keys.map(k => [k, new Set<string>()]));
+
       const query = `
         where doc.fullName in (
           select obj.name from BaseObject obj 
@@ -98,21 +109,24 @@ export default function HomePage() {
         )
       `.replace(/\s+/g, " ").trim();
 
-      const url = `http://159.203.20.200:8080/rest/wikis/xwiki/query?q=${encodeURIComponent(query)}&type=xwql&media=json&number=1000&distinct=1&className=${encodeURIComponent(className)}`;
+      const url = `https://wiki.llm.test/rest/wikis/xwiki/query?q=${encodeURIComponent(query)}&type=xwql&media=json&number=1000&distinct=1&className=${encodeURIComponent(className)}`;
 
       try {
-        const res = await fetch(url, { headers: { 'Accept': 'application/json', "Authorization": "Basic " + btoa('ahmed33033:ahmed2003') } });
+        const res = await fetch(url, {
+          headers: {
+            Accept: 'application/json',
+            Authorization: 'Basic ' + btoa('ahmed33033:ahmed2003'),
+          },
+        });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
 
-        const grouped: { [key: string]: Set<string> } =
-          Object.fromEntries(tagGroups.map(g => [g, new Set<string>()]));
-
+        // populate grouped using KEYS only
         data.searchResults?.forEach((result: any) => {
           const props = result.object?.properties || [];
           props.forEach((p: any) => {
-            const key = p.name?.trim();
-            const val = p.value;
+            const key = p.name?.trim();        // e.g. "useCases"
+            const val = p.value;               // comma-separated string
             if (!key || !grouped[key] || typeof val !== 'string') return;
             val.split(',').forEach((tag: string) => {
               const t = tag.trim().toLowerCase();
@@ -121,11 +135,14 @@ export default function HomePage() {
           });
         });
 
+        // flatten to arrays for UI
         const flat: TagMap = {};
-        for (const g of tagGroups) flat[g] = Array.from(grouped[g] || []).sort();
+        for (const [key] of tagGroups) {
+          flat[key] = Array.from(grouped[key] ?? new Set<string>()).sort((a, b) => a.localeCompare(b));
+        }
         setAvailableTags(flat);
       } catch (err) {
-        console.error("Failed to fetch tags:", err);
+        console.error('Failed to fetch tags:', err);
       }
     };
 
@@ -179,7 +196,7 @@ export default function HomePage() {
     query += " and doc.fullName <> 'LLM-Apps Wiki.Code.LLM-Apps WikiTemplate'";
     query = query.replace(/\s+/g, " ").trim();
 
-    const fullUrl = "http://159.203.20.200:8080/rest/wikis/xwiki/query" +
+    const fullUrl = "https://wiki.llm.test/rest/wikis/xwiki/query" +
       "?q=" + encodeURIComponent(query) +
       `&type=xwql&media=json&number=100&className=${encodeURIComponent(className)}`;
 
@@ -207,6 +224,8 @@ export default function HomePage() {
   const clearGroup = (group: string) =>
     setSelectedTags(prev => ({ ...prev, [group]: [] }));
   const clearAll = () => setSelectedTags({});
+  const tagTuples = MODES[mode].tagGroups;
+  const keyToLabel = Object.fromEntries(tagTuples);
 
   return (
     <ThemeProvider theme={theme}>
@@ -228,14 +247,51 @@ export default function HomePage() {
               <ToggleButton value="llm_apps">Apps</ToggleButton>
             </ToggleButtonGroup>
 
-            <InputBase
+            <Autocomplete
+              options={modelOptions}
+              freeSolo
+              inputValue={searchTerm}
+              onInputChange={(_, value) => setSearchTerm(value)}
+              // when a user picks an option, update and run the search
+              onChange={(_, value) => {
+                if (value != null) {
+                  setSearchTerm(value);
+                  searchPages();
+                }
+              }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') { e.preventDefault(); searchPages(); }
               }}
-              sx={{ ml: 1, flex: 1 }}
-              placeholder={`Search by ${MODES[mode].nameProp}`}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+
+              // Fill the space where your InputBase was
+              sx={{ ml: 1, flex: 1, minWidth: 0 }}
+
+              // render InputBase
+              renderInput={(params) => (
+                <Box sx={{ position: 'relative', width: '100%' }}>
+                  <InputBase
+                    placeholder={`Search by ${MODES[mode].nameProp}`}
+                    fullWidth
+                    inputRef={params.InputProps.ref}
+                    inputProps={params.inputProps}
+                    sx={{}}
+                  />
+                  {/* shows the clear button & dropdown icon */}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: 0,
+                      right: 0,
+                      height: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      pr: 0.5,
+                    }}
+                  >
+                    {params.InputProps.endAdornment}
+                  </Box>
+                </Box>
+              )}
             />
             <IconButton onClick={searchPages}><SearchIcon /></IconButton>
           </Paper>
@@ -246,12 +302,12 @@ export default function HomePage() {
 
         {/* Selected Filter Chips */}
         <Box sx={{ mt: 2 }}>
-          {Object.entries(selectedTags).flatMap(([group, tags]) =>
+          {Object.entries(selectedTags).flatMap(([groupKey, tags]) =>
             (tags || []).map((tag) => (
               <Chip
-                key={`${group}-${tag}`}
-                label={`${group}: ${tag}`}
-                onDelete={() => handleToggle(group, tag)}
+                key={`${groupKey}-${tag}`}
+                label={`${keyToLabel[groupKey] ?? groupKey}: ${tag}`}
+                onDelete={() => handleToggle(groupKey, tag)}  // live toggle
                 sx={{ mr: 1, mb: 1 }}
               />
             ))
@@ -299,13 +355,22 @@ export default function HomePage() {
                     : undefined;
 
                 // collect tag chips (groups + a couple mode-specific extras)
-                const tagFields = Array.from(
-                  new Set([...(MODES[mode].tagGroups as readonly string[]), ...EXTRA_TAG_FIELDS[mode]])
-                );
+                const tagTuples = MODES[mode].tagGroups;
+                const extraTuples = EXTRA_TAG_FIELDS[mode];
+                const keyToLabel = Object.fromEntries([...tagTuples, ...extraTuples]);
+                const tagFields = Array.from(new Set([
+                  ...tagTuples.map(([k]) => k),
+                  ...extraTuples.map(([k]) => k),
+                ]));
 
                 const chips = tagFields.flatMap((field) =>
                   splitTags(String(props[field] ?? '')).map((t) => ({ field, t }))
                 );
+
+                const chipsByField = chips.reduce((acc, c) => {
+                  (acc[c.field] ??= []).push(c);
+                  return acc;
+                }, {} as Record<string, { field: string; t: string }[]>);
 
                 // view URL
                 const appName = name;
@@ -315,8 +380,11 @@ export default function HomePage() {
                 return (
                   <Box 
                   key={index} 
-                  sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2 }} 
-                  onClick={() => setLinkClicked(`http://159.203.20.200:8080/bin/view/${MODES[mode].url}/${encodedName}`)}>
+                  sx={{ 
+                    border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2,
+                    cursor: 'pointer', '&:hover': {backgroundColor: 'action.hover', boxShadow: 2,
+                  }}}
+                  onClick={() => setLinkClicked(`https://wiki.llm.test/bin/view/${MODES[mode].url}/${encodedName}`)}>
                     <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', mb: 1 }}>
                       <Typography variant="h6" sx={{ mr: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {name}
@@ -329,9 +397,16 @@ export default function HomePage() {
                     </Typography>
 
                     {chips.length > 0 && (
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
-                        {chips.map(({ field, t }, i) => (
-                          <Chip key={`${field}-${t}-${i}`} label={`${field}: ${t}`} size="small" />
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        {Object.entries(chipsByField).map(([groupKey, items]) => (
+                          <Box key={groupKey} sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 0.75 }}>
+                            <Typography variant="caption" sx={{ mr: 0.5 }}>
+                              {keyToLabel[groupKey] ?? groupKey}:
+                            </Typography>
+                            {items.map(({ field, t }, i) => (
+                              <Chip key={`${field}-${t}-${i}`} label={t} size="small" />
+                            ))}
+                          </Box>
                         ))}
                       </Box>
                     )}
@@ -349,59 +424,61 @@ export default function HomePage() {
         <DialogContent dividers>
           {/* Live-selected chips */}
           <Box sx={{ mb: 2 }}>
-            {Object.entries(selectedTags).flatMap(([group, tags]) =>
+            {Object.entries(selectedTags).flatMap(([groupKey, tags]) =>
               (tags || []).map((tag) => (
                 <Chip
-                  key={`${group}-${tag}`}
-                  label={`${group}: ${tag}`}
-                  onDelete={() => handleToggle(group, tag)}  // live toggle
+                  key={`${groupKey}-${tag}`}
+                  label={`${keyToLabel[groupKey] ?? groupKey}: ${tag}`}
+                  onDelete={() => handleToggle(groupKey, tag)}  // live toggle
                   sx={{ mr: 1, mb: 1 }}
                 />
               ))
             )}
           </Box>
 
-          {/* Groups */}
+          {/* Groups (iterate tuples so we keep order + have labels) */}
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-            {Object.entries(availableTags).map(([group, values]) => (
-              <Box
-                key={group}
-                sx={{
-                  width: 260,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  borderRadius: 1,
-                  p: 1.5,
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography sx={{ textTransform: 'capitalize', fontWeight: 600 }}>{group}</Typography>
-                  <Button size="small" onClick={() => clearGroup(group)}>Clear</Button>
-                </Box>
+            {tagTuples.map(([key, label]) => {
+              const values = availableTags[key] ?? [];
+              const selected = new Set(selectedTags[key] ?? []);
+              return (
+                <Box
+                  key={key}
+                  sx={{
+                    width: 260,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 1,
+                    p: 1.5,
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                    <Typography sx={{ fontWeight: 600 }}>{label}</Typography>
+                    <Button size="small" onClick={() => clearGroup(key)}>Clear</Button>
+                  </Box>
 
-                <Box sx={{ maxHeight: 240, overflowY: 'auto', pr: 1 }}>
-                  <FormGroup>
-                    {values.map((tag) => (
-                      <FormControlLabel
-                        key={tag}
-                        control={
-                          <Checkbox
-                            checked={selectedTags[group]?.includes(tag) || false}
-                            onChange={() => handleToggle(group, tag)}  // live toggle
-                          />
-                        }
-                        label={tag}
-                      />
-                    ))}
-                  </FormGroup>
+                  <Box sx={{ maxHeight: 240, overflowY: 'auto', pr: 1 }}>
+                    <FormGroup>
+                      {values.map((tag) => (
+                        <FormControlLabel
+                          key={tag}
+                          control={
+                            <Checkbox
+                              checked={selected.has(tag)}
+                              onChange={() => handleToggle(key, tag)}
+                            />
+                          }
+                          label={tag}
+                        />
+                      ))}
+                    </FormGroup>
+                  </Box>
                 </Box>
-              </Box>
-            ))}
+              );
+            })}
           </Box>
         </DialogContent>
 
-        {/* Optional tiny footer: just Close + Clear All */}
-        {/* Remove this whole block if you want literally no buttons */}
         <DialogActions>
           <Button onClick={clearAll}>Clear All</Button>
           <Box sx={{ flexGrow: 1 }} />
