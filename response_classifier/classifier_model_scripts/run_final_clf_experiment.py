@@ -7,11 +7,12 @@ from data_loader import load_raw_data
 from data_splitter import hold_out_models, split_tuning_test
 from data_processor import process_word_freq
 from classifier_model import get_metric_func, predict_unknown
-from evaluator import compute_metrics_with_refusals, tune_threshold
+from evaluator import compute_metrics_with_refusals, tune_threshold, \
+    compute_per_model_coverage_accuracy, build_held_out_confusion_matrices, \
+    build_non_held_out_confusion_matrices, save_confusion_matrix_xy
 from llm_meta_data import load_llm_meta_data
 from tabulate import tabulate
 import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
 
 
@@ -100,7 +101,8 @@ def _display_label_map(split_name: str) -> dict:
 
 
 def generate_final_report(output_path: str, metrics: dict or dict[float, dict],
-                          phase: str, threshold: float = None):
+                          phase: str, threshold: float = None,
+                          per_model_metrics: dict[str, dict] | None = None):
     """
     Generate detailed report for tuning (multi-threshold) or test (single-threshold) phase.
     Uses tabulate to format metrics into tables for better readability.
@@ -117,96 +119,102 @@ def generate_final_report(output_path: str, metrics: dict or dict[float, dict],
         headers = ['Threshold'] + metric_keys
         return tabulate(table_data, headers=headers, tablefmt='simple')
 
+    def combined_table_for_split(split_name: str, split_metrics: dict) -> str:
+        import numpy as np
+        categories = ['overall', 'refusal', 'non_refusal']
+        if split_name == 'non_held_out':
+            metric_keys = [
+                'top1_accuracy_all', 'top3_accuracy_all',
+                'top1_accuracy_identified', 'top3_accuracy_identified',
+                'f1_score_identified', 'precision_identified', 'recall_identified',
+                'unknown_rate', 'misidentification_rate', 'identified_error_rate',
+                'total_predictions', 'total_identified'
+            ]
+        else:
+            metric_keys = [
+                'top1_family_accuracy_identified',
+                'top3_family_accuracy_identified',
+                'top1_branch_accuracy_identified',
+                'top3_branch_accuracy_identified',
+                'top1_family_accuracy_all',
+                'top3_family_accuracy_all',
+                'top1_branch_accuracy_all',
+                'top3_branch_accuracy_all',
+                'ood_detection_accuracy', 'misidentification_rate',
+                'total_predictions', 'total_identified'
+            ]
+        rows = []
+        for mk in metric_keys:
+            row = [mk]
+            for cat in categories:
+                v = split_metrics.get(cat, {}).get(mk, 'N/A')
+                row.append(f"{v:.4f}" if isinstance(v, (
+                int, float, np.integer, np.floating)) else v)
+            rows.append(row)
+        headers = ['Metric', 'overall', 'refusal', 'non_refusal']
+        return tabulate(rows, headers=headers, tablefmt='simple')
+
     with open(output_path, 'w') as f:
         f.write(f"========= Final CLF {phase.capitalize()} Report =========\n\n")
 
-        if isinstance(metrics, dict) and all(isinstance(k, float) for k in metrics):  # Multi-threshold (tuning)
+        if isinstance(metrics, dict) and all(isinstance(k, float) for k in metrics):
+            # Tuning phase
             f.write("Results for Multiple Thresholds:\n\n")
-
-            # Collect metrics by split and category into nested dicts
             collected = {
                 'non_held_out': {'overall': {}, 'refusal': {}, 'non_refusal': {}},
                 'held_out': {'overall': {}, 'refusal': {}, 'non_refusal': {}}
             }
-            for thresh, thresh_metrics in metrics.items():
+            for thresh, tm in metrics.items():
                 for split_name in ['non_held_out', 'held_out']:
-                    split_data = thresh_metrics[split_name]
                     for category in ['overall', 'refusal', 'non_refusal']:
-                        collected[split_name][category][thresh] = split_data[category]
-
-            # Generate 6 big tables
+                        collected[split_name][category][thresh] = tm[split_name][category]
             for split_name in ['non_held_out', 'held_out']:
                 f.write(f"--- {split_name.replace('_', ' ').title()} Metrics ---\n\n")
-                for category in ['overall', 'refusal', 'non_refusal']:
-                    f.write(f"  {category.capitalize()} Table:\n")
-                    if split_name == 'non_held_out':
-                        # Common metrics for non-held-out
-                        metric_keys = [
-                            'top1_accuracy_all', 'top3_accuracy_all',
-                            'top1_accuracy_identified', 'top3_accuracy_identified',
-                            'f1_score_identified', 'precision_identified',
-                            'recall_identified', 'unknown_rate', 'misidentification_rate',
-                            'identified_error_rate', 'total_predictions', 'total_identified'
-                        ]
-                    else:
-                        # Common metrics for held-out
-                        metric_keys = [
-                            # Identified-only
-                            'top1_family_accuracy_identified',
-                            'top3_family_accuracy_identified',
-                            'top1_branch_accuracy_identified',
-                            'top3_branch_accuracy_identified',
-                            # All-sample
-                            'top1_family_accuracy_all',
-                            'top3_family_accuracy_all',
-                            'top1_branch_accuracy_all',
-                            'top3_branch_accuracy_all',
-                            # Counts and OOD
-                            'total_predictions', 'total_identified',
-                            'ood_detection_accuracy', 'misidentification_rate'
-                        ]
-                    table_str = create_big_table(collected[split_name][category], metric_keys)
-                    f.write(table_str + "\n\n")
-        else:  # Single threshold (test) - keep original behavior
+                table_str = create_big_table(
+                    collected[split_name]['overall'],
+                    list(collected[split_name]['overall'][
+                             next(iter(collected[split_name]['overall']))].keys())
+                )
+                f.write(table_str + "\n\n")
+        else:
+            # Test phase
             f.write(f"Threshold: {threshold}\n\n")
-            for split_name in ['non_held_out', 'held_out']:
-                f.write(f"--- {split_name.replace('_', ' ').title()} Metrics ---\n\n")
-                split_metrics = metrics[split_name]
-                for category in ['overall', 'refusal', 'non_refusal']:
-                    f.write(f"  {category.capitalize()}:\n")
-                    table_data = [[k, f"{v:.4f}" if isinstance(v, float) else v] for k, v in split_metrics[category].items() if k != 'confusion_matrix']
-                    table_str = tabulate(table_data, headers=['Metric', 'Value'], tablefmt='simple')
-                    f.write(table_str + "\n\n")
+
+            # Combined non-held-out table
+            f.write(f"--- Non Held Out Metrics (combined) ---\n\n")
+            f.write(combined_table_for_split('non_held_out',
+                                             metrics['non_held_out']) + "\n\n")
+
+            # Combined held-out table
+            f.write(f"--- Held Out Metrics (combined) ---\n\n")
+            f.write(combined_table_for_split('held_out', metrics['held_out']) + "\n\n")
+
+            # Per-model metrics
+            if per_model_metrics and 'non_held_out' in per_model_metrics:
+                f.write("--- Per-Model Metrics (Non-Held-Out Test) ---\n\n")
+                mm = per_model_metrics['non_held_out']
+                rows = []
+                for model in sorted(mm.keys()):
+                    rows.append([
+                        model,
+                        mm[model]['n'],
+                        f"{mm[model]['coverage']:.4f}",
+                        f"{mm[model]['top1_accuracy_all']:.4f}",
+                        f"{mm[model]['top1_accuracy_identified']:.4f}",
+                        f"{mm[model]['top3_accuracy_all']:.4f}",
+                        f"{mm[model]['top3_accuracy_identified']:.4f}",
+                    ])
+                f.write(tabulate(
+                    rows,
+                    headers=['Model', 'Number of predictions',
+                             'Coverage (1 - unknown_rate)',
+                             'Top-1 Accuracy (all)',
+                             'Top-1 Accuracy (identified)',
+                             'Top-3 Accuracy (all)',
+                             'Top-3 Accuracy (identified)'],
+                    tablefmt='simple') + "\n\n")
 
         f.write("\n========= End of Report =========\n")
-
-
-def save_confusion_matrices(non_held_metrics: dict, held_metrics: dict, output_dir: str):
-    """
-    Compute and save confusion matrix plots for non_held_out and held_out test sets.
-    """
-    def plot_cm(cm, labels, title, file_path):
-        plt.figure(figsize=(10, 8))
-        sns.heatmap(cm, annot=True, fmt='d', xticklabels=labels, yticklabels=labels, cmap='Blues')
-        plt.title(title)
-        plt.xlabel('Predicted')
-        plt.ylabel('True')
-        plt.tight_layout()
-        plt.savefig(file_path)
-        plt.close()
-
-    # For non_held_out: Use existing confusion_matrix from overall metrics
-    if 'confusion_matrix' in non_held_metrics['overall']:
-        cm_non_held = np.array(non_held_metrics['overall']['confusion_matrix'])
-        labels_non_held = sorted(set(range(cm_non_held.shape[0])))  # Placeholder
-        plot_cm(
-            cm_non_held, labels_non_held,
-            'Non-Held-Out Test Confusion Matrix',
-            os.path.join(output_dir, 'non_held_out_test_cm.png')
-        )
-
-    # Held-out CM placeholder
-    print("Confusion matrix plotting for held_out is placeholder; implement if needed.")
 
 
 def generate_tuning_plots(tuning_results: dict, output_dir: str):
@@ -470,12 +478,85 @@ def run_final_clf_experiment(args):
                                                       threshold=args.threshold)
         }
 
-        save_confusion_matrices(test_metrics['non_held_out'], test_metrics['held_out'],
-                                '../results/')
+        # Create output dir
+        results_dir = '../results/final_clf_test/'
+        os.makedirs(results_dir, exist_ok=True)
 
-        # Generate report
-        generate_final_report('../results/final_clf_test_report.txt',
-                              test_metrics, 'test', args.threshold)
+        # Save ALL-sample CM for non-held-out (includes 'unknown')
+        nh_overall = test_metrics['non_held_out']['overall']
+        cm_all = np.array(nh_overall.get('confusion_matrix_all', []))
+        labels_all = nh_overall.get('confusion_matrix_all_labels', [])
+        if cm_all.size > 0 and labels_all:
+            save_confusion_matrix_xy(
+                cm_all, labels_all, labels_all,
+                os.path.join(results_dir, 'non_held_out_test_cm_all_samples.png'),
+                title='Non-held-out test set: confusion matrix (including "unknown" predictions)',
+                xtick_rotation=45
+            )
+
+        # Identified-only (no 'unknown') CMs for the non-held-out test set
+        library_llms = sorted({k[0] for k in library_avgs.keys()})
+        nh_cms = build_non_held_out_confusion_matrices(
+            non_held_preds, threshold=args.threshold, meta_map=meta_map,
+            library_llms=library_llms
+        )
+
+        save_confusion_matrix_xy(
+            nh_cms['model']['cm'], nh_cms['model']['ylabels'], nh_cms['model']['xlabels'],
+            os.path.join(results_dir, 'non_held_out_test_cm_identified_model.png'),
+            title='Non-held-out test set: LLM predictions (does not include "unknown")',
+            xtick_rotation=45
+        )
+        save_confusion_matrix_xy(
+            nh_cms['family']['cm'], nh_cms['family']['ylabels'],
+            nh_cms['family']['xlabels'],
+            os.path.join(results_dir, 'non_held_out_test_cm_identified_family.png'),
+            title='Non-held-out test set: LLM family predictions (does not include "unknown")',
+            xtick_rotation=45
+        )
+        save_confusion_matrix_xy(
+            nh_cms['branch']['cm'], nh_cms['branch']['ylabels'],
+            nh_cms['branch']['xlabels'],
+            os.path.join(results_dir, 'non_held_out_test_cm_identified_branch.png'),
+            title='Non-held-out test set: LLM branch predictions (does not include "unknown")',
+            xtick_rotation=45
+        )
+
+        # Generate three confusion matrices for the held-out test set
+        held_cms = build_held_out_confusion_matrices(
+            held_preds, threshold=args.threshold, meta_map=meta_map,
+            library_llms=library_llms
+        )
+        save_confusion_matrix_xy(
+            held_cms['model']['cm'], held_cms['model']['ylabels'],
+            held_cms['model']['xlabels'],
+            os.path.join(results_dir, 'held_out_test_cm_model.png'),
+            title='Held-out test set: LLM predictions (including "unknown" predictions)',
+            xtick_rotation=45
+        )
+        save_confusion_matrix_xy(
+            held_cms['family']['cm'], held_cms['family']['ylabels'],
+            held_cms['family']['xlabels'],
+            os.path.join(results_dir, 'held_out_test_cm_family.png'),
+            title='Held-out test set: LLM family predictions (including "unknown" predictions)',
+            xtick_rotation=45
+        )
+        save_confusion_matrix_xy(
+            held_cms['branch']['cm'], held_cms['branch']['ylabels'],
+            held_cms['branch']['xlabels'],
+            os.path.join(results_dir, 'held_out_test_cm_branch.png'),
+            title='Held-out test set: LLM branch predictions (including "unknown" predictions)',
+            xtick_rotation=45
+        )
+
+        # Per-model metrics and generate report in the final_clf_test dir
+        per_model_non_held = compute_per_model_coverage_accuracy(non_held_preds,
+                                                                 threshold=args.threshold)
+        generate_final_report(
+            os.path.join(results_dir, 'final_clf_test_report.txt'),
+            test_metrics, 'test', args.threshold,
+            per_model_metrics={'non_held_out': per_model_non_held}
+        )
 
 
 def parse_arguments():

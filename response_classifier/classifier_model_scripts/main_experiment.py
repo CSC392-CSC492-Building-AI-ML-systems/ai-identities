@@ -4,7 +4,6 @@ from data_loader import load_raw_data
 from data_processor import process_and_save
 from data_splitter import split_data_per_bin, hold_out_models, save_splits
 from cross_validation import perform_5fold_cv_for_method
-from evaluator import evaluate_final_model
 import pickle
 from validate_splits import validate_splits
 
@@ -12,8 +11,8 @@ from validate_splits import validate_splits
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Main experiment script for LLM response classification.")
     parser.add_argument('--action', type=str, required=True,
-                        choices=['split_data', 'validate_splits', 'cross_validation', 'evaluate', 'process'],
-                        help="Action to perform: 'split_data', 'validate_splits', 'cross_validation' (requires --method), 'evaluate' (requires --method), 'process'.")
+                        choices=['split_data', 'validate_splits', 'cross_validation', 'process'],
+                        help="Action to perform: 'split_data', 'validate_splits', 'cross_validation' (requires --method), 'process'.")
     parser.add_argument('--method', type=str, default=None,
                         help="Classification method name (e.g., 'nomic_cosine') for 'cross_validation' or 'evaluate' actions.")
     parser.add_argument('--eval_both', action='store_true',
@@ -53,24 +52,6 @@ def main(args):
         with open('../data/splits/train.pkl', 'rb') as f:
             train = pickle.load(f)
         perform_5fold_cv_for_method(train, classification_method, eval_both_metrics=args.eval_both)
-
-    if args.action == 'evaluate':
-        if not args.method:
-            raise ValueError("For 'evaluate' action, --method is required (e.g., nomic_cosine)")
-
-        classification_method = next((m for m in methods_cfg['embeddings'] + methods_cfg['word_freq']
-                                      if m['name'] == args.method), None)
-        if not classification_method:
-            raise ValueError(f"Method '{args.method}' not found in config")
-
-        # Load splits
-        with open('../data/splits/train.pkl', 'rb') as f:
-            train = pickle.load(f)
-        with open('../data/splits/test.pkl', 'rb') as f:
-            test = pickle.load(f)
-        with open('../data/splits/held_out.pkl', 'rb') as f:
-            held_out = pickle.load(f)
-        evaluate_final_model(classification_method, train, test, held_out)
 
     if args.action == 'process':
         with open('../data/splits/train.pkl', 'rb') as f:

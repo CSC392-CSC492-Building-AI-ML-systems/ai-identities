@@ -11,6 +11,22 @@ from tqdm import tqdm
 from analyze_final_clf_dataset import detect_refusal
 
 
+def save_confusion_matrix_xy(cm: np.ndarray, ylabels: list[str], xlabels: list[str],
+                             output_path: str, title: str | None = None,
+                             xtick_rotation: int = 0) -> None:
+    plt.figure(figsize=(max(10, 0.5*len(xlabels)), max(8, 0.45*len(ylabels))))
+    ax = sns.heatmap(cm, annot=True, fmt='d', xticklabels=xlabels, yticklabels=ylabels,
+                     cmap='Blues')
+    if title:
+        plt.title(title)
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+    plt.setp(ax.get_xticklabels(), rotation=xtick_rotation, ha='right')
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=150)
+    plt.close()
+
+
 def compute_metrics(predictions_with_scores: dict[str, dict], threshold: float) -> dict:
     """
     Compute metrics: top1/top3 acc, f1, etc. + confusion matrix.
@@ -69,13 +85,18 @@ def compute_metrics(predictions_with_scores: dict[str, dict], threshold: float) 
             # Counts and CM:
             'total_predictions': 0,
             'total_identified': 0,
-            'confusion_matrix': []
+            'confusion_matrix_identified': [],  # identified-only CM
+            'confusion_matrix_all': [],  # ALL-sample CM (includes 'unknown')
+            'confusion_matrix_all_labels': []
         }
 
     # ALL-sample accuracies (decision-level)
     top1_acc_all = accuracy_score(true_labels, top1_pred_labels)
     top3_acc_all = float(np.mean(
         [int(true_llm in top3) for true_llm, top3 in zip(true_labels, top3_pred_lists)]))
+
+    labels_all = sorted(set(true_labels) | set(top1_pred_labels))  # includes 'unknown'
+    cm_all = confusion_matrix(true_labels, top1_pred_labels, labels=labels_all).tolist()
 
     # Identified-only metrics
     known_indices = [i for i, label in enumerate(top1_pred_labels) if label != 'unknown']
@@ -105,7 +126,7 @@ def compute_metrics(predictions_with_scores: dict[str, dict], threshold: float) 
                               zero_division=0)
 
         all_labels = sorted(set(true_labels_known) | set(top1_preds_known))
-        cm = confusion_matrix(true_labels_known, top1_preds_known,
+        cm_identified = confusion_matrix(true_labels_known, top1_preds_known,
                               labels=all_labels).tolist()
     else:
         top1_acc_id = 0.0
@@ -113,7 +134,7 @@ def compute_metrics(predictions_with_scores: dict[str, dict], threshold: float) 
         f1 = 0.0
         precision = 0.0
         recall = 0.0
-        cm = []
+        cm_identified = []
 
     return {
         # ALL-sample decision-level accuracies:
@@ -135,8 +156,171 @@ def compute_metrics(predictions_with_scores: dict[str, dict], threshold: float) 
         # Counts and CM:
         'total_predictions': total_count,
         'total_identified': total_identified,
-        'confusion_matrix': cm
+        'confusion_matrix_identified': cm_identified,  # identified-only
+        'confusion_matrix_all': cm_all,  # ALL-sample
+        'confusion_matrix_all_labels': labels_all
     }
+
+
+def compute_per_model_coverage_accuracy(predictions_with_scores: dict[str, dict],
+                                        threshold: float) -> dict[str, dict]:
+    """
+    Returns {llm: {
+        'n': int,
+        'coverage': float,
+        'top1_accuracy_all': float,                # all-sample
+        'top1_accuracy_identified': float,     # identified-only
+        'top3_accuracy_all': float,            # all-sample
+        'top3_accuracy_identified': float      # identified-only
+    }}
+    coverage = fraction of examples with score >= threshold
+    """
+    out = {}
+    for true_llm, combo_preds in predictions_with_scores.items():
+        n = len(combo_preds)
+        identified = 0
+        correct_all = 0
+        correct_id = 0
+        top3_hits_all = 0
+        top3_hits_id = 0
+
+        for score_pairs in combo_preds.values():
+            if score_pairs and score_pairs[0][1] >= threshold:
+                identified += 1
+                pred1 = score_pairs[0][0]
+                if pred1 == true_llm:
+                    correct_all += 1
+                    correct_id += 1
+                top3_models = [p for p, _ in score_pairs[:3]]
+                if true_llm in top3_models:
+                    top3_hits_all += 1
+                    top3_hits_id += 1
+            else:
+                # un-identified: contributes 0 to all-sample accuracies
+                pass
+
+        out[true_llm] = {
+            'n': n,
+            'coverage': (identified / n) if n else 0.0,
+            'top1_accuracy_all': (correct_all / n) if n else 0.0,
+            'top1_accuracy_identified': (correct_id / identified) if identified else 0.0,
+            'top3_accuracy_all': (top3_hits_all / n) if n else 0.0,
+            'top3_accuracy_identified': (top3_hits_id / identified) if identified else 0.0
+        }
+
+    return out
+
+
+def build_held_out_confusion_matrices(predictions_with_scores: dict[str, dict],
+                                      threshold: float, meta_map: dict,
+                                      library_llms: list[str] | None = None) -> dict:
+    """
+    Returns a dict with three confusion matrices. Rows are true LLMs; columns vary:
+        - 'model': predicted known LLMs + 'unknown'
+        - 'family': predicted families + 'unknown'
+        - 'branch': predicted branches + 'unknown'
+    Each entry has: {'cm': np.ndarray, 'ylabels': [...], 'xlabels': [...]}
+    """
+    y_true = []
+    y_pred_model = []
+    y_pred_family = []
+    y_pred_branch = []
+
+    for true_llm, combo_preds in predictions_with_scores.items():
+        for score_pairs in combo_preds.values():
+            y_true.append(true_llm)
+            if score_pairs and score_pairs[0][1] >= threshold:
+                pm = score_pairs[0][0]
+            else:
+                pm = 'unknown'
+
+            y_pred_model.append(pm)
+            family, branch = get_llm_family_and_branch(score_pairs[0][0], meta_map)
+            y_pred_family.append(family)
+            y_pred_branch.append(branch)
+
+    row_labels = sorted(set(y_true))
+
+    # Column label sets
+    if library_llms:
+        model_cols = sorted(set(library_llms)) + ['unknown']
+        fam_cols = sorted({get_llm_family_and_branch(m, meta_map)[0] for m in library_llms} - {None, 'unknown'}) + ['unknown']
+        br_cols = sorted({get_llm_family_and_branch(m, meta_map)[1] for m in library_llms} - {None, 'unknown'}) + ['unknown']
+    else:
+        model_cols = sorted(set(y_pred_model)) + (['unknown'] if 'unknown' not in set(y_pred_model) else [])
+        fam_cols = sorted(set(y_pred_family)) + (['unknown'] if 'unknown' not in set(y_pred_family) else [])
+        br_cols = sorted(set(y_pred_branch)) + (['unknown'] if 'unknown' not in set(y_pred_branch) else [])
+
+    cm_model = create_rectangular_cm(row_labels, model_cols, y_true, y_pred_model)
+    cm_family = create_rectangular_cm(row_labels, fam_cols, y_true, y_pred_family)
+    cm_branch = create_rectangular_cm(row_labels, br_cols, y_true, y_pred_branch)
+
+    return {
+        'model': {'cm': cm_model, 'ylabels': row_labels, 'xlabels': model_cols},
+        'family': {'cm': cm_family, 'ylabels': row_labels, 'xlabels': fam_cols},
+        'branch': {'cm': cm_branch, 'ylabels': row_labels, 'xlabels': br_cols}
+    }
+
+
+def build_non_held_out_confusion_matrices(predictions_with_scores: dict[str, dict],
+                                          threshold: float, meta_map: dict,
+                                          library_llms: list[str] | None = None) -> dict:
+    """
+    Returns a dict with three confusion matrices. Rows are true LLMs; columns vary:
+        - 'model': predicted known LLMs (doesn't include "unknown")
+        - 'family': predicted families (doesn't include "unknown")
+        - 'branch': predicted branches (doesn't include "unknown")
+    Each entry has: {'cm': np.ndarray, 'ylabels': [...], 'xlabels': [...]}
+    """
+    y_true = []
+    y_pred_model = []
+    y_pred_family = []
+    y_pred_branch = []
+
+    for true_llm, combos in predictions_with_scores.items():
+        for score_pairs in combos.values():
+            if score_pairs and score_pairs[0][1] >= threshold:
+                y_true.append(true_llm)
+                pm = score_pairs[0][0]
+                y_pred_model.append(pm)
+                fam, br = get_llm_family_and_branch(pm, meta_map)
+                y_pred_family.append(fam if fam else 'unknown')
+                y_pred_branch.append(br if br else 'unknown')
+            else:
+                # skip un-identified rows entirely
+                continue
+
+    row_labels = sorted(set(y_true))
+
+    # Column labels
+    if library_llms:
+        model_cols = sorted(set(library_llms))
+        fam_cols = sorted({get_llm_family_and_branch(m, meta_map)[0] for m in library_llms} - {None, 'unknown'})
+        br_cols = sorted({get_llm_family_and_branch(m, meta_map)[1] for m in library_llms} - {None, 'unknown'})
+    else:
+        model_cols = sorted(set(y_pred_model))
+        fam_cols = sorted(set(y_pred_family) - {'unknown'})
+        br_cols = sorted(set(y_pred_branch) - {'unknown'})
+
+    cm_model = create_rectangular_cm(row_labels, model_cols, y_true, y_pred_model)
+    cm_family = create_rectangular_cm(row_labels, fam_cols, y_true, y_pred_family)
+    cm_branch = create_rectangular_cm(row_labels, br_cols, y_true, y_pred_branch)
+
+    return {
+        'model': {'cm': cm_model, 'ylabels': row_labels, 'xlabels': model_cols},
+        'family': {'cm': cm_family, 'ylabels': row_labels, 'xlabels': fam_cols},
+        'branch': {'cm': cm_branch, 'ylabels': row_labels, 'xlabels': br_cols}
+    }
+
+
+def create_rectangular_cm(rows, cols, y_t, y_p):
+    r_index = {r: i for i, r in enumerate(rows)}
+    c_index = {c: j for j, c in enumerate(cols)}
+    cm = np.zeros((len(rows), len(cols)), dtype=int)
+    for t, p in zip(y_t, y_p):
+        if t in r_index and p in c_index:
+            cm[r_index[t], c_index[p]] += 1
+    return cm
 
 
 def compute_held_out_llm_metrics(predictions_with_scores: dict[str, dict], meta_map: dict,
@@ -255,13 +439,6 @@ def compute_held_out_llm_metrics(predictions_with_scores: dict[str, dict], meta_
         'ood_detection_accuracy': unknown_preds / total_predictions,
         'misidentification_rate': identified_preds / total_predictions
     }
-
-
-def save_confusion_matrix(cm: np.ndarray, labels: list[str], output_path: str) -> None:
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(cm, annot=True, xticklabels=labels, yticklabels=labels)
-    plt.savefig(output_path)
-    plt.close()
 
 
 def apply_threshold(predictions_with_scores: dict[str, dict], threshold: float,
