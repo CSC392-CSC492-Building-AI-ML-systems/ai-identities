@@ -109,6 +109,9 @@ export default function LoginPage() {
         >
             Log In
         </button>
+        {loading ? (
+          <div style={{ color: '#6d6badff' }}>Loading...</div>
+        ) : (<span></span>)}
         {error && <p className="mt-4 text-center text-sm" style={{ color: '#FF6B6B' }}>{error}</p>}
         </form>
     </div>
