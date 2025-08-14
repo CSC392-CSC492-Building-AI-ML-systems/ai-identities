@@ -57,6 +57,10 @@ export function useXWikiAuth({
     };
     iframe.addEventListener('load', onLoad, { once: true });
 
+    // Fallback: if the iframe was already loaded before this hook mounted,
+    // this won't fire 'load', so send a permissive ping that won't error.
+    iframe.contentWindow?.postMessage({ type: 'xwiki-auth-request' }, xwikiOrigin);
+
     const t = window.setTimeout(() => setLoading(false), timeoutMs);
 
     return () => {
