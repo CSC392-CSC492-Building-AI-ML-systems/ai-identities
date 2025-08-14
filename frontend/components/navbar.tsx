@@ -34,8 +34,8 @@ export default function Navbar() {
         onClick={handleLogout}
         className="relative group text-[#F3F3FF] text-lg font-normal px-2 flex items-center whitespace-nowrap"
       >
-        Log Out
-        <span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
+        Log Out{/*
+        */}<span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
       </button>
     );
   } else {
@@ -44,8 +44,8 @@ export default function Navbar() {
         onClick={handleLogin}
         className="relative group text-[#F3F3FF] text-lg font-normal px-2 flex items-center whitespace-nowrap"
       >
-        Login
-        <span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
+        Login{/*
+        */}<span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
       </button>
     );
   }
@@ -73,7 +73,7 @@ export default function Navbar() {
             Search{/*
             */}<span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
           </Link>
-          
+
           {authNode}
         </div>
       </nav>
