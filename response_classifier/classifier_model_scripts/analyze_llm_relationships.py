@@ -178,7 +178,7 @@ def analyze_inter_llm_similarity(library_averages: dict[tuple[str, str], np.ndar
 def analyze_llm_response_consistency(library_data: dict[str, pd.DataFrame]) -> None:
     """
     Computes per-model metrics: mean/std cosine to centroid (overall and per
-    temp bin), and cosine similarities between bin centroids and overall.
+    temp bin), and cosine similarities between bin centroids and overall centroids.
     """
     dispersion_data = []
     for llm, df in library_data.items():
@@ -220,8 +220,8 @@ def analyze_llm_response_consistency(library_data: dict[str, pd.DataFrame]) -> N
 
 def analyze_family_separation(library_averages: dict[tuple[str, str], np.ndarray], meta_map: dict) -> None:
     """
-    Analysis 3: Between- vs within-family separation.
-    Uses overall vectors to compute mean sim to same/other families.
+    Analyze the difference of between-family and within-family cosine similarity.
+    Uses overall vectors to compute mean similarity to same/other families.
     """
     llms = sorted(set(m for m, _ in library_averages.keys()))
     vec_list = [get_vector(library_averages, (llm, 'overall'), DO_NORMALIZE) for llm in llms]
@@ -253,7 +253,7 @@ def analyze_family_separation(library_averages: dict[tuple[str, str], np.ndarray
 
 def analyze_inter_llm_similarity_temp(library_averages: dict[tuple[str, str], np.ndarray]) -> None:
     """
-    Additional Analysis 5: Temperature Impact on Inter-LLM Similarity.
+    Analyze the impact of LLM temperature on inter-LLM Similarity.
     Computes similarity matrices per temp bin and differences from overall.
     """
     llms = sorted(set(m for m, _ in library_averages.keys()))
