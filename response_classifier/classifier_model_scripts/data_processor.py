@@ -134,7 +134,7 @@ def load_processed(clf_method_name: str, split_name: str) -> dict[str, pd.DataFr
 
     data = {}
     for file in os.listdir(input_path):
-        if file.endswith('.pkl') and file != 'vectorizer.pkl':
+        if file.endswith('.pkl') and file != 'vectorizer.pkl' and file != 'library_averages.pkl':
             llm_name = file.replace('.pkl', '')
             with open(os.path.join(input_path, file), 'rb') as f:
                 df = pickle.load(f)

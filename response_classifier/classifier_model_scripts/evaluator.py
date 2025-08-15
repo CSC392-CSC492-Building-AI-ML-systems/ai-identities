@@ -8,7 +8,7 @@ from typing import Callable
 from classifier_model import predict_unknown
 from llm_meta_data import get_llm_family_and_branch
 from tqdm import tqdm
-from analyze_final_clf_dataset import detect_refusal
+from analyze_final_clf_dataset_refusal import detect_refusal
 
 
 def save_confusion_matrix_xy(cm: np.ndarray, ylabels: list[str], xlabels: list[str],

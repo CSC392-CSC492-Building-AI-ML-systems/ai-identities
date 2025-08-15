@@ -209,19 +209,16 @@ def save_refusal_report(stats: dict, output_path: str):
 
         # Per (LLM family, system Prompt) full table (if not too large; otherwise, limit)
         if 'per_family_system_prompt' in stats:
-            f.write(
-                "Refusal Rates per (LLM Family, System Prompt) (Prompt Trunc to 100 chars):\n")
+            f.write("Refusal Rates per (LLM Family, System Prompt) (Prompt Trunc to 100 chars):\n")
             df = stats['per_family_system_prompt'].copy()
             df['system_prompt'] = df['system_prompt'].apply(
                 lambda x: x[:100] + '...' if len(x) > 100 else x)
             df['refusal_rate'] = df['refusal_rate'].apply(lambda x: f"{x:.2%}")
-            f.write(
-                tabulate(df, headers='keys', tablefmt='simple', showindex=False) + "\n\n")
+            f.write(tabulate(df, headers='keys', tablefmt='simple', showindex=False) + "\n\n")
 
         # Cross-Tab Table (Average Refusal Rate by System Prompt and LLM, Top 5 System Prompts)
         if 'cross_tab' in stats:
-            f.write(
-                "Cross-Tab: Avg Refusal Rate by System Prompt and LLM (Top 5 System Prompts, Rates as %):\n")
+            f.write("Cross-Tab: Avg Refusal Rate by System Prompt and LLM (Top 5 System Prompts, Rates as %):\n")
             df = stats['cross_tab'].head(5).copy()  # Limit to top 5 for brevity
             df['system_prompt'] = df['system_prompt'].apply(
                 lambda x: x[:100] + '...' if len(x) > 100 else x)
@@ -237,4 +234,4 @@ if __name__ == '__main__':
     raw_path = '../data/final_clf_dataset_raw_data/'
     data, _, _, _ = load_raw_data(raw_path)
     stats = analyze_refusals(data, config['final_clf_dataset_temp_bins'])
-    save_refusal_report(stats, '../results/data_analysis/final_clf_refusal_analysis.txt')
+    save_refusal_report(stats, '../results/final_clf_dataset_analysis/final_clf_refusal_analysis.txt')
