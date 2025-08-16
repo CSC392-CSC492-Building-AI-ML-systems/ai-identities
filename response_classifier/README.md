@@ -8,8 +8,8 @@ It supports abstention (predicting "unknown") via thresholding (on the cosine si
 value) for out-of-distribution detection.
 
 The project progresses through phases:
-1. **Base Dataset Collection and Model Selection**: Collect responses for user prompts at varying temperatures and select the best classifier method via cross-validation.
-2. **System Prompt Robustness Evaluation**: Test classifiers against adversarial system prompts and neutralization techniques.
+1. **Base Dataset Collection and Model Selection**: Collect responses for user prompts at varying temperatures and compare classifiers using cross validation.
+2. **System Prompt Robustness Evaluation**: Test classifiers and system prompt neutralization techniques against system prompts.
 3. **Final Classifier with Threshold Tuning**: Use a refined dataset to tune and evaluate a production-ready classifier with OOD detection.
 
 Key findings:
