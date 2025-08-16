@@ -1,0 +1,75 @@
+========= Final CLF Test Report =========
+
+Threshold: 0.65
+
+--- Non Held Out Metrics (combined) ---
+
+Metric                      overall    refusal    non_refusal
+------------------------  ---------  ---------  -------------
+top1_accuracy_all            0.6378     0.0357         0.6777
+top3_accuracy_all            0.6822     0.0357         0.7251
+top1_accuracy_identified     0.9199     1              0.9196
+top3_accuracy_identified     0.984      1              0.9839
+f1_score_identified          0.9047     1              0.9047
+precision_identified         0.9433     1              0.9433
+recall_identified            0.906      1              0.906
+unknown_rate                 0.3067     0.9643         0.263
+misidentification_rate       0.0556     0              0.0592
+identified_error_rate        0.0801     0              0.0804
+total_predictions          450         28            422
+total_identified           312          1            311
+
+--- Held Out Metrics (combined) ---
+
+Metric                             overall    refusal    non_refusal
+-------------------------------  ---------  ---------  -------------
+top1_family_accuracy_identified     1             0           1
+top3_family_accuracy_identified     1             0           1
+top1_branch_accuracy_identified     0.3333        0           0.3333
+top3_branch_accuracy_identified     0.4444        0           0.4444
+top1_family_accuracy_all            0.9556        0.6         0.9765
+top3_family_accuracy_all            0.9667        0.6         0.9882
+top1_branch_accuracy_all            0.4667        0.4         0.4706
+top3_branch_accuracy_all            0.6444        0.4         0.6588
+ood_detection_accuracy              0.8           1           0.7882
+misidentification_rate              0.2           0           0.2118
+total_predictions                  90             5          85
+total_identified                   18             0          18
+
+--- Per-Model Metrics (Non-Held-Out Test) ---
+
+Model                                                Number of predictions    Coverage (1 - unknown_rate)    Top-1 Accuracy (all)    Top-1 Accuracy (identified)    Top-3 Accuracy (all)    Top-3 Accuracy (identified)
+-------------------------------------------------  -----------------------  -----------------------------  ----------------------  -----------------------------  ----------------------  -----------------------------
+Qwen_Qwen2.5-72B-Instruct                                               15                         0.9333                  0.9333                         1                       0.9333                           1
+Qwen_Qwen2.5-7B-Instruct                                                15                         0.9333                  0.9333                         1                       0.9333                           1
+Qwen_Qwen2.5-Coder-32B-Instruct                                         15                         0.6                     0.6                            1                       0.6                              1
+Qwen_Qwen2.5-VL-32B-Instruct                                            15                         0.6                     0.6                            1                       0.6                              1
+Qwen_Qwen3-14B                                                          15                         0.8667                  0.8667                         1                       0.8667                           1
+Qwen_Qwen3-235B-A22B                                                    15                         0.6                     0.6                            1                       0.6                              1
+Qwen_Qwen3-32B                                                          15                         0.8667                  0.8667                         1                       0.8667                           1
+deepseek-ai_DeepSeek-R1-0528                                            15                         0.5333                  0.4667                         0.875                   0.5333                           1
+deepseek-ai_DeepSeek-V3-0324                                            15                         0.9333                  0.9333                         1                       0.9333                           1
+google_gemini-2.0-flash-001                                             15                         0.6667                  0.6667                         1                       0.6667                           1
+google_gemini-2.5-flash                                                 15                         0.6                     0.6                            1                       0.6                              1
+google_gemma-3-27b-it                                                   15                         0.9333                  0.9333                         1                       0.9333                           1
+google_gemma-3-4b-it                                                    15                         0.3333                  0.3333                         1                       0.3333                           1
+meta-llama_Llama-3.2-11B-Vision-Instruct                                15                         0.9333                  0.9333                         1                       0.9333                           1
+meta-llama_Llama-3.2-3B-Instruct                                        15                         0.6667                  0.6667                         1                       0.6667                           1
+meta-llama_Llama-3.2-90B-Vision-Instruct                                15                         0.8                     0.4667                         0.5833                  0.8                              1
+meta-llama_Llama-3.3-70B-Instruct-Turbo                                 15                         0.9333                  0.9333                         1                       0.9333                           1
+meta-llama_Llama-4-Maverick-17B-128E-Instruct-FP8                       15                         0.9333                  0.9333                         1                       0.9333                           1
+meta-llama_Llama-4-Scout-17B-16E-Instruct                               15                         0.5333                  0.4                            0.75                    0.4                              0.75
+meta-llama_Meta-Llama-3-8B-Instruct                                     15                         0.8667                  0.8                            0.9231                  0.8667                           1
+meta-llama_Meta-Llama-3.1-70B-Instruct-Turbo                            15                         0.7333                  0.5333                         0.7273                  0.7333                           1
+meta-llama_Meta-Llama-3.1-8B-Instruct-Turbo                             15                         0.7333                  0.1333                         0.1818                  0.7333                           1
+microsoft_WizardLM-2-8x22B                                              15                         1                       1                              1                       1                                1
+microsoft_phi-4                                                         15                         0.7333                  0.7333                         1                       0.7333                           1
+mistralai_Devstral-Small-2507                                           15                         0.6                     0.6                            1                       0.6                              1
+mistralai_Mistral-7B-Instruct-v0.3                                      15                         0.6667                  0.6667                         1                       0.6667                           1
+mistralai_Mistral-Nemo-Instruct-2407                                    15                         0.3333                  0.3333                         1                       0.3333                           1
+mistralai_Mistral-Small-3.1-24B-Instruct-2503                           15                         0.6                     0.5333                         0.8889                  0.6                              1
+mistralai_Mistral-Small-3.2-24B-Instruct-2506                           15                         0.2667                  0.0667                         0.25                    0.0667                           0.25
+mistralai_Mixtral-8x7B-Instruct-v0.1                                    15                         0.0667                  0.0667                         1                       0.0667                           1
+
+
+========= End of Report =========

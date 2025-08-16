@@ -115,7 +115,11 @@ def load_raw_data(raw_path: str, remove_cot: bool = True) -> tuple:
                 'empty_after_removal': empty_after_removal
             }
 
-            df = pd.DataFrame(raw_list)[['prompt', 'response', 'temperature']]
+            columns_to_keep = ['prompt', 'response', 'temperature']
+            if raw_list and 'system_prompt' in raw_list[0]:
+                columns_to_keep.extend(['system_prompt', 'neutralization_technique'])
+
+            df = pd.DataFrame(raw_list)[columns_to_keep]
             df['model'] = model_name
             data[model_name] = df
 

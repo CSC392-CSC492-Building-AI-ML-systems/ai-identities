@@ -1,0 +1,7 @@
+Temperature Impact Metrics
+
+    temp_bin      mean_diff_from_overall
+--  ----------  ------------------------
+ 0  low                        0.139983
+ 1  medium                     0.070028
+ 2  high                       0.0274956

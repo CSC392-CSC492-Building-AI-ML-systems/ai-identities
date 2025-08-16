@@ -13,3 +13,7 @@ system_prompt_dataset_temp_bins:
   low: { min: 0.0, max: 0.4, num_points: 2 }
   medium: { min: 0.4, max: 0.8, num_points: 4 }
   high: { min: 0.8, max: 1.2, num_points: 8 }
+final_clf_dataset_temp_bins:
+  low: { min: 0.0, max: 0.4, num_points: 4 }
+  medium: { min: 0.4, max: 0.8, num_points: 8 }
+  high: { min: 0.8, max: 1.2, num_points: 16 }

@@ -257,7 +257,6 @@ def run_evaluation(args):
     results_df = pd.DataFrame(all_results)
     if not results_df.empty:
         results_df['is_correct_top1'] = results_df['true_model'] == results_df['top1_prediction']
-    results_df.to_csv(os.path.join(output_dir, 'sys_prompt_dataset_clf_results.csv'), index=False)
 
     generate_detailed_report(
         output_path=os.path.join(output_dir, 'system_prompt_experiment_report.txt'),

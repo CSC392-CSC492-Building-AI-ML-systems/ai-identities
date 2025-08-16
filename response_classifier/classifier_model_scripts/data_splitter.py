@@ -90,8 +90,33 @@ def save_splits(train: dict, test: dict, held_out: dict, output_path: str) -> No
         pickle.dump(held_out, f)
 
 
-# Example usage (in main_experiment.py)
+def split_tuning_test(data: dict[str, pd.DataFrame], bins: dict, seed: int) -> tuple[dict, dict]:
+    """
+    Split dataset into tuning and test sets (50/50), stratifying by (model, prompt, system_prompt, temp_bin).
+    Returns dicts of tuning and test set DataFrames.
+    """
+    # Flatten to single DF for stratified splitting
+    all_df = pd.concat([df.assign(model=model) for model, df in data.items()])
+    all_df = bin_temperatures(all_df, bins)  # Reuse existing function
+    all_df['stratum'] = (
+        all_df['model'] + '|' +
+        all_df['prompt'] + '|' +
+        all_df['system_prompt'] + '|' +
+        all_df['temp_bin']
+    )
+
+    # Stratified split (50/50)
+    tuning_df, test_df = train_test_split(all_df, test_size=0.5, stratify=all_df['stratum'], random_state=seed)
+
+    # Group back into dicts
+    tuning_data = {model: group.drop(columns=['model', 'stratum']) for model, group in tuning_df.groupby('model')}
+    test_data = {model: group.drop(columns=['model', 'stratum']) for model, group in test_df.groupby('model')}
+
+    return tuning_data, test_data
+
+
 if __name__ == '__main__':
+    # Example usage (in main_experiment.py)
     config = yaml.safe_load(open('../configs/data_config.yaml'))
     raw = load_raw_data(config['raw_data_path'])  # From data_loader
     non_held_out, held_out = hold_out_models(raw, config)
