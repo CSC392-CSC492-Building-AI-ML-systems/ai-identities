@@ -107,7 +107,7 @@ Hence, we suggest adding funds to your Deepinfra account before starting data co
   1. Split data: `python classifier_model_scripts/main_experiment.py --action split_data`.
   2. Validate splits: `python classifier_model_scripts/main_experiment.py --action validate_splits`. This splits the entire dataset (by the LLMs) 
      into non-held-out set and held-out set which does not share any LLM. The non-held-out set is then split into train and test sets using the 5:1 split ratio. 
-  3. Run 5-fold CV on the train set for a method: `python classifier_model_scripts/main_experiment.py --action cross_validation --method tfidf_trigram --eval_both`. 
+  3. Run 5-fold CV on the train set for a classifier method: `python classifier_model_scripts/main_experiment.py --action cross_validation --method tfidf_trigram --eval_both`. 
      The method name should be one of the 'name' entries in 'configs/classification_methods_config.yaml' file. 
 - **Library**: The 4 train splits of the train set.
 - **Test Set**: The remaining 1 val split of the train set.
