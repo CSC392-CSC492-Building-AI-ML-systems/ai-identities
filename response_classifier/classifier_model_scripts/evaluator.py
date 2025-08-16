@@ -27,7 +27,7 @@ def save_confusion_matrix_xy(cm: np.ndarray, ylabels: list[str], xlabels: list[s
     plt.close()
 
 
-def compute_metrics(predictions_with_scores: dict[str, dict], threshold: float) -> dict:
+def compute_metrics(predictions_with_scores: dict[str, dict], threshold: float | None = None) -> dict:
     """
     Compute metrics: top1/top3 acc, f1, etc. + confusion matrix.
     Assumes predictions are nested: {llm: {group_key: top-k list}}, where
@@ -54,15 +54,19 @@ def compute_metrics(predictions_with_scores: dict[str, dict], threshold: float) 
         for pred_list_with_scores in group_preds.values():
             total_count += 1
             true_labels.append(llm)
-            if pred_list_with_scores and pred_list_with_scores[0][1] >= threshold:
-                # Confident prediction
+            if threshold is not None:
+                if pred_list_with_scores and pred_list_with_scores[0][1] >= threshold:
+                    # Confident prediction
+                    top1_pred_labels.append(pred_list_with_scores[0][0])
+                    top3_pred_lists.append([p for p, _ in pred_list_with_scores])
+                else:
+                    # Not confident, predict 'unknown'
+                    top1_pred_labels.append('unknown')
+                    top3_pred_lists.append([])  # No top-3 prediction
+                    unknown_count += 1
+            else:
                 top1_pred_labels.append(pred_list_with_scores[0][0])
                 top3_pred_lists.append([p for p, _ in pred_list_with_scores])
-            else:
-                # Not confident, predict 'unknown'
-                top1_pred_labels.append('unknown')
-                top3_pred_lists.append([])  # No top-3 prediction
-                unknown_count += 1
 
     if total_count == 0:
         return {
