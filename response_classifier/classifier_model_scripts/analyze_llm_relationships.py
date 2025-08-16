@@ -23,7 +23,7 @@ LIBRARY_AVERAGES_PATH = f'../data/processed/{METHOD_NAME}/{SPLIT_NAME}/library_a
 OUTPUT_DIR = '../results/library_data_analysis/'
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 META_MAP = load_llm_meta_data('../configs/llm_set.json')
-DO_NORMALIZE = False
+DO_NORMALIZE = True
 
 
 def get_vector(library_averages: dict, key: tuple, do_normalize: bool,
@@ -39,7 +39,7 @@ def get_vector(library_averages: dict, key: tuple, do_normalize: bool,
     else:
         raise ValueError(f"Key {key} not found and no default shape provided.")
 
-    if do_normalize:
+    if do_normalize and np.linalg.norm(vec) > 0:
         vec = normalize(vec, norm='l2')
 
     return vec
@@ -164,12 +164,17 @@ def analyze_inter_llm_similarity(library_averages: dict[tuple[str, str], np.ndar
     dist_matrix = 1 - sim_matrix
     np.fill_diagonal(dist_matrix, 0)
     condensed_dist = squareform(dist_matrix)
-    Z = linkage(condensed_dist, method='ward')
+    Z = linkage(condensed_dist, method='average')
     fig, ax = plt.subplots(figsize=(22, 16))
-    dendrogram(Z, labels=llms, leaf_rotation=90, leaf_font_size=18, orientation='top', ax=ax)
+    dendrogram(Z, labels=llms, leaf_rotation=45, leaf_font_size=18, orientation='top', ax=ax)
+    ax.set_xticklabels(ax.get_xticklabels(), ha='right')
     ax.set_title('Dendrogram of LLM Clustering (Overall, Best Prompt)', fontsize=26)
-    ax.set_ylabel('Ward Distance', fontsize=22)
+    ax.set_ylabel('Average Linkage Distance', fontsize=22)
     ax.tick_params(axis='y', labelsize=18)
+    # Increase branch thickness
+    linecollections = ax.collections  # Get all line collections (branches)
+    for lc in linecollections:
+        lc.set_linewidth(3)
     plt.tight_layout()
     plt.savefig(os.path.join(OUTPUT_DIR, 'inter_llm_dendrogram_overall.png'))
     plt.close()
