@@ -212,7 +212,7 @@ For more information, check `results/cv_metrics.txt`.
 ![Tuning Curves (Overall)](results/final_clf_tuning/overall_curves.png)
 
 For more plots and detailed report, check `results/final_clf_tuning/`.
-The following are the keywords in `results/final_clf_tuning/final_clf_tuning_report.txt`:
+The following are the potentially confusing keywords in `results/final_clf_tuning/final_clf_tuning_report.txt`:
 - Overall table: contains metrics for all the data points.
 - Refusal table: contains metrics for data points that were detected to be refusal responses.
 - Non-refusal table: contains metrics for data points that were detected to be non-refusal responses.
@@ -230,6 +230,13 @@ approach and still quite effective to get a rough estimate.
 
 
 #### Test Metrics (Using Threshold Value 0.65) (from `results/final_clf_test/final_clf_test_report.txt`):
+
+The following points be confusing in `results/final_clf_tuning/final_clf_test_report.txt`:
+- The metric names ending in "all" or "identified" depends on whether we predicted "unknown"
+  for the LLM or not. Thus, the LLM family and branch predictions does not directly depend
+  on the threshold value and whether we predicted "unknown" or not.
+- However, if a metric name has "identified", it still means that the metric is computed
+  from identified data points.
 
 ##### Non-Held-Out Metrics
 
@@ -280,6 +287,13 @@ For confusion matrix plots and a more detailed report, check `results/final_clf_
   that LLMs mostly have the most similar responses to other LLMs in the same family.
 
 ![Inter-LLM Cosine Similarity Heatmap](results/library_data_analysis/inter_llm_heatmap_overall.png)
+
+Insights from the Cosine Similarity Heatmap Above:
+- A brighter color (more green and yellow) indicates more similarity.
+- LLM labels for both axes have the same order.
+- The heatmap has square blocks of lighter color along the diagonal. This implies that LLMs are 
+  generally the most similar to other LLMs in the same family.
+
 
 ### Dendrogram of LLM Clustering
 - Dendrogram is a type of diagram used to illustrate the arrangement of clusters produced by 
