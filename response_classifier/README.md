@@ -1,6 +1,11 @@
 # LLM Response Classifier
 
-This repository contains code for building and evaluating a classifier that identifies unknown Large Language Models (LLMs) based on their responses to specific user prompts. The classifier compares responses from an unknown LLM against a library of known LLMs using techniques like word frequency vectors (e.g., TF-IDF) or embedding vectors. It supports abstention (predicting "unknown") via confidence thresholding for out-of-distribution detection.
+This repository contains code for building and evaluating a classifier that identifies 
+unknown Large Language Models (LLMs) based on their responses to specific user prompts. 
+The classifier compares responses from an unknown LLM against a library of known LLMs 
+using techniques like word frequency vectors (e.g., TF-IDF) or embedding vectors. 
+It supports abstention (predicting "unknown") via thresholding (on the cosine similarity 
+value) for out-of-distribution detection.
 
 The project progresses through phases:
 1. **Base Dataset Collection and Model Selection**: Collect responses for user prompts at varying temperatures and select the best classifier method via cross-validation.
@@ -8,22 +13,21 @@ The project progresses through phases:
 3. **Final Classifier with Threshold Tuning**: Use a refined dataset to tune and evaluate a production-ready classifier with OOD detection.
 
 Key findings:
-- Best classifier: TF-IDF trigram with cosine similarity (achieves >95% top-1 accuracy on base data).
-- Best user prompt: "Invent a new taste unknown to humans ... Speak like a professor and only ..." (most discriminative).
-- Optimal threshold: 0.65 (balances accuracy and OOD detection; see tuning results below).
+- **Best classifier**: TF-IDF trigram with cosine similarity (achieves >95% top-1 accuracy on base data).
+- **Best user prompt**: "Invent a new taste unknown to humans ... Speak like a professor and only ..." (most discriminative).
+- **Optimal threshold**: 0.65 (balances accuracy and OOD detection; see tuning results below).
 - **Refusal Analysis**: Overall refusal rate 10.83%. Highest in legal/tech support prompts. Meta and Google models refuse more (up to 36%).
-- **Inter-LLM Similarities**: LLMs from the same family (e.g., Meta's Llama models) show high cosine similarities, especially at higher temperatures. Distinct clusters emerge, with Qwen models forming one group, Meta models another, and others more dispersed.
+- **Inter-LLM Similarities**: LLMs from the same family (e.g., Meta's Llama models) show high cosine similarities. Distinct clusters emerge, with Meta and Google models forming their own groups, and others more dispersed.
 - **Intra-LLM Dispersion**: Dispersion decreases with higher temperatures, indicating more consistent responses. For example, Qwen_Qwen3-14B has the lowest overall dispersion (mean cosine to centroid: 0.448).
-- **Temperature Impact**: Lower temperatures lead to higher deviation from overall behavior (mean diff: 0.14 for low vs. 0.03 for high).
-- **Classifier Performance**: Using TF-IDF trigram with cosine similarity, top-1 accuracy on non-held-out test set is 0.92 (identified), with 30% unknown rate. On held-out, family accuracy is 1.0, branch 0.33 at threshold 0.65.
-- **System Prompt Robustness**: Classifiers are robust, but "best-of-n" neutralization reduces accuracy most (avg 0.11).
+- **Classifier Performance**: Using TF-IDF trigram with cosine similarity, top-1 accuracy on non-held-out test set is 0.92 (identified), with 30% unknown rate. On held-out, family accuracy is 1.0, branch accuracy is 0.33 at threshold 0.65.
+- **System Prompt Robustness**: Prompt injection techniques and other system prompt neutralization technique does not improve prediction accuracy.
 
 ## Repository Structure
 
 ```
 .
 ├── classifier_model_scripts/     # Core scripts for data processing, splitting, evaluation, and analysis
-├── configs/                      # Configuration files (e.g., set of LLMs, user prompts, system prompts, neutralization techniques, temperature bins)
+├── configs/                      # Configuration files (e.g., set of LLMs, user prompts, etc)
 ├── data/                         # Raw and processed datasets, splits
 ├── data_collection_scripts/      # Scripts for collecting LLM response data
 ├── README.md                     # This file
@@ -33,8 +37,8 @@ Key findings:
 ## Setup and Installation
 
 ### Prerequisites
-- Conda
-- DeepInfra API Key: Create a `.env` file in the root of response_classifier with `DEEPINFRA_API_KEY=your_key_here`.
+- Conda must be installed on your machine
+- DeepInfra API Key: Create a file named `.env` in the root of response_classifier with the content `DEEPINFRA_API_KEY=your_key_here`.
 
 ### Environment Setup
 1. Clone the repo: 
@@ -96,7 +100,7 @@ Hence, we suggest adding funds to your Deepinfra account before starting data co
 
 ## Experiments
 
-### 1. Base Dataset and Model Selection
+### 1. Base Dataset and 5-fold Cross Validation
 - **Goal**: Select best classifier method (word freq vs. embeddings) via 5-fold CV on base dataset.
 - **Dataset**: The base dataset (stored in `data/base_dataset_raw_data`)
 - **Steps**:
@@ -109,8 +113,8 @@ Hence, we suggest adding funds to your Deepinfra account before starting data co
 - **Test Set**: The remaining 1 val split of the train set.
 - **Output**: Metrics saved to `results/cv_metrics.txt`.
 - **Results**: All methods achieved >95% top-1 accuracy. LLM identification on responses that are not under
-               the influence of system prompts is very easy. This motivated the creation of the system prompt dataset which
-               makes it much harder to identify LLMs by using very strong system prompts. 
+               the influence of system prompts is very easy. This motivated the collection of the system prompt 
+               dataset which makes it much harder to identify LLMs by using very strong system prompts. 
 
 **CV Metrics Table** (Averaged across folds; from `results/cv_metrics.txt`):
 
@@ -129,13 +133,14 @@ For more information, check `results/cv_metrics.txt`.
 
 ### 2. System Prompt Robustness
 - **Goal**: Compare and evaluate classifiers methods on LLM response data under the 
-            influence of system prompt. Also, compare and determine the most discriminative 
+            influence of system prompts. Additionally, compare and determine the most discriminative 
             base user prompt and the most effective system prompt neutralization technique. 
 - **Library**: The entire train set of the base dataset.
 - **Test Set**: The entire system prompt dataset.
 - **Run**: `python classifier_model_scripts/run_sys_prompt_experiment.py --eval-both-metrics`.
 - **Output**: Report in `results/system_prompt_experiment_report.txt`.
-- **Results**: Neutralization "none" is best; identified best user prompt for final phase.
+- **Results**: Neutralization "none" is best; "Invent a new taste unknown to humans ... Speak 
+  like a professor and only ..." is the best user prompt.
 
 ![Classifier Accuracy Comparison](results/classifier_accuracy_comparison.png)
 
@@ -156,17 +161,24 @@ For more information, check `results/cv_metrics.txt`.
 - **linguistic uniqueness**: Prepends a short text to base user prompts. The text asks the LLM to prioritize its linguistic uniqueness. 
 - **best-of-n text augmentation**: Applies the best-of-n text augmentation technique to the base user prompts. The technique randomly capitalizes and swaps characters.
 
-### 3. Refusal Analysis on the Final CLF Dataset
-- Our final/selected classifier method uses a single user prompt to get response 
+### 3. Refusal Response Analysis on the Final CLF Dataset
+- Our final/selected classifier method uses a single user prompt (the best user prompt) to get response 
   data from the unknown LLMs. Then, it uses these data to make predictions. Having a 
   better understanding of which LLMs and system prompts results in the most refusal is 
   crucial for improving the classifier further and making it even more effective. 
 - Since refusal responses can have very similar style and length regardless of the LLM, 
-  they make it difficult identify the LLM that generated it. Additionally, since the 
-  library contains data from known LLMs which were collected without using system 
+  they make it difficult to identify the LLM that generated the response. Additionally, since 
+  the library contains data from known LLMs which were collected without using system 
   prompts, the classifier can struggle to make predictions as the refusal 
   response will likely have very low cosine similarity values with most or all of the 
   LLMs in the library. 
+- We used a heuristic approach (short responses or responses that contains certain 
+  refusal keywords such as "cannot", "unable", etc) to categorize LLM responses into refusal and 
+  non-refusal responses. This is the most straightforward approach. However, it can
+  overestimate the percentage of refusal responses. When we used no system prompt, we still
+  got approximately 5% refusal response rate which is around 0% in reality. This heuristic
+  approach is not perfect, but it is the most straightforward approach and still effective 
+  to get a rough estimate.
 - **Run**: `python classifier_model_scripts/analyze_final_clf_dataset_refusal.py`.
 - **Output**: saved to `results/final_clf_dataset_analysis/final_clf_refusal_analysis.txt`.
 - **Results**: Overall refusal rate ~10%; varies by LLM/family.
@@ -193,7 +205,7 @@ For more information, check `results/cv_metrics.txt`.
   3. Search for optimal threshold: `python classifier_model_scripts/run_final_clf_experiment.py --action tune`.
   4. Evaluate classifier on the 2 test sets: `python classifier_model_scripts/run_final_clf_experiment.py --action evaluate --threshold 0.65`.
 - **Output**: Reports/plots saved to `results/final_clf_tuning/` and `results/final_clf_test/`.
-- **Results**: Optimal threshold ~0.65. High in-distribution accuracy with good OOD detection accuarcy.
+- **Results**: Optimal threshold ~0.65. High in-distribution accuracy with good OOD detection accuracy.
 
 #### Tuning Metrics
 
@@ -213,7 +225,7 @@ The following are the keywords in `results/final_clf_tuning/final_clf_tuning_rep
 Note that we used a heuristic approach (short responses or responses that contains certain 
 refusal keywords such as "cannot", "unable", etc) to categorize LLM responses in refusal 
 responses (LLMs refused to answer the user prompt) and non-refusal responses. The heuristic
-approach for refusal response categorization is not perfect but it is the most straightforward 
+approach for refusal response categorization is not perfect, but it is the most straightforward 
 approach and still quite effective to get a rough estimate.
 
 
@@ -270,12 +282,13 @@ For confusion matrix plots and a more detailed report, check `results/final_clf_
 ![Inter-LLM Cosine Similarity Heatmap](results/library_data_analysis/inter_llm_heatmap_overall.png)
 
 ### Dendrogram of LLM Clustering
-- Dendrograms are typically generated from hierarchical clustering algorithms. These 
-  algorithms start with each item as its own cluster and progressively merge the most 
-  similar ones until everything is in a single cluster.
+- Dendrogram is a type of diagram used to illustrate the arrangement of clusters produced by 
+  hierarchical clustering. These hierarchical clustering algorithms start with each item as its 
+  own cluster and progressively merge the most similar ones until everything is in a single cluster.
 - **Structure**:
   - **Leaves (Bottom)**: These are the individual items being clustered (e.g., LLMs in the plot below).
-  - **Y-Axis**: Quantifies dissimilarity. Lower values indicate closer (more similar) items/LLMs.
+  - **Y-Axis**: Quantifies dissimilarity. Lower values indicate closer (more similar) items/LLMs. In 
+    our case, we used 1 - cosine similarity as the dissimilarity metric. 
   - **X-Axis**: Lists the items/LLMs, often reordered to group similar ones together.
   - **Branches**: Horizontal lines connect items or clusters. The height of a branch (y-axis) 
     represents the "distance" or dissimilarity between the merged clusters. Shorter branches 
@@ -285,17 +298,17 @@ For confusion matrix plots and a more detailed report, check `results/final_clf_
 ![Dendrogram of LLM clustering](results/library_data_analysis/inter_llm_dendrogram_overall.png)
 
 Insights from the Dendrogram Above:
-- Orange Cluster (left): Meta's Llama models clusters closely here, showing family-level similarity. 
-- Mostly Qwen and DeepSeek models – these are highly similar, forming a tight group.
-- Green Cluster (middle): Almost all of the Mistral models, Microsoft models, and some Qwen 
-  models cluster within their family first and then cluster with other families. 
-- Red Cluster (right): Google models, some Qwen models, and Deepseek models cluster within 
-  their family first and then cluster with other families. There is a single Mistral model
-  that is also part of this cluster.
-- Family Clustering: Models from the same family (e.g., all Llama variants) cluster closely, reflecting
-  shared architectures or training data. This validates the project's inter-LLM similarity findings.
-- Distinct Groups: There are clear separations – e.g., Qwen/DeepSeek are isolated from Meta/Mistral, suggesting unique "fingerprints" in their responses.
-- Dissimilarity within Family: Qwen models are spread widely across many different branches unlike most of the LLM families. 
-- Overall Structure: The tree merges into one big cluster at high distance (~1.5), meaning all LLMs have some baseline similarity, but sub-clusters reveal nuances.
+- Orange Cluster: Meta's Llama models clusters closely here, showing family-level similarity.
+- Green Cluster: A pair of Qwen and Mistral model clusters here.  
+- Red Cluster: Two Microsoft models cluster closely, three Qwen2.5 models cluster closely, and
+  the remaining Mistral models all clusters. Then, these three clusters merges to create a larger cluster.
+- Purple Cluster: The three Qwen3 models clusters and the two Deepseek models clusters. Then, they merge to 
+  create a larger cluster.
+- Brown Cluster: The three Google models clusters here. 
+- Note that "google_gemma-3-4b-it" does not cluster closely with any other model or group of models.
+- Family Clustering: Models from the same family (e.g., all Llama variants) generally cluster 
+  closely, reflecting shared architectures or training data. This validates the project's inter-LLM similarity findings.
+- Dissimilarity within Family: Qwen models are spread widely across many different branches (green, red, and 
+  purple branches) unlike most of the LLM families.
 
 For more plots and detailed reports, check `results/library_data_analysis/`.
