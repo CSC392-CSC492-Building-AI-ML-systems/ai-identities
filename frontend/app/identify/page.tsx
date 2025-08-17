@@ -137,7 +137,7 @@ export default function IdentifyPage() {
       {/* Show only results after upload */}
       {results && !uploading && (
         <>
-          <div className="mt-32 w-full max-w-2xl bg-[#2D2A5A] rounded-2xl p-10 shadow-lg">
+                     <div className="mt-32 w-full max-w-4xl bg-[#2D2A5A] rounded-2xl p-10 shadow-lg">
             <h2 className="text-4xl font-bold text-[#F3F3FF] mb-8 text-center">Identification Results</h2>
             <div className="space-y-8">
               {Object.entries(results).slice(0, 3).map(([name, percent]) => (
@@ -244,10 +244,13 @@ function AnimatedBar({ name, percent }: { name: string; percent: number }) {
     const b = Math.round(c1[2] + (c2[2] - c1[2]) * (p / 100));
     return `rgb(${r},${g},${b})`;
   }
+  
   const [displayPercent, setDisplayPercent] = React.useState(0);
+  
   React.useEffect(() => {
     const duration = 1000; // ms
     const startTime = performance.now();
+    
     function animate(now: number) {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
@@ -256,23 +259,42 @@ function AnimatedBar({ name, percent }: { name: string; percent: number }) {
         requestAnimationFrame(animate);
       }
     }
+    
     setDisplayPercent(0);
     requestAnimationFrame(animate);
   }, [percent]);
+  
   const barColor = percentToGradientColor(displayPercent);
+  
   return (
-    <div className="flex items-center gap-8">
-      <div className="w-40 text-[#F3F3FF] text-2xl font-bold capitalize">{name}</div>
-      <div className="flex-1 h-12 flex items-center min-w-[400px] max-w-[700px]">
-        <div className="w-full h-full flex items-center justify-center">
-          <div className="bg-[#2D2A5A] rounded-xl w-full flex items-center justify-between border-4 border-[#050a1f]" style={{ minWidth: '400px', maxWidth: '700px', height: '48px' }}>
-            <div className="w-full h-10 bg-[#050a1f] rounded-l-lg relative overflow-hidden border-4 border-[#050a1f]">
-              <div
-                className="h-full rounded-lg transition-all duration-1000 ease-out absolute top-0 left-0"
-                style={{ width: `${displayPercent}%`, background: barColor }}
-              ></div>
-            </div>
-            <span className="text-[#F3F3FF] text-2xl font-bold mx-2 w-16 min-w-[48px] flex items-center justify-center text-center">{displayPercent}%</span>
+         <div className="flex items-center gap-12 w-full">
+       {/* Model name */}
+       <div className="w-96 text-[#F3F3FF] text-lg font-semibold capitalize truncate">
+         {name}
+       </div>
+       
+       {/* Progress bar container */}
+       <div className="w-96 h-12 flex items-center">
+         <div className="w-full h-full flex items-center">
+           {/* Main bar container */}
+           <div className="bg-[#2D2A5A] rounded-xl w-full h-10 flex items-center relative overflow-hidden border-2 border-[#050a1f]">
+            {/* Background bar */}
+            <div className="absolute inset-0 bg-[#050a1f] rounded-lg"></div>
+            
+            {/* Progress fill */}
+            <div
+              className="h-full rounded-lg transition-all duration-1000 ease-out absolute top-0 left-0 z-10"
+              style={{ 
+                width: `${displayPercent}%`, 
+                background: barColor,
+                minWidth: displayPercent > 0 ? '4px' : '0px'
+              }}
+            ></div>
+            
+                         {/* Percentage text */}
+             <span className="text-[#F3F3FF] text-xl font-bold absolute right-0 z-20 bg-[#2D2A5A] px-3 rounded-r-lg h-full flex items-center">
+               {displayPercent}%
+             </span>
           </div>
         </div>
       </div>
