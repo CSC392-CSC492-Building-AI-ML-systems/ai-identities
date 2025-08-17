@@ -12,7 +12,7 @@ export default function WikiIframePage() {
 
   // Join the segments to reconstruct the full space + page
   const fullPath = slug.join('/');
-  const wikiUrl = `http://159.203.20.200:8080/bin/view/${fullPath}`;
+  const wikiUrl = `https://wiki.llm.test/bin/view/${fullPath}`;
 
   return (
     <main className="min-h-screen bg-[#050a1f] pt-20 flex flex-col items-center">

@@ -40,7 +40,7 @@ def get_dataset_config(dataset_type: str) -> tuple[Callable, Callable]:
     if dataset_type == 'base':
         group_key_func = lambda item: item['prompt']
         group_desc_func = lambda key: f"Prompt: {key[:35]}..."
-    else:  # 'system_prompt'
+    elif dataset_type == 'system_prompt':
         group_key_func = lambda item: (
             item['prompt'],
             item['system_prompt'],
@@ -51,6 +51,18 @@ def get_dataset_config(dataset_type: str) -> tuple[Callable, Callable]:
             f"System: {key[1][:10]}... | "
             f"Technique: {key[2]}"
         )
+    elif dataset_type == 'final_clf':
+        group_key_func = lambda item: (
+            item['prompt'],
+            item['system_prompt']
+        )
+        group_desc_func = lambda key: (
+            f"Prompt: {key[0][:20]}... | "
+            f"System: {key[1][:10]}..."
+        )
+    else:
+        raise ValueError(f"Unknown dataset_type: {dataset_type}")
+
     return group_key_func, group_desc_func
 
 
@@ -64,6 +76,9 @@ def load_all_reference_sets(config_dir: str, dataset_type: str) -> dict[str, set
     if dataset_type == 'system_prompt':
         sets['system_prompts'] = load_reference_set(os.path.join(config_dir, 'system_prompt_set.json'))
         sets['techniques'] = load_reference_set(os.path.join(config_dir, 'neutralization_techniques.json'))
+    elif dataset_type == 'final_clf':
+        sets['user_prompts'] = load_reference_set(os.path.join(config_dir, 'best_user_prompt.json'))
+        sets['system_prompts'] = load_reference_set(os.path.join(config_dir, 'final_clf_system_prompt_set.json'))
     return sets
 
 
@@ -103,6 +118,8 @@ def process_model_data(file_path: str, group_key_func: Callable, dataset_type: s
         if dataset_type == 'system_prompt':
             found_sets['system_prompts'].add(item['system_prompt'])
             found_sets['techniques'].add(item['neutralization_technique'])
+        elif dataset_type == 'final_clf':
+            found_sets['system_prompts'].add(item['system_prompt'])
 
     return {
         "model_name": model_name,
@@ -152,6 +169,17 @@ def generate_set_validation_report(found: dict, ref: dict, dataset_type: str) ->
             if missing: report += f"    Examples: {', '.join(missing[:3])}\n"
             report += f"  Extra techniques: {len(extra)}\n"
             if extra: report += f"    Examples: {', '.join(extra[:3])}\n"
+
+    if dataset_type == 'final_clf':
+        match = (found['system_prompts'] == ref['system_prompts'])
+        report += f"- System prompts match reference: {match}\n"
+        if not match:
+            missing = sorted(ref['system_prompts'] - found['system_prompts'])
+            extra = sorted(found['system_prompts'] - ref['system_prompts'])
+            report += f"  Missing system prompts: {len(missing)}\n"
+            if missing: report += f"    Examples: {', '.join(p[:20] + '...' for p in missing[:3])}\n"
+            report += f"  Extra system prompts: {len(extra)}\n"
+            if extra: report += f"    Examples: {', '.join(e[:20] + '...' for e in extra[:3])}\n"
 
     return report
 
@@ -250,8 +278,10 @@ def create_sanity_check_report(directory: str, output_file: str, temp_list: list
         )
         if dataset_type == 'base':
             report_section += f"Number of unique user prompts: {num_groups}\n"
-        else:
+        elif dataset_type == 'system_prompt':
             report_section += f"Number of unique (user prompt, system prompt, neutralization technique) combinations: {num_groups}\n"
+        elif dataset_type == 'final_clf':
+            report_section += f"Number of unique (user prompt, system prompt) combinations: {num_groups}\n"
         report_section += f"All groups have complete temperatures: {all_temps_complete}\n\n"
 
         # Reference set validation report
@@ -263,6 +293,29 @@ def create_sanity_check_report(directory: str, output_file: str, temp_list: list
             report_section += generate_group_completeness_report(
                 processed_data['group_counts'], reference_sets, group_desc_func
             )
+        elif dataset_type == 'final_clf':
+            expected_groups = {
+                (user_prompt, system_prompt)
+                for user_prompt in reference_sets['user_prompts']
+                for system_prompt in reference_sets['system_prompts']
+            }
+            found_groups = set(processed_data['group_counts'].keys())
+            match = (found_groups == expected_groups)
+            report_section += f"- Group combinations complete: {match}\n"
+            if not match:
+                missing = sorted(list(expected_groups - found_groups), key=str)
+                extra = sorted(list(found_groups - expected_groups), key=str)
+                report_section += f"  Missing groups: {len(missing)}\n"
+                if missing:
+                    report_section += "    Examples:\n"
+                    for group in missing[
+                                 :3]: report_section += f"      - {group_desc_func(group)}\n"
+                report_section += f"  Extra groups: {len(extra)}\n"
+                if extra:
+                    report_section += "    Examples:\n"
+                    for group in extra[
+                                 :3]: report_section += f"      - {group_desc_func(group)}\n"
+
 
         # Detailed analysis of problematic groups
         analysis_report, totals = generate_group_analysis_report(processed_data,
@@ -291,8 +344,8 @@ def main():
     Main function to parse arguments and run validation.
     """
     parser = argparse.ArgumentParser(description='Validate LLM response datasets')
-    parser.add_argument('--dataset-type', choices=['base', 'system_prompt'],
-                        required=True, help='Type of dataset to validate (base or system_prompt)')
+    parser.add_argument('--dataset-type', choices=['base', 'system_prompt', 'final_clf'],
+                        required=True, help='Type of dataset to validate (base, system_prompt, or final_clf)')
     args = parser.parse_args()
 
     # Load configuration
@@ -304,10 +357,14 @@ def main():
         directory = '../data/base_dataset_raw_data/'
         bins_config = config['temp_bins']
         output_file = '../data/base_dataset_sanity_report.txt'
-    else:  # system_prompt
+    elif args.dataset_type == 'system_prompt':
         directory = '../data/system_prompt_dataset_raw_data/'
         bins_config = config['system_prompt_dataset_temp_bins']
         output_file = '../data/system_prompt_dataset_sanity_report.txt'
+    elif args.dataset_type == 'final_clf':
+        directory = '../data/final_clf_dataset_raw_data/'
+        bins_config = config['final_clf_dataset_temp_bins']
+        output_file = '../data/final_clf_dataset_sanity_report.txt'
 
     # Generate temperature list
     temp_list = generate_temperature_list(bins_config)

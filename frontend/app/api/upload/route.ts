@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 // import { getDatabase } from "@/lib/mongodb"; // <-- Commented out
-import { spawn } from "child_process";
-import path from "path";
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,67 +26,84 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid JSON format" }, { status: 400 });
     }
 
-    // --- MongoDB code commented out ---
-    // const db = await getDatabase();
-    // const collection = db.collection("uploaded_files");
-    // const document = {
-    //   filename: file.name,
-    //   uploadedAt: new Date(),
-    //   size: file.size,
-    //   content: jsonData,
-    //   metadata: {
-    //     originalName: file.name,
-    //     mimeType: file.type,
-    //   },
-    // };
-    // const result = await collection.insertOne(document);
-    /*
-    // --- Call the Python algorithm ---
-    const scriptPath = path.join(process.cwd(), "..", "algorithm.py");
-    const py = spawn("python", [scriptPath]);
-    */
-    const id_server = 'http://localhost:8000/identify';
-    const response = await fetch(id_server, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(jsonData)
-    });
-    let output = "";
-    if (!response.ok) {
-        console.error("Python Server Error");
+
+    // Extract responses from the JSON data
+    // The classifier expects a list of response strings
+    let responses: string[] = [];
+    
+    if (Array.isArray(jsonData)) {
+      // If it's an array, assume each item is a response
+      responses = jsonData.map(item => 
+        typeof item === 'string' ? item : JSON.stringify(item)
+      );
+    } else if (jsonData.responses && Array.isArray(jsonData.responses)) {
+      // If it has a responses field
+      responses = jsonData.responses.map((item: any) => 
+        typeof item === 'string' ? item : JSON.stringify(item)
+      );
+    } else if (jsonData.messages && Array.isArray(jsonData.messages)) {
+      // If it has a messages field (common in chat formats)
+      responses = jsonData.messages
+        .filter((msg: any) => msg.role === 'assistant' || msg.role === 'model')
+        .map((msg: any) => msg.content || JSON.stringify(msg));
     } else {
-        output = await response.text();
+      // Fallback: try to extract any text content
+      responses = [JSON.stringify(jsonData)];
     }
-    /*
-    // Log any errors from the Python script
-    py.stderr.on("data", (data) => {
-    console.error("PYTHON ERROR:", data.toString());
+
+    if (responses.length === 0) {
+      return NextResponse.json({ error: "No valid responses found in the JSON file" }, { status: 400 });
+    }
+
+    // Call the new FastAPI classifier service
+    const classifierUrl = process.env.CLASSIFIER_SERVICE_URL || 'http://localhost:8000';
+    const response = await fetch(`${classifierUrl}/identify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(responses)
     });
 
-    py.stdin.write(fileContent);
-    py.stdin.end();
-
-    let output = "";
-    for await (const chunk of py.stdout) {
-      output += chunk;
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Classifier service error:', errorText);
+      return NextResponse.json({ 
+        error: "Classifier service error", 
+        details: errorText 
+      }, { status: 500 });
     }
-    */
-    let analysis;
-    try {
-      analysis = JSON.parse(output);
-    } catch {
-      console.log(response);
-      return NextResponse.json({ error: "Algorithm error" }, { status: 500 });
+
+
+    const classifierResult = await response.json();
+
+    // Transform the classifier result to match the expected frontend format
+    let analysis: { [key: string]: number } = {};
+    
+    if (classifierResult.prediction && classifierResult.prediction[0] !== "unknown") {
+      // Convert the prediction scores to percentages
+      const totalScore = classifierResult.prediction.reduce((sum: number, [_, score]: [string, number]) => sum + score, 0);
+      
+      classifierResult.prediction.forEach(([model, score]: [string, number]) => {
+        // Convert score to percentage and clean up model name
+        const modelName = model.replace(/_/g, ' ').replace(/-/g, ' ').toLowerCase();
+        const percentage = Math.round((score / totalScore) * 100);
+        analysis[modelName] = percentage;
+      });
+    } else {
+      // If unknown, return a default response
+      analysis = {
+        "unknown": 100
+      };
     }
 
     console.log(analysis)
     return NextResponse.json(
       {
         message: "File uploaded successfully",
-        // fileId: result.insertedId, // commented out
         filename: file.name,
-        // uploadedAt: document.uploadedAt, // commented out
-        analysis, // <-- returned from Python
+        analysis,
+        raw_classifier_result: classifierResult, // Include raw result for debugging
       },
       { status: 200 }
     );

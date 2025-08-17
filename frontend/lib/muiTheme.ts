@@ -22,7 +22,7 @@ const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundColor: '#1C1B2A',
+          backgroundColor: '#050a1f',
           color: '#F3F3FF',
         },
       },
@@ -38,7 +38,7 @@ const theme = createTheme({
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          backgroundColor: '#1C1B2A',
+          backgroundColor: '#050a1f',
           color: '#F3F3FF',
           borderColor: '#F3F3FF',
         },

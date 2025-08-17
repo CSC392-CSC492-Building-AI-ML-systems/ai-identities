@@ -40,3 +40,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#proxy files
+/dev-proxy/certs/*.key
+/dev-proxy/certs/*.crt
+/dev-proxy/bin/*

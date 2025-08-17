@@ -24,10 +24,12 @@ def load_fitted_vectorizer(method_name: str, split_name: str = 'train'):
 
 
 def process_word_freq(data: dict[str, pd.DataFrame], config: dict,
-                      output_path: str, fitted_vectorizer=None) -> tuple[dict[str, pd.DataFrame], object]:
+                      output_path: str, fitted_vectorizer=None,
+                      drop_response: bool = True) -> tuple[dict[str, pd.DataFrame], object]:
     """
     Convert responses to word freq vectors (e.g., BoW or TF-IDF) and return processed dict and vectorizer.
     If output_path provided, also saves. If fitted_vectorizer provided, use it (skip fit).
+    If drop_response is False, retain the 'response' column in the output DataFrames.
     """
     vectorizer_str = config['vectorizer']
     vectorizer_class = VECTORIZER_MAP.get(vectorizer_str)
@@ -52,12 +54,13 @@ def process_word_freq(data: dict[str, pd.DataFrame], config: dict,
     if output_path:
         os.makedirs(output_path, exist_ok=True)
 
-    for llm_name, df in data.items():
+    for llm_name, df in tqdm(data.items(), desc="Vectorizing LLM responses"):
         sparse_vectors = vectorizer.transform(df['response'])
         response_vectors = [sparse_vectors[i] for i in range(sparse_vectors.shape[0])]
         processed_df = df.copy()
         processed_df['response_vector'] = response_vectors  # list of csr_matrix
-        processed_df = processed_df.drop(columns=['response'])
+        if drop_response:
+            processed_df = processed_df.drop(columns=['response'])
         processed_data[llm_name] = processed_df
 
         if output_path:
@@ -131,7 +134,7 @@ def load_processed(clf_method_name: str, split_name: str) -> dict[str, pd.DataFr
 
     data = {}
     for file in os.listdir(input_path):
-        if file.endswith('.pkl') and file != 'vectorizer.pkl':
+        if file.endswith('.pkl') and file != 'vectorizer.pkl' and file != 'library_averages.pkl':
             llm_name = file.replace('.pkl', '')
             with open(os.path.join(input_path, file), 'rb') as f:
                 df = pickle.load(f)

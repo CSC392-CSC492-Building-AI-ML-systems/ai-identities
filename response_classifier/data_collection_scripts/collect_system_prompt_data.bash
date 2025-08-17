@@ -22,4 +22,5 @@ python collect_data.py \
     --low-bin-num 2 \
     --med-bin-num 4 \
     --high-bin-num 8 \
+    --force \
     "$@"

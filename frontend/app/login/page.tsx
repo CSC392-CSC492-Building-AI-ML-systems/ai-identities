@@ -102,11 +102,16 @@ export default function LoginPage() {
             type="submit"
             className="w-full py-2 rounded font-semibold transition-colors"
             style={{ background: '#9290C3', color: '#F3F3FF' }}
-            onMouseOver={e => e.currentTarget.style.background = '#535C91'}
-            onMouseOut={e => e.currentTarget.style.background = '#9290C3'}
+            onMouseEnter={e => (e.currentTarget.style.background = '#535C91')}
+            onFocus={e => (e.currentTarget.style.background = '#535C91')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#9290C3')}
+            onBlur={e => (e.currentTarget.style.background = '#9290C3')}
         >
             Log In
         </button>
+        {loading ? (
+          <div style={{ color: '#6d6badff' }}>Loading...</div>
+        ) : (<span></span>)}
         {error && <p className="mt-4 text-center text-sm" style={{ color: '#FF6B6B' }}>{error}</p>}
         </form>
     </div>

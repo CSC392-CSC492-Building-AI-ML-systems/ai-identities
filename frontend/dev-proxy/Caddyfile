@@ -1,0 +1,18 @@
+# Optional convenience: redirect http → https
+http://app.llm.test, http://wiki.llm.test {
+  redir https://{host}{uri}
+}
+
+# Next.js dev app
+https://app.llm.test {
+  tls ./certs/app.crt ./certs/app.key
+  reverse_proxy http://localhost:3000
+}
+
+# XWiki (remote IP) via HTTPS front
+https://wiki.llm.test {
+  tls ./certs/wiki.crt ./certs/wiki.key
+  # Helps if XWiki emits absolute http:// links
+  header Content-Security-Policy "upgrade-insecure-requests"
+  reverse_proxy http://159.203.20.200:8080
+}

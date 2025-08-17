@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  classifier-service:
+    build:
+      context: ./classifier_service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./classifier_service/resources:/app/resources:ro
+    environment:
+      - CLASSIFIER_HOST=0.0.0.0
+      - CLASSIFIER_PORT=8000
+      - CLASSIFIER_RELOAD=false
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - ai-identities-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - CLASSIFIER_SERVICE_URL=http://classifier-service:8000
+      - NODE_ENV=production
+    depends_on:
+      classifier-service:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - ai-identities-network
+
+networks:
+  ai-identities-network:
+    driver: bridge
