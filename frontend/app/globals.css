@@ -21,3 +21,12 @@ body {
 html, body, main {
   scroll-behavior: smooth !important;
 }
+
+/* Prevent layout shift when scrollbar appears/disappears */
+html {
+  scrollbar-gutter: stable;
+}
+
+body {
+  overflow-x: hidden;
+}

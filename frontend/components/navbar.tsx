@@ -62,7 +62,7 @@ export default function Navbar() {
         </div>
         <div className="flex items-center gap-10 justify-end">
           <Link href="/identify" className="relative group text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2 flex items-center">
-            Identification{/*
+            Identify{/*
             */}<span className="pointer-events-none absolute left-0 bottom-[-9px] h-[0.2rem] rounded-full bg-[#9290C3] transition-all duration-300 max-w-0 group-hover:max-w-full w-full"></span>
           </Link>
           <Link href="/wiki" className="relative group text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 text-lg font-normal px-2 flex items-center">
