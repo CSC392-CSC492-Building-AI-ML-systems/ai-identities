@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid JSON format" }, { status: 400 });
     }
 
+
     // Extract responses from the JSON data
     // The classifier expects a list of response strings
     let responses: string[] = [];
@@ -56,12 +57,12 @@ export async function POST(req: NextRequest) {
 
     // Call the new FastAPI classifier service
     const classifierUrl = process.env.CLASSIFIER_SERVICE_URL || 'http://localhost:8000';
-    const response = await fetch(`${classifierUrl}/predict`, {
+    const response = await fetch(`${classifierUrl}/identify`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(responses),
+      body: JSON.stringify(responses)
     });
 
     if (!response.ok) {
@@ -72,6 +73,7 @@ export async function POST(req: NextRequest) {
         details: errorText 
       }, { status: 500 });
     }
+
 
     const classifierResult = await response.json();
 
@@ -95,6 +97,7 @@ export async function POST(req: NextRequest) {
       };
     }
 
+    console.log(analysis)
     return NextResponse.json(
       {
         message: "File uploaded successfully",

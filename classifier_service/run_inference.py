@@ -6,13 +6,15 @@ from typing import Callable
 import numpy as np
 from sklearn.preprocessing import normalize
 from sklearn.metrics.pairwise import cosine_similarity
+import re
 
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-ASSETS_DIR = os.path.join(SCRIPT_DIR, 'resources')
-VECTORIZER_PATH = os.path.join(ASSETS_DIR, 'vectorizer.pkl')
-LIBRARY_AVERAGES_PATH = os.path.join(ASSETS_DIR, 'library_averages.pkl')
-CONFIDENCE_THRESHOLD = 0.40  # Placeholder until the optimal threshold is found
+RESOURCES_DIR = os.path.join(SCRIPT_DIR, 'resources')
+VECTORIZER_PATH = os.path.join(RESOURCES_DIR, 'vectorizer.pkl')
+LIBRARY_AVERAGES_PATH = os.path.join(RESOURCES_DIR, 'library_averages.pkl')
+LLM_SET_PATH = os.path.join(RESOURCES_DIR, 'llm_set.json')
+CONFIDENCE_THRESHOLD = 0.65
 
 
 def load_inference_assets():
@@ -22,20 +24,34 @@ def load_inference_assets():
     if not os.path.exists(VECTORIZER_PATH) or not os.path.exists(LIBRARY_AVERAGES_PATH):
         raise FileNotFoundError(
             "Required resources not found. Please run 'precompute_library.py' first and ensure "
-            f"'vectorizer.pkl' is in the '{ASSETS_DIR}' directory."
+            f"'vectorizer.pkl' is in the '{RESOURCES_DIR}' directory."
         )
+
     with open(VECTORIZER_PATH, 'rb') as f:
         try:
             vectorizer = pickle.load(f)
         except Exception as e:
             raise RuntimeError(f"Failed to load vectorizer: {e}")
+
     with open(LIBRARY_AVERAGES_PATH, 'rb') as f:
         try:
             library_averages = pickle.load(f)
         except Exception as e:
             raise RuntimeError(f"Failed to load library averages: {e}")
 
-    return vectorizer, library_averages
+    try:
+        with open(LLM_SET_PATH, 'r') as f:
+            llm_set = json.load(f)
+
+        llm_family_map = dict()
+        for item in llm_set:
+            llm_name = item['model_name']
+            llm_name = llm_name.replace('/', '_', 1)
+            llm_family_map[llm_name] = item['model_family']
+    except Exception as e:
+        raise RuntimeError(f"Failed to load the set of LLMs: {e}")
+
+    return vectorizer, library_averages, llm_family_map
 
 
 def _as_ndarray(x) -> np.ndarray:
@@ -105,6 +121,74 @@ def predict_with_scores(unknown_responses: list[str],
     return top_k_predictions, all_predictions
 
 
+def remove_cot_block(response: str, is_special_model: bool = False) -> str:
+    """
+    Robustly remove any <think>...</think> blocks from a response string, handling
+    all positions (start/mid/end), nesting, and malformed/unpaired cases.
+    Preserves content in incomplete/malformed cases to avoid data loss.
+
+    :param response: Raw response string.
+    :param is_special_model: If True, treat as model that skips <think> but uses </think>.
+    :return: Cleaned response without CoT (never empty unless input was).
+    """
+    if not response:
+        return response
+
+    original = response
+
+    # Iterative removal to handle nesting and multiples
+    while True:
+        # Find and remove complete paired blocks (non-greedy, anywhere)
+        new_response = re.sub(r'<think>.*?</think>', '', response, flags=re.DOTALL)
+        if new_response == response:
+            break  # No more changes
+        response = new_response
+
+    # Handle unpaired/malformed after paired removal
+    # Unpaired <think>: Remove tag, keep content after
+    response = re.sub(r'<think>', '', response, flags=re.DOTALL)
+
+    # Unpaired </think>: Remove tag, keep content before/after
+    response = re.sub(r'</think>', '', response, flags=re.DOTALL)
+
+    # Special model handling (assumes no <think>, but </think> closes initial CoT)
+    if is_special_model:
+        # If no </think>, keep all (incomplete)
+        if '</think>' not in original:
+            response = original  # Override to preserve
+
+    response = response.strip()
+
+    # Fallback to original if somehow emptied (rare)
+    if not response:
+        return original
+
+    return response
+
+
+def preprocess_responses(responses: list[str]) -> list[str]:
+    """
+    Preprocess a list of responses by detecting special model behavior and optionally removing CoT blocks.
+    Returns cleaned responses and stats for debugging.
+
+    :param responses: List of raw response strings.
+    :return: List of cleaned response strings.
+    """
+    if not responses:
+        return responses
+
+    # Detect if this is a special model (never uses <think>, but uses </think> at least once)
+    uses_think = any('<think>' in resp for resp in responses)
+    uses_close = any('</think>' in resp for resp in responses)
+    is_special = not uses_think and uses_close
+
+    cleaned_responses = []
+    for original_response in responses:
+        cleaned_response = remove_cot_block(original_response, is_special)
+        cleaned_responses.append(cleaned_response)
+
+    return cleaned_responses
+
 
 def identify_llm(responses: list[str]) -> dict:
     """
@@ -113,9 +197,10 @@ def identify_llm(responses: list[str]) -> dict:
     :param responses: A list of strings, where each string is a response from the unknown LLM.
     :return: A dictionary containing the prediction results.
     """
-    vectorizer, library_averages = load_inference_assets()
+    cleaned_responses = preprocess_responses(responses)
+    vectorizer, library_averages, llm_family_map = load_inference_assets()
     top_k_preds, all_scores = predict_with_scores(
-        unknown_responses=responses,
+        unknown_responses=cleaned_responses,
         library_prompt_averages=library_averages,
         vectorizer=vectorizer,
         metric=cosine_similarity,
@@ -129,8 +214,15 @@ def identify_llm(responses: list[str]) -> dict:
             "all_scores": all_scores
         }
     else:
+        top3_llm_families = []
+        for llm, _ in top_k_preds:
+            llm_family = llm_family_map[llm]
+            if llm_family not in top3_llm_families and len(top3_llm_families) < 3:
+                top3_llm_families.append(llm_family)
+
         prediction_result = {
             "prediction": ["unknown"],
+            "top3_llm_families": top3_llm_families,
             "all_scores": all_scores
         }
 
