@@ -27,7 +27,7 @@ export default function RootLayout({
       <head>
       </head>
       <body
-        className={`${notoSans.variable} antialiased bg-[#070F2B] text-[#F3F3FF] overflow-hidden`} style={{ margin: 0, padding: 0 }}
+        className={`${notoSans.variable} antialiased bg-[#070F2B] text-[#F3F3FF] overflow-x-hidden`} style={{ margin: 0, padding: 0 }}
       >
         <Navbar />
         {children}

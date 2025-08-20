@@ -48,15 +48,15 @@ const MODES = {
     className: 'XWiki.LLMClass',
     nameProp: 'llms',
     url: 'XWiki/LLMClass',
-    tagGroups: ["inputModalities", "outputModalities", "miscTags", "languages"] ,
-    textFilterFields: ["predecessor", "successor", "modelSeries", "creators", "baseModel"] 
+    tagGroups: ["inputModalities", "outputModalities", "miscTags", "languages"],
+    textFilterFields: ["predecessor", "successor", "modelSeries", "creators", "baseModel"]
   },
   llm_apps: {
     label: 'LLM Apps Pages',
     className: 'XWiki.LLMAppClass',
     nameProp: 'llm apps',
     url: 'XWiki/LLMAppClass',
-    tagGroups: ["uses"] ,
+    tagGroups: ["uses"],
     textFilterFields: ["creators", "llmsUsed"]
   },
 };
@@ -128,23 +128,23 @@ export default function HomePage() {
   console.log(curWikiPage)
 
 
-  const searchHelper = (searchTerm: string, fieldName: string) =>{
-  if(searchTerm.includes('\"')){
-    console.log(searchTerm)
-    searchTerm = searchTerm.slice(1,-1)
-    return `(lower(obj.${fieldName}) LIKE lower('%|${searchTerm}|%') OR lower(obj.${fieldName}) LIKE lower('%|${searchTerm}') OR lower(obj.${fieldName}) LIKE lower('${searchTerm}|%') OR lower(obj.${fieldName}) LIKE lower('${searchTerm}'))`
-  } else{
-    if(MODES[mode].textFilterFields.includes(fieldName)){
-      return `(lower(obj.${fieldName}) LIKE lower('%|${searchTerm}%') OR lower(obj.${fieldName}) LIKE lower('${searchTerm}%'))`
-    } else{
-      return `lower(obj.${fieldName}) LIKE lower('%${searchTerm}%')`
-    }
+  const searchHelper = (searchTerm: string, fieldName: string) => {
+    if (searchTerm.includes('\"')) {
+      console.log(searchTerm)
+      searchTerm = searchTerm.slice(1, -1)
+      return `(lower(obj.${fieldName}) LIKE lower('%|${searchTerm}|%') OR lower(obj.${fieldName}) LIKE lower('%|${searchTerm}') OR lower(obj.${fieldName}) LIKE lower('${searchTerm}|%') OR lower(obj.${fieldName}) LIKE lower('${searchTerm}'))`
+    } else {
+      if (MODES[mode].textFilterFields.includes(fieldName)) {
+        return `(lower(obj.${fieldName}) LIKE lower('%|${searchTerm}%') OR lower(obj.${fieldName}) LIKE lower('${searchTerm}%'))`
+      } else {
+        return `lower(obj.${fieldName}) LIKE lower('%${searchTerm}%')`
+      }
 
+    }
   }
-}
 
   useEffect(() => {
-    async function test(){
+    async function test() {
       console.log(await (await fetch("https://wiki.llm.test/bin/view/XWiki/LLMClass")).text())
     }
     test()
@@ -195,7 +195,7 @@ export default function HomePage() {
         const grouped: { [key: string]: Set<string> } =
           Object.fromEntries(tagGroups.map(g => [g, new Set<string>()]));
 
-        let prettyNames: {[key: string]: string} = {}
+        let prettyNames: { [key: string]: string } = {}
 
         data.properties.forEach(result => {
           console.log(result)
@@ -247,13 +247,13 @@ export default function HomePage() {
 
     for (const i of Object.keys(selectedTags)) {
       if (selectedTags[i].length) {
-        queryArr.push(selectedTags[i].map((entry)=>{return searchHelper(entry, i)}).join(' AND '))
+        queryArr.push(selectedTags[i].map((entry) => { return searchHelper(entry, i) }).join(' AND '))
       }
     }
 
     for (const i of Object.keys(textFilterFields)) {
       if (textFilterFields[i]) {
-        queryArr.push(textFilterFields[i].split(",").map((entry)=>{return searchHelper(entry, i)}).join(' AND '))
+        queryArr.push(textFilterFields[i].split(",").map((entry) => { return searchHelper(entry, i) }).join(' AND '))
       }
     }
 
@@ -266,7 +266,7 @@ export default function HomePage() {
       queryArr.push(`obj.releaseDate < '${dateFilter.endDate}'`)
     }
     query += ' where ' + queryArr.join(' AND ')
-    
+
 
     console.log(query)
 
@@ -400,7 +400,7 @@ export default function HomePage() {
             <iframe
               src={curWikiPage}
               title={`Wiki: ${curWikiPage}`}
-              className="w-full h-[80vh] "
+              className="w-97/100 h-[80vh] "
               style={{ minHeight: 400 }}
             />
           </div>
@@ -449,7 +449,7 @@ export default function HomePage() {
                 return (
                   <Box
                     key={index}
-                    sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2, cursor:"pointer"}}
+                    sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 2, cursor: "pointer" }}
                     onClick={() => setCurWikiPage(`${XWIKI_URL}/bin/view/${MODES[mode].url}/${encodedName}`)}>
                     <Box sx={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', mb: 1 }}>
                       <Typography variant="h6" sx={{ mr: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -522,7 +522,13 @@ export default function HomePage() {
                 value={dateFilter.startDate}
                 onChange={(e) => setDateFilter(prev => ({ ...prev, startDate: e.target.value }))}
                 InputLabelProps={{ shrink: true }}
-                sx={{ minWidth: 150 }}
+                sx={{
+                  minWidth: 150,
+                  '& input[type="date"]::-webkit-calendar-picker-indicator': {
+                    filter: 'invert(1)', // Makes it white
+                    cursor: 'pointer',
+                  }
+                }}
               />
               <TextField
                 label="To Date"
@@ -530,7 +536,13 @@ export default function HomePage() {
                 value={dateFilter.endDate}
                 onChange={(e) => setDateFilter(prev => ({ ...prev, endDate: e.target.value }))}
                 InputLabelProps={{ shrink: true }}
-                sx={{ minWidth: 150 }}
+                sx={{
+                  minWidth: 150,
+                  '& input[type="date"]::-webkit-calendar-picker-indicator': {
+                    filter: 'invert(1)', // Makes it white
+                    cursor: 'pointer',
+                  }
+                }}
               />
               <Button
                 variant="outlined"
