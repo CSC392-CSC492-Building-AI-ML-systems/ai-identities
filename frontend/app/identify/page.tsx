@@ -18,8 +18,8 @@ export default function IdentifyPage() {
   const [results, setResults] = useState<{
     [key: string]: number;
   } | null>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('identify_results');
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("identify_results");
       if (saved) {
         try {
           return JSON.parse(saved);
@@ -60,8 +60,11 @@ export default function IdentifyPage() {
           message: `File \"${result.filename}\" analyzed successfully!`,
         });
         setResults(result.analysis);
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('identify_results', JSON.stringify(result.analysis));
+        if (typeof window !== "undefined") {
+          localStorage.setItem(
+            "identify_results",
+            JSON.stringify(result.analysis)
+          );
         }
       } else {
         setUploadStatus({
@@ -82,54 +85,65 @@ export default function IdentifyPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#050a1f] pt-24 flex flex-col items-center">
+    <main className="min-h-screen bg-[#050a1f] flex flex-col items-center">
       {/* Show header ONLY if not uploading and no results */}
       {!uploading && !results && (
-        <>
-          <h1 className="text-3xl font-semibold text-[#F3F3FF] dark:text-[#F3F3FF] mt-80 mb-2">
+        <div className="mt-30 p-12 border-2 border-[#3D3A6A] rounded-2xl bg-[#0A1225] shadow-lg max-w-xl w-full mx-4">
+          <h1 className="text-3xl font-semibold text-[#F3F3FF] dark:text-[#F3F3FF] mb-2 text-center">
             Identify the LLM
           </h1>
-          <p className="text-base text-[#F3F3FF] dark:text-[#F3F3FF] mb-10">Upload a JSON file to identify!</p>
-          <label
-            htmlFor="json-upload"
-            className="group inline-block bg-[#2D2A5A] text-[#F3F3FF] px-10 py-6 rounded-xl text-xl font-semibold cursor-pointer transition-transform duration-300 hover:scale-105 mb-4 mt-4 flex items-center gap-4 justify-center"
-          >
-            <div className="upload-animate flex items-center justify-center group-hover:animate-bounce">
-              <img src="/upload1.png" alt="Upload 1" className="h-8 w-auto" />
-            </div>
-            <div className="flex items-center justify-center">
-              <img src="/upload2.png" alt="Upload 2" className="h-4 w-auto" />
-            </div>
-            <input
-              id="json-upload"
-              ref={fileInputRef}
-              type="file"
-              accept="application/json,.json"
-              className="hidden"
-              onChange={handleFileSelect}
-              disabled={uploading}
-            />
-          </label>
-          {/* Show Identify button if a file is selected */}
-          {uploadedFile && (
-            <>
-              <Button
-                className="mt-6 !bg-[#2D2A5A] text-white hover:outline hover:outline-2 hover:outline-[#F3F3FF] border-none transition-transform duration-300 hover:scale-105 animate-fade-in-up"
-                style={{ backgroundColor: '#2D2A5A', alignSelf: 'center', display: 'block' }}
-                onClick={handleIdentify}
+          <p className="text-base text-[#F3F3FF] dark:text-[#F3F3FF] mb-10 text-center">
+            Upload a JSON file to identify!
+          </p>
+          <div className="flex flex-col items-center">
+            <label
+              htmlFor="json-upload"
+              className="group inline-block bg-[#2D2A5A] text-[#F3F3FF] px-10 py-6 rounded-xl text-xl font-semibold cursor-pointer transition-transform duration-300 hover:scale-105 mb-4 flex items-center gap-4 justify-center"
+            >
+              <div className="upload-animate flex items-center justify-center group-hover:animate-bounce">
+                <img src="/upload1.png" alt="Upload 1" className="h-8 w-auto" />
+              </div>
+              <div className="flex items-center justify-center">
+                <img src="/upload2.png" alt="Upload 2" className="h-4 w-auto" />
+              </div>
+              <input
+                id="json-upload"
+                ref={fileInputRef}
+                type="file"
+                accept="application/json,.json"
+                className="hidden"
+                onChange={handleFileSelect}
                 disabled={uploading}
-              >
-                Identify
-              </Button>
-              <FilePreviewToggle file={uploadedFile} />
-            </>
-          )}
-        </>
+              />
+            </label>
+            {/* Show Identify button if a file is selected */}
+            {uploadedFile && (
+              <>
+                <Button
+                  className="mt-6 !bg-[#2D2A5A] text-white hover:outline hover:outline-2 hover:outline-[#F3F3FF] border-none transition-transform duration-300 hover:scale-105 animate-fade-in-up"
+                  style={{
+                    backgroundColor: "#2D2A5A",
+                    alignSelf: "center",
+                    display: "block",
+                  }}
+                  onClick={handleIdentify}
+                  disabled={uploading}
+                >
+                  Identify
+                </Button>
+                <FilePreviewToggle file={uploadedFile} />
+              </>
+            )}
+          </div>
+        </div>
       )}
 
       {/* Show only "Identifying..." while uploading */}
       {uploading && (
-        <div className="flex flex-1 items-center justify-center w-full" style={{ minHeight: "60vh" }}>
+        <div
+          className="flex flex-1 items-center justify-center w-full"
+          style={{ minHeight: "60vh" }}
+        >
           <IdentifyingDots />
         </div>
       )}
@@ -137,26 +151,36 @@ export default function IdentifyPage() {
       {/* Show only results after upload */}
       {results && !uploading && (
         <>
-                     <div className="mt-32 w-full max-w-4xl bg-[#2D2A5A] rounded-2xl p-10 shadow-lg">
-            <h2 className="text-4xl font-bold text-[#F3F3FF] mb-8 text-center">Identification Results</h2>
+          <div className="mt-32 w-full max-w-4xl bg-[#2D2A5A] rounded-2xl p-10 shadow-lg">
+            <h2 className="text-4xl font-bold text-[#F3F3FF] mb-8 text-center">
+              Identification Results
+            </h2>
             <div className="space-y-8">
-              {Object.entries(results).slice(0, 3).map(([name, percent]) => (
-                <AnimatedBar key={name} name={name} percent={percent} />
-              ))}
+              {Object.entries(results)
+                .slice(0, 3)
+                .map(([name, percent]) => (
+                  <AnimatedBar key={name} name={name} percent={percent} />
+                ))}
             </div>
             <div className="flex items-center gap-3 mt-12 justify-center">
-              <span className="text-[#F3F3FF] text-base font-medium">Download Advanced Results</span>
+              <span className="text-[#F3F3FF] text-base font-medium">
+                Download Advanced Results
+              </span>
               <DownloadAdvancedResultsButton results={results} />
             </div>
           </div>
           <Button
             className="mt-8 !bg-[#2D2A5A] text-white hover:outline hover:outline-2 hover:outline-[#F3F3FF] border-none transition-transform duration-300 hover:scale-105"
-            style={{ backgroundColor: '#2D2A5A', alignSelf: 'center', display: 'block' }}
+            style={{
+              backgroundColor: "#2D2A5A",
+              alignSelf: "center",
+              display: "block",
+            }}
             onClick={() => {
               setResults(null);
               setUploadStatus({ type: null, message: "" });
-              if (typeof window !== 'undefined') {
-                localStorage.removeItem('identify_results');
+              if (typeof window !== "undefined") {
+                localStorage.removeItem("identify_results");
               }
             }}
             disabled={uploading}
@@ -188,10 +212,17 @@ function FilePreview({ file }: { file: File }) {
       }
     };
     reader.readAsText(file);
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [file]);
-  if (!content) return <div className="text-[#aaa] italic">Loading preview...</div>;
-  return <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{content}</pre>;
+  if (!content)
+    return <div className="text-[#aaa] italic">Loading preview...</div>;
+  return (
+    <pre style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+      {content}
+    </pre>
+  );
 }
 
 // File preview toggle component for JSON files
@@ -205,10 +236,19 @@ function FilePreviewToggle({ file }: { file: File }) {
         type="button"
       >
         <span>Preview: {file.name}</span>
-        <span className="ml-2">{open ? '▲' : '▼'}</span>
+        <span className="ml-2">{open ? "▲" : "▼"}</span>
       </button>
       {open && (
-        <div style={{ fontFamily: 'monospace', fontSize: '0.95rem', maxHeight: 320, overflow: 'auto', border: '1px solid #23204a' }} className="bg-[#18163a] text-[#F3F3FF] rounded-b-lg p-4">
+        <div
+          style={{
+            fontFamily: "monospace",
+            fontSize: "0.95rem",
+            maxHeight: 320,
+            overflow: "auto",
+            border: "1px solid #23204a",
+          }}
+          className="bg-[#18163a] text-[#F3F3FF] rounded-b-lg p-4"
+        >
           <FilePreview file={file} />
         </div>
       )}
@@ -227,7 +267,7 @@ function IdentifyingDots() {
   }, []);
   return (
     <div className="text-[#F3F3FF] text-3xl font-semibold">
-      Identifying{'.'.repeat(dotCount)}
+      Identifying{".".repeat(dotCount)}
     </div>
   );
 }
@@ -244,13 +284,13 @@ function AnimatedBar({ name, percent }: { name: string; percent: number }) {
     const b = Math.round(c1[2] + (c2[2] - c1[2]) * (p / 100));
     return `rgb(${r},${g},${b})`;
   }
-  
+
   const [displayPercent, setDisplayPercent] = React.useState(0);
-  
+
   React.useEffect(() => {
     const duration = 1000; // ms
     const startTime = performance.now();
-    
+
     function animate(now: number) {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
@@ -259,42 +299,42 @@ function AnimatedBar({ name, percent }: { name: string; percent: number }) {
         requestAnimationFrame(animate);
       }
     }
-    
+
     setDisplayPercent(0);
     requestAnimationFrame(animate);
   }, [percent]);
-  
+
   const barColor = percentToGradientColor(displayPercent);
-  
+
   return (
-         <div className="flex items-center gap-12 w-full">
-       {/* Model name */}
-       <div className="w-96 text-[#F3F3FF] text-lg font-semibold capitalize truncate">
-         {name}
-       </div>
-       
-       {/* Progress bar container */}
-       <div className="w-96 h-12 flex items-center">
-         <div className="w-full h-full flex items-center">
-           {/* Main bar container */}
-           <div className="bg-[#2D2A5A] rounded-xl w-full h-10 flex items-center relative overflow-hidden border-2 border-[#050a1f]">
+    <div className="flex items-center gap-12 w-full">
+      {/* Model name */}
+      <div className="w-96 text-[#F3F3FF] text-lg font-semibold capitalize truncate">
+        {name}
+      </div>
+
+      {/* Progress bar container */}
+      <div className="w-96 h-12 flex items-center">
+        <div className="w-full h-full flex items-center">
+          {/* Main bar container */}
+          <div className="bg-[#2D2A5A] rounded-xl w-full h-10 flex items-center relative overflow-hidden border-2 border-[#050a1f]">
             {/* Background bar */}
             <div className="absolute inset-0 bg-[#050a1f] rounded-lg"></div>
-            
+
             {/* Progress fill */}
             <div
               className="h-full rounded-lg transition-all duration-1000 ease-out absolute top-0 left-0 z-10"
-              style={{ 
-                width: `${displayPercent}%`, 
+              style={{
+                width: `${displayPercent}%`,
                 background: barColor,
-                minWidth: displayPercent > 0 ? '4px' : '0px'
+                minWidth: displayPercent > 0 ? "4px" : "0px",
               }}
             ></div>
-            
-                         {/* Percentage text */}
-             <span className="text-[#F3F3FF] text-xl font-bold absolute right-0 z-20 bg-[#2D2A5A] px-3 rounded-r-lg h-full flex items-center">
-               {displayPercent}%
-             </span>
+
+            {/* Percentage text */}
+            <span className="text-[#F3F3FF] text-xl font-bold absolute right-0 z-20 bg-[#2D2A5A] px-3 rounded-r-lg h-full flex items-center">
+              {displayPercent}%
+            </span>
           </div>
         </div>
       </div>
@@ -303,21 +343,28 @@ function AnimatedBar({ name, percent }: { name: string; percent: number }) {
 }
 
 // Download button for advanced results (top 6)
-function DownloadAdvancedResultsButton({ results }: { results: { [key: string]: number } }) {
+function DownloadAdvancedResultsButton({
+  results,
+}: {
+  results: { [key: string]: number };
+}) {
   function handleDownload() {
     if (!results) return;
     // Get top 6 entries
     const top6 = Object.entries(results)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 6)
-      .reduce((acc, [k, v]) => { acc[k] = v; return acc; }, {} as { [key: string]: number });
-    const blob = new Blob([
-      JSON.stringify(top6, null, 2)
-    ], { type: 'text/plain' });
+      .reduce((acc, [k, v]) => {
+        acc[k] = v;
+        return acc;
+      }, {} as { [key: string]: number });
+    const blob = new Blob([JSON.stringify(top6, null, 2)], {
+      type: "text/plain",
+    });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = 'advanced_results.txt';
+    a.download = "advanced_results.txt";
     document.body.appendChild(a);
     a.click();
     setTimeout(() => {
@@ -328,7 +375,12 @@ function DownloadAdvancedResultsButton({ results }: { results: { [key: string]: 
   return (
     <Button
       className="!bg-[#2D2A5A] text-white hover:outline hover:outline-2 hover:outline-[#F3F3FF] border-none transition-transform duration-300 hover:scale-105 px-6 py-3 text-base font-semibold"
-      style={{ backgroundColor: '#2D2A5A', alignSelf: 'center', minWidth: 0, display: 'inline-block' }}
+      style={{
+        backgroundColor: "#2D2A5A",
+        alignSelf: "center",
+        minWidth: 0,
+        display: "inline-block",
+      }}
       onClick={handleDownload}
       disabled={!results}
     >
