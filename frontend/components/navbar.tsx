@@ -56,11 +56,11 @@ function WikiMenu() {
           },
         }}
       >
-        <MenuItem onClick={handleClose}>
-          <Link href="/search">View</Link>
+        <MenuItem component={Link} href="/search" onClick={handleClose}>
+          View
         </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <Link href="/create">Create</Link>
+        <MenuItem component={Link} href="/create" onClick={handleClose}>
+          Create
         </MenuItem>
       </Menu>
     </div>

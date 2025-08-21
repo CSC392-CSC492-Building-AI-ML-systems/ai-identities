@@ -91,6 +91,7 @@ export default function WikiIframePage() {
                   ? "/bin/view/XWiki/LLMClass"
                   : "/bin/view/XWiki/LLMAppClass")
               }
+              title="Create Wiki Page"
               className="w-97/100 h-[90vh]"
               id="createFrame"
               name="createFrame"
