@@ -211,7 +211,7 @@ export default function HomePage() {
         setFieldPrettyNames(prettyNames)
 
         const flat: TagMap = {};
-        for (const g of tagGroups) flat[g] = Array.from(grouped[g] || []).sort();
+        for (const g of tagGroups) flat[g] = Array.from(grouped[g] || []).sort((a, b) => a.localeCompare(b));
         setAvailableTags(flat);
       } catch (err) {
         console.error("Failed to fetch tags:", err);
