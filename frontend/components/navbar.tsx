@@ -7,62 +7,35 @@ import { useXWikiAuth } from "../hooks/useXWikiAuth";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import * as React from "react";
-import Button from "@mui/material/Button";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 
 function WikiMenu() {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const [isHovered, setIsHovered] = React.useState(false);
 
   return (
-    <div>
-      <Button
-        id="wiki-button"
-        aria-controls={open ? "wiki-menu" : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? "true" : undefined}
-        onClick={handleClick}
-        sx={{ fontSize: "", textTransform: "capitalize " }}
-      >
-        <span className="relative group text-[#F3F3FF] text-lg font-normal">
-          Wiki {!open ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
-        </span>
-      </Button>
-      <Menu
-        id="wiki-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        disableScrollLock={true}
-        slotProps={{
-          list: {
-            "aria-labelledby": "wiki-button",
-            style: {
-              backgroundColor: "#2D2A5A",
-              color: "white",
-            },
-          },
-          paper: {
-            style: {
-              backgroundColor: "#2D2A5A",
-            },
-          },
-        }}
-      >
-        <MenuItem onClick={handleClose}>
-          <Link href="/search">View</Link>
-        </MenuItem>
-        <MenuItem onClick={handleClose}>
-          <Link href="/create">Create</Link>
-        </MenuItem>
-      </Menu>
+    <div 
+      className="relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <span className="relative group text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 lg:text-lg font-normal cursor-pointer flex items-center">
+        Wiki <ArrowDropDownIcon />
+      </span>
+      
+      {/* Dropdown Menu */}
+      {isHovered && (
+        <div className="absolute top-full -left-4 mt-0 bg-[#2D2A5A] rounded-lg shadow-lg py-2 min-w-[100px] z-50">
+          <Link href="/search">
+            <div className="px-4 py-2 text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 cursor-pointer text-left">
+              View
+            </div>
+          </Link>
+          <Link href="/create">
+            <div className="px-4 py-2 text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 cursor-pointer text-left">
+              Create
+            </div>
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
@@ -107,7 +80,7 @@ export default function Navbar() {
                 href="/identify"
                 className="relative group text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 lg:text-lg font-normal"
               >
-                Identification
+                Identify
               </Link>
               <WikiMenu />
             </div>

@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 const sections = [
   {
     title: "AI-powered LLM identifier & knowledge hub — with expert human insight",
-    subtitle: "LLMDetective identifies large language models (LLMs) across the web, offering a structured, searchable wiki of every model we find — from ChatGPT to open-source tools. Explore the technology behind today’s AI, backed by transparent data and human curation.",
+    subtitle: "LLMDetective identifies large language models (LLMs) across the web, offering a structured, searchable wiki of every model we find — from ChatGPT to open-source tools. Explore the technology behind today's AI, backed by transparent data and human curation.",
     pill: null,
     bg: "",
     cta: null,
@@ -19,7 +19,7 @@ const sections = [
     bg: "",
     cta: (
       <div className="w-full flex flex-col items-center">
-        <div className="w-2/5 mx-auto flex flex-col items-center mb-12">
+        <div className="w-full max-w-2xl px-8 mx-auto flex flex-col items-center mb-12">
           <h2 className="text-4xl md:text-5xl text-[#2D2A5A] dark:text-[#F3F3FF] text-center mb-8">Identify, Search, and Explore</h2>
         </div>
         <div className="w-full flex flex-col md:flex-row justify-center gap-8">
@@ -36,7 +36,7 @@ const sections = [
           <div className="flex-1 max-w-xs bg-[#2D2A5A] rounded-2xl shadow-lg p-8 flex flex-col items-start text-white">
             <div className="mb-4 text-3xl">🧑‍💻</div>
             <div className="text-2xl mb-2 font-semibold">Explore</div>
-            <div className="text-base opacity-80">Dive into the technology and data behind today’s AI, curated and explained by experts.</div>
+            <div className="text-base opacity-80">Dive into the technology and data behind today's AI, curated and explained by experts.</div>
           </div>
         </div>
       </div>
@@ -65,7 +65,7 @@ const sections = [
         </Button>
         <Button
           className="!bg-[#2D2A5A] text-white hover:outline hover:outline-2 hover:outline-[#F3F3FF] border-none transition-transform duration-300 hover:scale-105"
-          onClick={() => window.location.href = "/wiki"}
+          onClick={() => window.location.href = "/search"}
           style={{ backgroundColor: '#2D2A5A' }}
         >
           Wiki
@@ -122,10 +122,10 @@ export default function HomePage() {
         <section
           key={i}
           ref={el => { refs.current[i] = el; }}
-          className={`${i === sections.length - 1 ? 'min-h-[20vh] bg-[#2D2A5A]' : 'min-h-[60vh]'} w-full flex flex-col items-center justify-center`}
+          className={`${i === sections.length - 1 ? 'min-h-[20vh] bg-[#2D2A5A]' : 'min-h-[50vh]'} w-full flex flex-col items-center justify-center`}
         >
           <div
-            className={`w-2/5 mx-auto flex flex-col items-center transition-all duration-700 ease-out
+            className={`w-full max-w-4xl px-8 mx-auto flex flex-col items-center transition-all duration-700 ease-out
               ${visible[i] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
           >
             {section.pill && <Pill text={section.pill} />}
@@ -144,45 +144,37 @@ export default function HomePage() {
           {i === 1 && section.cta ? (
             <>
               {/* Heading fade in from bottom */}
-              <div className={`w-2/5 mx-auto flex flex-col items-center transition-all duration-700 ease-out
+              <div className={`w-full max-w-5xl px-8 mx-auto flex flex-col items-center transition-all duration-700 ease-out
                 ${visible[i] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                <h2 className="text-4xl md:text-5xl text-[#2D2A5A] dark:text-[#F3F3FF] text-center mb-8">Identify, Search, and Contribute</h2>
+                <h2 className="text-5xl md:text-6xl text-[#2D2A5A] dark:text-[#F3F3FF] text-center mb-8">Identify, Search, and Contribute</h2>
               </div>
               {/* Deck of cards animation */}
-              <div className="relative w-[928px] mx-auto mt-8" style={{ minHeight: 320 }}>
-                {[
-                  {
-                    icon: '🕵️‍♂️',
-                    title: 'Identify',
-                    desc: 'Use our tools to detect which large language model (LLM) generated a given text, leveraging advanced AI identification.'
-                  },
-                  {
-                    icon: '🔍',
-                    title: 'Wiki Search',
-                    desc: 'Search our structured, searchable wiki of LLMs—from ChatGPT to open-source models—to find detailed information on every model we track.'
-                  },
-                  {
-                    icon: '✏️',
-                    title: 'Contribute',
-                    desc: 'Edit and improve our wiki data. Help keep the LLM knowledge base accurate and up to date for the whole community.'
-                  }
-                ].map((card, cardIdx) => {
-                  const cardWidth = 288;
-                  const gap = 32;
-                  const x = cardIdx * (cardWidth + gap);
-                  return (
+              <div className="w-full flex justify-center mt-8">
+                <div className="flex flex-wrap justify-center gap-8 max-w-6xl">
+                  {[
+                    {
+                      icon: '🕵️‍♂️',
+                      title: 'Identify',
+                      desc: 'Use our tools to detect which large language model (LLM) generated a given text, leveraging advanced AI identification.'
+                    },
+                    {
+                      icon: '🔍',
+                      title: 'Search',
+                      desc: 'Search our structured, searchable wiki of LLMs—from ChatGPT to open-source models—to find detailed information on every model we track.'
+                    },
+                    {
+                      icon: '✏️',
+                      title: 'Contribute',
+                      desc: 'Edit and improve our wiki data. Help keep the LLM knowledge base accurate and up to date for the whole community.'
+                    }
+                  ].map((card, cardIdx) => (
                     <div
                       key={cardIdx}
-                      className={`absolute top-0 h-[320px] transition-all duration-700 ease-out
-                        ${visible[i] ? 'opacity-100' : 'opacity-0'}
+                      className={`w-78 h-78 flex-shrink-0 transition-all duration-700 ease-out
+                        ${visible[i] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
                       `}
                       style={{
-                        left: 0,
-                        transform: visible[i]
-                          ? `translateX(${x}px)`
-                          : `translateX(0px)`,
                         transitionDelay: visible[i] ? `${cardIdx * 120}ms` : '0ms',
-                        width: cardWidth,
                       }}
                     >
                       <div className="bg-[#2D2A5A] rounded-2xl shadow-lg p-8 flex flex-col items-start text-[#F3F3FF] h-full transition-transform duration-300 hover:scale-105">
@@ -191,10 +183,69 @@ export default function HomePage() {
                         <div className="text-base text-[#B8B8FF]">{card.desc}</div>
                       </div>
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
             </>
+          ) : i === 2 ? (
+            /* Methods of Identification cards with left-right animation */
+            <div className="w-full flex flex-col items-center mt-12">
+              <div className="w-full max-w-4xl px-8 mx-auto space-y-8">
+                {[
+                  {
+                    icon: '🧠',
+                    title: 'Neural Pattern Analysis',
+                    desc: 'Advanced machine learning algorithms analyze writing patterns, vocabulary choices, and sentence structures unique to each LLM.',
+                    direction: 'left'
+                  },
+                  {
+                    icon: '📊',
+                    title: 'Statistical Fingerprinting',
+                    desc: 'Statistical analysis of token distributions, response lengths, and linguistic markers to create unique model signatures.',
+                    direction: 'right'
+                  },
+                  {
+                    icon: '🔬',
+                    title: 'Behavioral Profiling',
+                    desc: 'Detection of model-specific behaviors, response patterns, and characteristic outputs that distinguish different LLMs.',
+                    direction: 'left'
+                  }
+                ].map((method, methodIdx) => (
+                  <div
+                    key={methodIdx}
+                    className={`w-full transition-all duration-700 ease-out
+                      ${visible[i] ? 'opacity-100 translate-x-0' : `opacity-0 ${method.direction === 'left' ? '-translate-x-12' : 'translate-x-12'}`}
+                    `}
+                    style={{
+                      transitionDelay: visible[i] ? `${methodIdx * 200}ms` : '0ms',
+                    }}
+                  >
+                    <div className={`rounded-2xl shadow-lg min-h-[200px] flex transition-transform duration-300 hover:scale-105 border-2 border-[#2D2A5A] ${
+                      methodIdx % 2 === 0 
+                        ? 'bg-gradient-to-r from-[#2D2A5A] from-50% to-[#050a1f] to-50%'
+                        : 'bg-gradient-to-r from-[#050a1f] from-50% to-[#2D2A5A] to-50%'
+                    }`}>
+                      {/* Content positioned on the blue half */}
+                      <div className={`w-1/2 p-12 flex flex-col justify-center text-[#F3F3FF] ${
+                        methodIdx % 2 === 0 ? '' : 'order-2'
+                      }`}>
+                        <div className="text-4xl mb-4">{method.icon}</div>
+                        <div className="text-2xl mb-2 font-semibold">{method.title}</div>
+                        <div className="text-base text-[#B8B8FF]">{method.desc}</div>
+                      </div>
+                      {/* Empty half for visual balance */}
+                      <div className={`w-1/2 flex items-center justify-center ${methodIdx % 2 === 0 ? 'order-2' : ''}`}>
+                        <div className="w-32 h-32 bg-[#1a1a2e] rounded-lg border border-[#2D2A5A] flex items-center justify-center">
+                          <div className="text-6xl opacity-30">
+                            {methodIdx === 0 ? '🧠' : methodIdx === 1 ? '📊' : '🔬'}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           ) : section.cta}
         </section>
       ))}
