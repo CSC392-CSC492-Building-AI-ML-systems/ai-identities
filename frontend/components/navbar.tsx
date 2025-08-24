@@ -12,7 +12,6 @@ function WikiMenu() {
   const [isHovered, setIsHovered] = React.useState(false);
 
   return (
-<<<<<<< HEAD
     <div 
       className="relative"
       onMouseEnter={() => setIsHovered(true)}
@@ -37,49 +36,6 @@ function WikiMenu() {
           </Link>
         </div>
       )}
-=======
-    <div>
-      <Button
-        id="wiki-button"
-        aria-controls={open ? "wiki-menu" : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? "true" : undefined}
-        onClick={handleClick}
-        sx={{ fontSize: "", textTransform: "capitalize " }}
-      >
-        <span className="relative group text-[#F3F3FF] text-lg font-normal">
-          Wiki {!open ? <ArrowDropDownIcon /> : <ArrowDropUpIcon />}
-        </span>
-      </Button>
-      <Menu
-        id="wiki-menu"
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        disableScrollLock={true}
-        slotProps={{
-          list: {
-            "aria-labelledby": "wiki-button",
-            style: {
-              backgroundColor: "#2D2A5A",
-              color: "white",
-            },
-          },
-          paper: {
-            style: {
-              backgroundColor: "#2D2A5A",
-            },
-          },
-        }}
-      >
-        <MenuItem component={Link} href="/search" onClick={handleClose}>
-          View
-        </MenuItem>
-        <MenuItem component={Link} href="/create" onClick={handleClose}>
-          Create
-        </MenuItem>
-      </Menu>
->>>>>>> b41811b3259fb545f5a62ca4043e8750de54bf3e
     </div>
   );
 }
