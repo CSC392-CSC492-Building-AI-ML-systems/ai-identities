@@ -24,17 +24,23 @@ const sections = [
         </div>
         <div className="w-full flex flex-col md:flex-row justify-center gap-8">
           <div className="flex-1 max-w-xs bg-[#2D2A5A] rounded-2xl shadow-lg p-8 flex flex-col items-start text-white">
-            <div className="mb-4 text-3xl">🕵️‍♂️</div>
+            <div className="mb-4">
+              <img src="/det.png" alt="Detective" className="w-8 h-8" />
+            </div>
             <div className="text-2xl mb-2 font-semibold">Identify</div>
             <div className="text-base opacity-80">Use our tools to identify which LLM generated a given text, leveraging advanced detection and comparison algorithms.</div>
           </div>
           <div className="flex-1 max-w-xs bg-[#2D2A5A] rounded-2xl shadow-lg p-8 flex flex-col items-start text-white">
-            <div className="mb-4 text-3xl">🔍</div>
+            <div className="mb-4">
+              <img src="/magl.png" alt="Magnifying Glass" className="w-8 h-8" />
+            </div>
             <div className="text-2xl mb-2 font-semibold">Search</div>
             <div className="text-base opacity-80">Find detailed information on a wide range of LLMs, from ChatGPT to open-source models, all in one place.</div>
           </div>
           <div className="flex-1 max-w-xs bg-[#2D2A5A] rounded-2xl shadow-lg p-8 flex flex-col items-start text-white">
-            <div className="mb-4 text-3xl">🧑‍💻</div>
+            <div className="mb-4">
+              <img src="/pen.png" alt="Pencil" className="w-8 h-8" />
+            </div>
             <div className="text-2xl mb-2 font-semibold">Explore</div>
             <div className="text-base opacity-80">Dive into the technology and data behind today's AI, curated and explained by experts.</div>
           </div>
@@ -153,17 +159,17 @@ export default function HomePage() {
                 <div className="flex flex-wrap justify-center gap-8 max-w-6xl">
                   {[
                     {
-                      icon: '🕵️‍♂️',
+                      icon: '/det.png',
                       title: 'Identify',
                       desc: 'Use our tools to detect which large language model (LLM) generated a given text, leveraging advanced AI identification.'
                     },
                     {
-                      icon: '🔍',
+                      icon: '/magl.png',
                       title: 'Search',
                       desc: 'Search our structured, searchable wiki of LLMs—from ChatGPT to open-source models—to find detailed information on every model we track.'
                     },
                     {
-                      icon: '✏️',
+                      icon: '/pen.png',
                       title: 'Contribute',
                       desc: 'Edit and improve our wiki data. Help keep the LLM knowledge base accurate and up to date for the whole community.'
                     }
@@ -178,7 +184,9 @@ export default function HomePage() {
                       }}
                     >
                       <div className="bg-[#2D2A5A] rounded-2xl shadow-lg p-8 flex flex-col items-start text-[#F3F3FF] h-full transition-transform duration-300 hover:scale-105">
-                        <div className="mb-4 text-3xl">{card.icon}</div>
+                        <div className="mb-4">
+                          <img src={card.icon} alt={card.title} className="w-8 h-8" />
+                        </div>
                         <div className="text-2xl mb-2 font-semibold">{card.title}</div>
                         <div className="text-base text-[#B8B8FF]">{card.desc}</div>
                       </div>
