@@ -193,21 +193,21 @@ export default function HomePage() {
               <div className="w-full max-w-4xl px-8 mx-auto space-y-8">
                 {[
                   {
-                    icon: '🧠',
-                    title: 'Neural Pattern Analysis',
-                    desc: 'Advanced machine learning algorithms analyze writing patterns, vocabulary choices, and sentence structures unique to each LLM.',
+                    image: '/statistic.png',
+                    title: 'Statistical Fingerprinting',
+                    desc: 'LLM responses to an experimentally selected "best" user prompt are converted into TF‑IDF trigram vectors with interpretable features and weights.',
                     direction: 'left'
                   },
                   {
-                    icon: '📊',
-                    title: 'Statistical Fingerprinting',
-                    desc: 'Statistical analysis of token distributions, response lengths, and linguistic markers to create unique model signatures.',
+                    image: '/similar.png',
+                    title: 'Similarity‑Based Identification',
+                    desc: 'Each vector is compared against a library of known LLMs using cosine similarity to produce a ranked shortlist of likely LLMs.',
                     direction: 'right'
                   },
                   {
-                    icon: '🔬',
-                    title: 'Behavioral Profiling',
-                    desc: 'Detection of model-specific behaviors, response patterns, and characteristic outputs that distinguish different LLMs.',
+                    image: '/predict.png',
+                    title: 'Predict or Abstain',
+                    desc: 'A fixed, experiment‑selected threshold abstains on low‑similarity cases, ensuring reliable and transparent decisions.',
                     direction: 'left'
                   }
                 ].map((method, methodIdx) => (
@@ -229,16 +229,17 @@ export default function HomePage() {
                       <div className={`w-1/2 p-12 flex flex-col justify-center text-[#F3F3FF] ${
                         methodIdx % 2 === 0 ? '' : 'order-2'
                       }`}>
-                        <div className="text-4xl mb-4">{method.icon}</div>
                         <div className="text-2xl mb-2 font-semibold">{method.title}</div>
                         <div className="text-base text-[#B8B8FF]">{method.desc}</div>
                       </div>
-                      {/* Empty half for visual balance */}
+                      {/* Image half */}
                       <div className={`w-1/2 flex items-center justify-center ${methodIdx % 2 === 0 ? 'order-2' : ''}`}>
-                        <div className="w-32 h-32 bg-[#1a1a2e] rounded-lg border border-[#2D2A5A] flex items-center justify-center">
-                          <div className="text-6xl opacity-30">
-                            {methodIdx === 0 ? '🧠' : methodIdx === 1 ? '📊' : '🔬'}
-                          </div>
+                        <div className="w-48 h-48 flex items-center justify-center">
+                          <img 
+                            src={method.image} 
+                            alt={method.title}
+                            className="max-w-full max-h-full object-contain"
+                          />
                         </div>
                       </div>
                     </div>
