@@ -149,10 +149,10 @@ export default function HomePage() {
           {/* Animate the Identify/Search/Explore cards as a group if this is the second section */}
           {i === 1 && section.cta ? (
             <>
-              {/* Heading fade in from bottom */}
+              {/* Heading fade in from bottom - FIXED: Changed to light color */}
               <div className={`w-full max-w-5xl px-8 mx-auto flex flex-col items-center transition-all duration-700 ease-out
                 ${visible[i] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                <h2 className="text-5xl md:text-6xl text-[#2D2A5A] dark:text-[#F3F3FF] text-center mb-8">Identify, Search, and Contribute</h2>
+                <h2 className="text-5xl md:text-6xl text-[#F3F3FF] text-center mb-8">Identify, Search, and Contribute</h2>
               </div>
               {/* Deck of cards animation */}
               <div className="w-full flex justify-center mt-8">
