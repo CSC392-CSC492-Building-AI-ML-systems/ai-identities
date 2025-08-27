@@ -76,18 +76,16 @@ export async function POST(req: NextRequest) {
 
 
     const classifierResult = await response.json();
-
+    console.log(classifierResult)
     // Transform the classifier result to match the expected frontend format
     let analysis: { [key: string]: number } = {};
     
     if (classifierResult.prediction && classifierResult.prediction[0] !== "unknown") {
-      // Convert the prediction scores to percentages
-      const totalScore = classifierResult.prediction.reduce((sum: number, [_, score]: [string, number]) => sum + score, 0);
       
       classifierResult.prediction.forEach(([model, score]: [string, number]) => {
         // Convert score to percentage and clean up model name
         const modelName = model.replace(/_/g, ' ').replace(/-/g, ' ').toLowerCase();
-        const percentage = Math.round((score / totalScore) * 100);
+        const percentage = score * 100;
         analysis[modelName] = percentage;
       });
     } else {

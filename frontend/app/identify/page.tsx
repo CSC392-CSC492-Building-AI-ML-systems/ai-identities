@@ -10,6 +10,7 @@ export default function IdentifyPage() {
   // while another file is being uploaded
   const [uploading, setUploading] = useState(false);
   // used to display upload status messages
+  const [fullResults, setFullResults] = useState<{[key: string]: number}>({})
   const [uploadStatus, setUploadStatus] = useState<{
     type: "success" | "error" | null;
     message: string;
@@ -60,6 +61,7 @@ export default function IdentifyPage() {
           message: `File \"${result.filename}\" analyzed successfully!`,
         });
         setResults(result.analysis);
+        setFullResults(result.raw_classifier_result.all_scores)
         if (typeof window !== "undefined") {
           localStorage.setItem(
             "identify_results",
@@ -166,7 +168,7 @@ export default function IdentifyPage() {
               <span className="text-[#F3F3FF] text-base font-medium">
                 Download Advanced Results
               </span>
-              <DownloadAdvancedResultsButton results={results} />
+              <DownloadAdvancedResultsButton results={fullResults} />
             </div>
           </div>
           <Button
@@ -351,9 +353,9 @@ function DownloadAdvancedResultsButton({
   function handleDownload() {
     if (!results) return;
     // Get top 6 entries
+    console.log(results)
     const top6 = Object.entries(results)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 6)
       .reduce((acc, [k, v]) => {
         acc[k] = v;
         return acc;
