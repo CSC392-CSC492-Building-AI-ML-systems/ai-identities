@@ -157,6 +157,9 @@ export default function IdentifyPage() {
             <h2 className="text-4xl font-bold text-[#F3F3FF] mb-8 text-center">
               Identification Results
             </h2>
+            <h3 className="text-1xl text-[#F3F3FF] mb-1 text-right">
+                Cosine Similarity Score
+            </h3>
             <div className="space-y-8">
               {Object.entries(results)
                 .slice(0, 3)
@@ -335,7 +338,7 @@ function AnimatedBar({ name, percent }: { name: string; percent: number }) {
 
             {/* Percentage text */}
             <span className="text-[#F3F3FF] text-xl font-bold absolute right-0 z-20 bg-[#2D2A5A] px-3 rounded-r-lg h-full flex items-center">
-              {displayPercent}%
+              0.{displayPercent}
             </span>
           </div>
         </div>
