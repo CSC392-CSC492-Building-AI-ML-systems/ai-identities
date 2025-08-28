@@ -13,7 +13,10 @@ export async function POST(req: NextRequest) {
 
     // Check if file is JSON
     if (!file.name.endsWith(".json") && file.type !== "application/json") {
-      return NextResponse.json({ error: "File must be a JSON file" }, { status: 400 });
+      return NextResponse.json(
+        { error: "File must be a JSON file" },
+        { status: 400 }
+      );
     }
 
     // Read file content
@@ -23,28 +26,29 @@ export async function POST(req: NextRequest) {
     try {
       jsonData = JSON.parse(fileContent);
     } catch (parseError) {
-      return NextResponse.json({ error: "Invalid JSON format" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid JSON format" },
+        { status: 400 }
+      );
     }
 
-
     // Extract responses from the JSON data
-    // The classifier expects a list of response strings
     let responses: string[] = [];
-    
+
     if (Array.isArray(jsonData)) {
       // If it's an array, assume each item is a response
-      responses = jsonData.map(item => 
-        typeof item === 'string' ? item : JSON.stringify(item)
+      responses = jsonData.map((item) =>
+        typeof item === "string" ? item : JSON.stringify(item)
       );
     } else if (jsonData.responses && Array.isArray(jsonData.responses)) {
       // If it has a responses field
-      responses = jsonData.responses.map((item: any) => 
-        typeof item === 'string' ? item : JSON.stringify(item)
+      responses = jsonData.responses.map((item: any) =>
+        typeof item === "string" ? item : JSON.stringify(item)
       );
     } else if (jsonData.messages && Array.isArray(jsonData.messages)) {
       // If it has a messages field (common in chat formats)
       responses = jsonData.messages
-        .filter((msg: any) => msg.role === 'assistant' || msg.role === 'model')
+        .filter((msg: any) => msg.role === "assistant" || msg.role === "model")
         .map((msg: any) => msg.content || JSON.stringify(msg));
     } else {
       // Fallback: try to extract any text content
@@ -52,50 +56,56 @@ export async function POST(req: NextRequest) {
     }
 
     if (responses.length === 0) {
-      return NextResponse.json({ error: "No valid responses found in the JSON file" }, { status: 400 });
+      return NextResponse.json(
+        { error: "No valid responses found in the JSON file" },
+        { status: 400 }
+      );
     }
 
     // Call the new FastAPI classifier service
-    const classifierUrl = process.env.CLASSIFIER_SERVICE_URL || 'http://localhost:8000';
+    const classifierUrl =
+      process.env.CLASSIFIER_SERVICE_URL || "http://localhost:8000";
     const response = await fetch(`${classifierUrl}/identify`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(responses)
+      body: JSON.stringify(responses),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Classifier service error:', errorText);
-      return NextResponse.json({ 
-        error: "Classifier service error", 
-        details: errorText 
-      }, { status: 500 });
+      console.error("Classifier service error:", errorText);
+      return NextResponse.json(
+        {
+          error: "Classifier service error",
+          details: errorText,
+        },
+        { status: 500 }
+      );
     }
 
-
     const classifierResult = await response.json();
-    console.log(classifierResult)
+    console.log(classifierResult);
+
     // Transform the classifier result to match the expected frontend format
     let analysis: { [key: string]: number } = {};
-    
+
     if (classifierResult.prediction && classifierResult.prediction[0] !== "unknown") {
-      
       classifierResult.prediction.forEach(([model, score]: [string, number]) => {
-        // Convert score to percentage and clean up model name
-        const modelName = model.replace(/_/g, ' ').replace(/-/g, ' ').toLowerCase();
         const percentage = score * 100;
-        analysis[modelName] = percentage;
+        // Keep model name exactly as returned (with _ and - intact)
+        analysis[model] = percentage;
       });
     } else {
       // If unknown, return a default response
       analysis = {
-        "unknown": 100
+        unknown: 100,
       };
     }
 
-    console.log(analysis)
+    console.log(analysis);
+
     return NextResponse.json(
       {
         message: "File uploaded successfully",
@@ -107,6 +117,9 @@ export async function POST(req: NextRequest) {
     );
   } catch (error) {
     console.error("Upload error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

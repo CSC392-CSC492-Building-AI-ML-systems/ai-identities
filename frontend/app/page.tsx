@@ -123,7 +123,7 @@ function useSectionFadeIn(numSections: number) {
 export default function HomePage() {
   const { refs, visible } = useSectionFadeIn(sections.length);
   return (
-    <main className="bg-[#050a1f] pt-24">
+    <main className="bg-[#050a1f] pt-6">
       {sections.map((section, i) => (
         <section
           key={i}
