@@ -83,6 +83,12 @@ export default function Navbar() {
                 Identify
               </Link>
               <WikiMenu />
+              <Link
+                href="https://github.com/CSC392-CSC492-Building-AI-ML-systems/ai-identities/tree/main/response_classifier#llm-response-classifier"
+                className="relative group text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 lg:text-lg font-normal"
+              >
+                Further Reading
+              </Link>
             </div>
           )}
         </div>

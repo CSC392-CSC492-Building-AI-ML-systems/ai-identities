@@ -49,7 +49,7 @@ const sections = [
     ),
   },
   {
-    title: "Methods of Identification",
+    title: "Identification Methodology",
     subtitle: null,
     pill: null,
     bg: "",

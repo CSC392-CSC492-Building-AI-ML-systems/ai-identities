@@ -86,16 +86,15 @@ export async function POST(req: NextRequest) {
     }
 
     const classifierResult = await response.json();
-    console.log(classifierResult);
 
     // Transform the classifier result to match the expected frontend format
     let analysis: { [key: string]: number } = {};
 
     if (classifierResult.prediction && classifierResult.prediction[0] !== "unknown") {
       classifierResult.prediction.forEach(([model, score]: [string, number]) => {
-        const percentage = score * 100;
-        // Keep model name exactly as returned (with _ and - intact)
-        analysis[model] = percentage;
+        analysis[model] = score * 100;
+        console.log(model)
+        console.log(score)
       });
     } else {
       // If unknown, return a default response
@@ -103,8 +102,6 @@ export async function POST(req: NextRequest) {
         unknown: 100,
       };
     }
-
-    console.log(analysis);
 
     return NextResponse.json(
       {

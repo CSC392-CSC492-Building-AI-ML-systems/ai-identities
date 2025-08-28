@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     const pageUrl = `${BASE_URL}/rest/wikis/${WIKI}/spaces/${SPACE}/pages/${username}`;
     const createPage = await fetch(pageUrl, {
       method: "PUT",
-      headers: { "Content-Type": "application/xml", Authorization: AUTH },
+      headers: { "Content-Type": "application/xml" },
       body: `<page xmlns="http://www.xwiki.org"><title>${username}</title><content>Created via API</content></page>`,
     });
 

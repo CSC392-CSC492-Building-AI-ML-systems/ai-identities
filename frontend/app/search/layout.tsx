@@ -144,10 +144,6 @@ export default function HomePage() {
   }
 
   useEffect(() => {
-    async function test() {
-      console.log(await (await fetch("https://wiki.llm.test/bin/view/XWiki/LLMClass")).text())
-    }
-    test()
     if (slug) {
       setCurWikiPage(`${XWIKI_URL}/bin/view/XWiki/${slug.join('/')}`)
     }
@@ -181,6 +177,7 @@ export default function HomePage() {
 
   // Load tags from XWiki
   useEffect(() => {
+    try{
     const fetchTags = async () => {
       const { className, tagGroups } = MODES[mode];
 
@@ -188,7 +185,7 @@ export default function HomePage() {
       const url = `${XWIKI_URL}/rest/wikis/xwiki/classes/${className}/properties?media=json`;
       console.log(url)
       try {
-        const res = await fetch(url, { headers: { 'Accept': 'application/json', "Authorization": "Basic " + btoa('ahmed33033:ahmed2003') } });
+        const res = await fetch(url, { headers: { 'Accept': 'application/json'} });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data: XWikiClass = await res.json();
 
@@ -219,6 +216,9 @@ export default function HomePage() {
     };
 
     fetchTags();
+    } catch(_){
+      console.log(_)
+    }
   }, [mode]);
 
   const handleToggle = (group: string, value: string) => {
@@ -276,7 +276,7 @@ export default function HomePage() {
       `&type=xwql&media=json&number=100&className=${encodeURIComponent(className)}`;
     console.log(fullUrl)
     try {
-      const res = await fetch(fullUrl, { headers: { "Accept": "application/json", "Authorization": "Basic " + btoa("ahmed33033:ahmed2003") } });
+      const res = await fetch(fullUrl, { headers: { "Accept": "application/json", "Authorization": "Basic " + btoa("WasdWasd:wasdwasd") } });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
 
@@ -437,8 +437,8 @@ export default function HomePage() {
                   new Set([...(MODES[mode].tagGroups as readonly string[]), ...EXTRA_TAG_FIELDS[mode]])
                 );
 
-                const chips = tagFields.flatMap((field) =>
-                  splitTags(String(props[field] ?? '')).map((t) => ({ field, t }))
+                const chips = tagFields.flatMap((field) => 
+                  splitTags(String(props[field] ?? '')).map((t) => ({ field, t: t.includes('|') ? t.split('|').join(', ') : t}))
                 );
 
                 // view URL
