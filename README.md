@@ -5,6 +5,9 @@ LLMs. The web application also contains a built-in wiki with curated LLM info. T
 contains production services, data collection tooling, experimental scripts, and a frontend
 for interacting with the classifier and wiki.
 
+Check out the demo video below for a walkthrough of our application's main features! 
+
+https://github.com/user-attachments/assets/320cb6bd-cb3b-4d38-a319-7ee638069f32
 
 ## Table of contents
 
