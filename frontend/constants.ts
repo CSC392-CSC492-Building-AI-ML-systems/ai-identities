@@ -1,2 +1,2 @@
-const XWIKI_URL = 'https://wiki.llm.test'
-export {XWIKI_URL}
+const XWIKI_URL = "https://wiki.llmdetective.ca";
+export { XWIKI_URL };

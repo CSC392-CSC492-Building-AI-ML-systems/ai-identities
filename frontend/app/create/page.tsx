@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import theme from "@/lib/muiTheme";
 import { useXWikiAuth } from "@/hooks/useXWikiAuth";
+
 type ModeKey = "llms" | "llm_apps";
 export default function WikiIframePage() {
   const [pageName, setPageName] = useState("");
@@ -27,8 +28,9 @@ export default function WikiIframePage() {
   }
 
   if (!loggedIn) {
-    window.location.href =
-      "https://wiki.llm.test/bin/login/XWiki/XWikiLogin?xredirect=https%3A%2F%2Fwiki.llm.test%2Fbin%2Fview%2Fredir%3Fnext%3D%2Fcreate";
+    window.location.href = `${XWIKI_URL}/bin/login/XWiki/XWikiLogin?xredirect=${XWIKI_URL.split("://").join(
+      "%3A%2F%2F"
+    )}%2Fbin%2Fview%2Fredir%3Fnext%3D%2Fcreate`;
     return <div></div>;
   }
 
@@ -37,9 +39,7 @@ export default function WikiIframePage() {
       <CssBaseline />
       <main className=" bg-[#050a1f] mt-56 flex flex-col items-center w-screen">
         {!submitted ? (
-          <div
-            style={{ display: "flex", flexDirection: "row", columnGap: "50px" }}
-          >
+          <div style={{ display: "flex", flexDirection: "row", columnGap: "50px" }}>
             <ToggleButtonGroup
               size="small"
               exclusive
@@ -85,20 +85,13 @@ export default function WikiIframePage() {
         ) : (
           <div className="flex-1 flex justify-center w-screen absolute bottom-0 h-[90vh]">
             <iframe
-              src={
-                XWIKI_URL +
-                (mode === "llms"
-                  ? "/bin/view/XWiki/LLMClass"
-                  : "/bin/view/XWiki/LLMAppClass")
-              }
+              src={XWIKI_URL + (mode === "llms" ? "/bin/view/XWiki/LLMClass" : "/bin/view/XWiki/LLMAppClass")}
               title="Create Wiki Page"
               className="w-97/100 h-[90vh]"
               id="createFrame"
               name="createFrame"
               onLoad={() => {
-                const iframe = document.getElementById(
-                  "createFrame"
-                ) as HTMLIFrameElement | null;
+                const iframe = document.getElementById("createFrame") as HTMLIFrameElement | null;
 
                 console.log(iframe);
                 if (iframe) {

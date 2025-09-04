@@ -7,20 +7,17 @@ import { useXWikiAuth } from "../hooks/useXWikiAuth";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import * as React from "react";
+import { XWIKI_URL } from "@/constants";
 
 function WikiMenu() {
   const [isHovered, setIsHovered] = React.useState(false);
 
   return (
-    <div 
-      className="relative"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <div className="relative" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
       <span className="relative group text-[#F3F3FF] hover:text-[#9290C3] transition-colors duration-200 lg:text-lg font-normal cursor-pointer flex items-center">
         Wiki <ArrowDropDownIcon />
       </span>
-      
+
       {/* Dropdown Menu */}
       {isHovered && (
         <div className="absolute top-full -left-4 mt-0 bg-[#2D2A5A] rounded-lg shadow-lg py-2 min-w-[100px] z-50">
@@ -45,12 +42,10 @@ export default function Navbar() {
   const redirectPath = usePathname(); // To track the current route
 
   console.log(loggedIn, "     ", username, "    ", loading);
-  const redirectUrl = encodeURIComponent(
-    `https://wiki.llm.test/bin/view/redir?next=${redirectPath}`
-  );
-  const href_logout_url = `https://wiki.llm.test/bin/logout/XWiki/XWikiLogout?xredirect=${redirectUrl}`;
-  const href_login_url = `https://wiki.llm.test/bin/login/XWiki/XWikiLogin?xredirect=${redirectUrl}`;
-  const href_signup_url = `https://wiki.llm.test/bin/register/XWiki/XWikiRegister`;
+  const redirectUrl = encodeURIComponent(`${XWIKI_URL}/bin/view/redir?next=${redirectPath}`);
+  const href_logout_url = `${XWIKI_URL}/bin/logout/XWiki/XWikiLogout?xredirect=${redirectUrl}`;
+  const href_login_url = `${XWIKI_URL}/bin/login/XWiki/XWikiLogin?xredirect=${redirectUrl}`;
+  const href_signup_url = `${XWIKI_URL}/bin/register/XWiki/XWikiRegister`;
   return (
     <div className="fixed top-0 left-0 w-full z-50 flex justify-center px-4">
       <nav
@@ -59,10 +54,7 @@ export default function Navbar() {
       >
         {/* Left section - Logo and main navigation */}
         <div className="flex items-center gap-8">
-          <div
-            className="text-2xl font-normal flex items-center gap-2"
-            style={{ color: "#F3F3FF" }}
-          >
+          <div className="text-2xl font-normal flex items-center gap-2" style={{ color: "#F3F3FF" }}>
             <Image src="/llmdetlogo.png" alt="Logo" width={40} height={40} />
             <Link href="/">
               <span className="font-bold" style={{ color: "#F3F3FF" }}>
@@ -96,9 +88,7 @@ export default function Navbar() {
         {/* Right section - Auth buttons */}
         <div>
           {loading ? (
-            <span className="text-[#F3F3FF] text-sm font-normal">
-              Verifying...
-            </span>
+            <span className="text-[#F3F3FF] text-sm font-normal">Verifying...</span>
           ) : (
             <div className="flex items-center gap-8">
               {loggedIn ? (

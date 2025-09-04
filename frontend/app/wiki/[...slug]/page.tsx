@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
-import { useParams } from 'next/navigation';
+import { XWIKI_URL } from "@/constants";
+import { useParams } from "next/navigation";
 
 export default function WikiIframePage() {
   const params = useParams();
@@ -11,8 +12,8 @@ export default function WikiIframePage() {
   }
 
   // Join the segments to reconstruct the full space + page
-  const fullPath = slug.join('/');
-  const wikiUrl = `https://wiki.llm.test/bin/view/${fullPath}`;
+  const fullPath = slug.join("/");
+  const wikiUrl = `${XWIKI_URL}/bin/view/${fullPath}`;
 
   return (
     <main className="min-h-screen bg-[#050a1f] pt-20 flex flex-col items-center">
