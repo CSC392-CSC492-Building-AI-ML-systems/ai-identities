@@ -7,7 +7,8 @@ import { useEffect, useRef, useState } from "react";
 const sections = [
   {
     title: "AI-powered LLM identifier & knowledge hub — with expert human insight",
-    subtitle: "LLMDetective identifies large language models (LLMs) across the web, offering a structured, searchable wiki of every model we find — from ChatGPT to open-source tools. Explore the technology behind today's AI, backed by transparent data and human curation.",
+    subtitle:
+      "LLMDetective identifies large language models (LLMs) across the web, offering a structured, searchable wiki of every model we find — from ChatGPT to open-source tools. Explore the technology behind today's AI, backed by transparent data and human curation.",
     pill: null,
     bg: "",
     cta: null,
@@ -20,7 +21,9 @@ const sections = [
     cta: (
       <div className="w-full flex flex-col items-center">
         <div className="w-full max-w-2xl px-8 mx-auto flex flex-col items-center mb-12">
-          <h2 className="text-4xl md:text-5xl text-[#2D2A5A] dark:text-[#F3F3FF] text-center mb-8">Identify, Search, and Explore</h2>
+          <h2 className="text-4xl md:text-5xl text-[#2D2A5A] dark:text-[#F3F3FF] text-center mb-8">
+            Identify, Search, and Explore
+          </h2>
         </div>
         <div className="w-full flex flex-col md:flex-row justify-center gap-8">
           <div className="flex-1 max-w-xs bg-[#2D2A5A] rounded-2xl shadow-lg p-8 flex flex-col items-start text-white">
@@ -28,21 +31,28 @@ const sections = [
               <img src="/det.png" alt="Detective" className="w-8 h-8" />
             </div>
             <div className="text-2xl mb-2 font-semibold">Identify</div>
-            <div className="text-base opacity-80">Use our tools to identify which LLM generated a given text, leveraging advanced detection and comparison algorithms.</div>
+            <div className="text-base opacity-80">
+              Use our tools to identify which LLM generated a given text, leveraging advanced detection and comparison
+              algorithms.
+            </div>
           </div>
           <div className="flex-1 max-w-xs bg-[#2D2A5A] rounded-2xl shadow-lg p-8 flex flex-col items-start text-white">
             <div className="mb-4">
               <img src="/magl.png" alt="Magnifying Glass" className="w-8 h-8" />
             </div>
             <div className="text-2xl mb-2 font-semibold">Search</div>
-            <div className="text-base opacity-80">Find detailed information on a wide range of LLMs, from ChatGPT to open-source models, all in one place.</div>
+            <div className="text-base opacity-80">
+              Find detailed information on a wide range of LLMs, from ChatGPT to open-source models, all in one place.
+            </div>
           </div>
           <div className="flex-1 max-w-xs bg-[#2D2A5A] rounded-2xl shadow-lg p-8 flex flex-col items-start text-white">
             <div className="mb-4">
               <img src="/pen.png" alt="Pencil" className="w-8 h-8" />
             </div>
             <div className="text-2xl mb-2 font-semibold">Explore</div>
-            <div className="text-base opacity-80">Dive into the technology and data behind today's AI, curated and explained by experts.</div>
+            <div className="text-base opacity-80">
+              Dive into the technology and data behind today's AI, curated and explained by experts.
+            </div>
           </div>
         </div>
       </div>
@@ -64,15 +74,15 @@ const sections = [
       <div className="flex gap-4 mt-6">
         <Button
           className="!bg-[#2D2A5A] text-white hover:outline hover:outline-2 hover:outline-[#F3F3FF] border-none transition-transform duration-300 hover:scale-105"
-          onClick={() => window.location.href = "/identify"}
-          style={{ backgroundColor: '#2D2A5A' }}
+          onClick={() => (window.location.href = "/identify")}
+          style={{ backgroundColor: "#2D2A5A" }}
         >
           Identify
         </Button>
         <Button
           className="!bg-[#2D2A5A] text-white hover:outline hover:outline-2 hover:outline-[#F3F3FF] border-none transition-transform duration-300 hover:scale-105"
-          onClick={() => window.location.href = "/search"}
-          style={{ backgroundColor: '#2D2A5A' }}
+          onClick={() => (window.location.href = "/search")}
+          style={{ backgroundColor: "#2D2A5A" }}
         >
           Wiki
         </Button>
@@ -87,7 +97,9 @@ const sections = [
     cta: (
       <div className="flex flex-col items-center justify-center w-full">
         <img src="/llmdetlogo.png" alt="Logo" width={32} height={32} className="mb-2" />
-        <span className="text-[#F3F3FF] text-sm">&copy; {new Date().getFullYear()} LLM Detective. All rights reserved.</span>
+        <span className="text-[#F3F3FF] text-sm">
+          &copy; {new Date().getFullYear()} LLM Detective. All rights reserved.
+        </span>
       </div>
     ),
   },
@@ -111,7 +123,7 @@ function useSectionFadeIn(numSections: number) {
           }
         });
       },
-      { threshold: 0.7 }
+      { rootMargin: "-40% 0px -40% 0px", threshold: 0.1 }
     );
     refs.current.forEach((el) => el && observer.observe(el));
     return () => observer.disconnect();
@@ -127,21 +139,29 @@ export default function HomePage() {
       {sections.map((section, i) => (
         <section
           key={i}
-          ref={el => { refs.current[i] = el; }}
-          className={`${i === sections.length - 1 ? 'min-h-[20vh] bg-[#2D2A5A]' : 'min-h-[50vh]'} w-full flex flex-col items-center justify-center`}
+          ref={(el) => {
+            refs.current[i] = el;
+          }}
+          className={`${
+            i === sections.length - 1 ? "min-h-[20vh] bg-[#2D2A5A]" : "min-h-[50vh]"
+          } w-full flex flex-col items-center justify-center`}
         >
           <div
             className={`w-full max-w-4xl px-8 mx-auto flex flex-col items-center transition-all duration-700 ease-out
-              ${visible[i] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+              ${visible[i] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
           >
             {section.pill && <Pill text={section.pill} />}
             {section.title && (
-              <h1 className={`text-5xl md:text-6xl mt-8 ${i === 0 ? 'mb-8' : 'mb-4'} text-[#F3F3FF] text-center drop-shadow-lg`}>
+              <h1
+                className={`text-5xl md:text-6xl mt-20 ${
+                  i === 0 ? "mb-8" : "mb-4"
+                } text-[#F3F3FF] text-center drop-shadow-lg`}
+              >
                 {section.title}
               </h1>
             )}
             {section.subtitle && (
-              <p className={`text-lg md:text-xl text-[#B8B8FF] text-center mb-2 ${i === 0 ? 'mt-4' : ''}`}>
+              <p className={`text-lg md:text-xl text-[#B8B8FF] text-center mb-2 ${i === 0 ? "mt-4" : ""}`}>
                 {section.subtitle}
               </p>
             )}
@@ -150,37 +170,41 @@ export default function HomePage() {
           {i === 1 && section.cta ? (
             <>
               {/* Heading fade in from bottom - FIXED: Changed to light color */}
-              <div className={`w-full max-w-5xl px-8 mx-auto flex flex-col items-center transition-all duration-700 ease-out
-                ${visible[i] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                <h2 className="text-5xl md:text-6xl text-[#F3F3FF] text-center mb-8">Identify, Search, and Contribute</h2>
+              <div
+                className={`w-full max-w-5xl px-8 mx-auto flex flex-col items-center transition-all duration-700 ease-out
+                ${visible[i] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
+              >
+                <h2 className="text-5xl md:text-6xl text-[#F3F3FF] text-center mb-8 mt-30">
+                  Identify, Search, and Contribute
+                </h2>
               </div>
               {/* Deck of cards animation */}
               <div className="w-full flex justify-center mt-8">
                 <div className="flex flex-wrap justify-center gap-8 max-w-6xl">
                   {[
                     {
-                      icon: '/det.png',
-                      title: 'Identify',
-                      desc: 'Use our tools to detect which large language model (LLM) generated a given text, leveraging advanced AI identification.'
+                      icon: "/det.png",
+                      title: "Identify",
+                      desc: "Use our tools to detect which large language model (LLM) generated a given text, leveraging advanced AI identification.",
                     },
                     {
-                      icon: '/magl.png',
-                      title: 'Search',
-                      desc: 'Search our structured, searchable wiki of LLMs—from ChatGPT to open-source models—to find detailed information on every model we track.'
+                      icon: "/magl.png",
+                      title: "Search",
+                      desc: "Search our structured, searchable wiki of LLMs—from ChatGPT to open-source models—to find detailed information on every model we track.",
                     },
                     {
-                      icon: '/pen.png',
-                      title: 'Contribute',
-                      desc: 'Edit and improve our wiki data. Help keep the LLM knowledge base accurate and up to date for the whole community.'
-                    }
+                      icon: "/pen.png",
+                      title: "Contribute",
+                      desc: "Edit and improve our wiki data. Help keep the LLM knowledge base accurate and up to date for the whole community.",
+                    },
                   ].map((card, cardIdx) => (
                     <div
                       key={cardIdx}
                       className={`w-78 h-78 flex-shrink-0 transition-all duration-700 ease-out
-                        ${visible[i] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}
+                        ${visible[i] ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}
                       `}
                       style={{
-                        transitionDelay: visible[i] ? `${cardIdx * 120}ms` : '0ms',
+                        transitionDelay: visible[i] ? `${cardIdx * 120}ms` : "0ms",
                       }}
                     >
                       <div className="bg-[#2D2A5A] rounded-2xl shadow-lg p-8 flex flex-col items-start text-[#F3F3FF] h-full transition-transform duration-300 hover:scale-105">
@@ -201,53 +225,57 @@ export default function HomePage() {
               <div className="w-full max-w-4xl px-8 mx-auto space-y-8">
                 {[
                   {
-                    image: '/statistic.png',
-                    title: 'Statistical Fingerprinting',
+                    image: "/statistic.png",
+                    title: "Statistical Fingerprinting",
                     desc: 'LLM responses to an experimentally selected "best" user prompt are converted into TF‑IDF trigram vectors with interpretable features and weights.',
-                    direction: 'left'
+                    direction: "left",
                   },
                   {
-                    image: '/similar.png',
-                    title: 'Similarity‑Based Identification',
-                    desc: 'Each vector is compared against a library of known LLMs using cosine similarity to produce a ranked shortlist of likely LLMs.',
-                    direction: 'right'
+                    image: "/similar.png",
+                    title: "Similarity‑Based Identification",
+                    desc: "Each vector is compared against a library of known LLMs using cosine similarity to produce a ranked shortlist of likely LLMs.",
+                    direction: "right",
                   },
                   {
-                    image: '/predict.png',
-                    title: 'Predict or Abstain',
-                    desc: 'A fixed, experiment‑selected threshold abstains on low‑similarity cases, ensuring reliable and transparent decisions.',
-                    direction: 'left'
-                  }
+                    image: "/predict.png",
+                    title: "Predict or Abstain",
+                    desc: "A fixed, experiment‑selected threshold abstains on low‑similarity cases, ensuring reliable and transparent decisions.",
+                    direction: "left",
+                  },
                 ].map((method, methodIdx) => (
                   <div
                     key={methodIdx}
                     className={`w-full transition-all duration-700 ease-out
-                      ${visible[i] ? 'opacity-100 translate-x-0' : `opacity-0 ${method.direction === 'left' ? '-translate-x-12' : 'translate-x-12'}`}
+                      ${
+                        visible[i]
+                          ? "opacity-100 translate-x-0"
+                          : `opacity-0 ${method.direction === "left" ? "-translate-x-12" : "translate-x-12"}`
+                      }
                     `}
                     style={{
-                      transitionDelay: visible[i] ? `${methodIdx * 200}ms` : '0ms',
+                      transitionDelay: visible[i] ? `${methodIdx * 200}ms` : "0ms",
                     }}
                   >
-                    <div className={`rounded-2xl shadow-lg min-h-[200px] flex transition-transform duration-300 hover:scale-105 border-2 border-[#2D2A5A] ${
-                      methodIdx % 2 === 0 
-                        ? 'bg-gradient-to-r from-[#2D2A5A] from-50% to-[#050a1f] to-50%'
-                        : 'bg-gradient-to-r from-[#050a1f] from-50% to-[#2D2A5A] to-50%'
-                    }`}>
+                    <div
+                      className={`rounded-2xl shadow-lg min-h-[200px] flex transition-transform duration-300 hover:scale-105 border-2 border-[#2D2A5A] ${
+                        methodIdx % 2 === 0
+                          ? "bg-gradient-to-r from-[#2D2A5A] from-50% to-[#050a1f] to-50%"
+                          : "bg-gradient-to-r from-[#050a1f] from-50% to-[#2D2A5A] to-50%"
+                      }`}
+                    >
                       {/* Content positioned on the blue half */}
-                      <div className={`w-1/2 p-12 flex flex-col justify-center text-[#F3F3FF] ${
-                        methodIdx % 2 === 0 ? '' : 'order-2'
-                      }`}>
+                      <div
+                        className={`w-1/2 p-12 flex flex-col justify-center text-[#F3F3FF] ${
+                          methodIdx % 2 === 0 ? "" : "order-2"
+                        }`}
+                      >
                         <div className="text-2xl mb-2 font-semibold">{method.title}</div>
                         <div className="text-base text-[#B8B8FF]">{method.desc}</div>
                       </div>
                       {/* Image half */}
-                      <div className={`w-1/2 flex items-center justify-center ${methodIdx % 2 === 0 ? 'order-2' : ''}`}>
+                      <div className={`w-1/2 flex items-center justify-center ${methodIdx % 2 === 0 ? "order-2" : ""}`}>
                         <div className="w-48 h-48 flex items-center justify-center">
-                          <img 
-                            src={method.image} 
-                            alt={method.title}
-                            className="max-w-full max-h-full object-contain"
-                          />
+                          <img src={method.image} alt={method.title} className="max-w-full max-h-full object-contain" />
                         </div>
                       </div>
                     </div>
@@ -255,7 +283,9 @@ export default function HomePage() {
                 ))}
               </div>
             </div>
-          ) : section.cta}
+          ) : (
+            section.cta
+          )}
         </section>
       ))}
     </main>
