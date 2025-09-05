@@ -97,7 +97,6 @@ export default function WikiIframePage() {
                 console.log(iframe);
                 if (iframe) {
                   iframe.contentWindow?.postMessage(pageName, XWIKI_URL);
-                  iframe.className = "w-full";
                 }
               }}
             />
