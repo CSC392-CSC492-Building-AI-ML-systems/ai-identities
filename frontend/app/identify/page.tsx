@@ -89,9 +89,9 @@ const fadeInStyles = `
 export default function IdentifyPage() {
   // Inject styles on component mount
   useEffect(() => {
-    const styleId = 'fade-in-styles';
+    const styleId = "fade-in-styles";
     if (!document.getElementById(styleId)) {
-      const styleElement = document.createElement('style');
+      const styleElement = document.createElement("style");
       styleElement.id = styleId;
       styleElement.textContent = fadeInStyles;
       document.head.appendChild(styleElement);
@@ -104,7 +104,7 @@ export default function IdentifyPage() {
   // while another file is being uploaded
   const [uploading, setUploading] = useState(false);
   // used to display upload status messages
-  const [fullResults, setFullResults] = useState<{ [key: string]: number }>({})
+  const [fullResults, setFullResults] = useState<{ [key: string]: number }>({});
   const [uploadStatus, setUploadStatus] = useState<{
     type: "success" | "error" | null;
     message: string;
@@ -118,7 +118,7 @@ export default function IdentifyPage() {
       if (saved) {
         try {
           return JSON.parse(saved);
-        } catch { }
+        } catch {}
       }
     }
     return null;
@@ -131,7 +131,7 @@ export default function IdentifyPage() {
   // Trigger animations when showing identify page
   useEffect(() => {
     if (!uploading && !results) {
-      setAnimationKey(prev => prev + 1);
+      setAnimationKey((prev) => prev + 1);
       // Small delay to ensure DOM is ready, then start animations
       const timer = setTimeout(() => {
         setIsVisible(true);
@@ -149,7 +149,7 @@ export default function IdentifyPage() {
       if (savedFullResults) {
         try {
           setFullResults(JSON.parse(savedFullResults));
-        } catch { }
+        } catch {}
       }
     }
   }, [results]);
@@ -157,20 +157,20 @@ export default function IdentifyPage() {
   // store the uploaded file before analysis
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   // Button transition state
-  const [buttonTransition, setButtonTransition] = useState<'idle' | 'fadeOut' | 'fadeIn'>('idle');
+  const [buttonTransition, setButtonTransition] = useState<"idle" | "fadeOut" | "fadeIn">("idle");
 
   // event handler for file selection (does not upload immediately)
   function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] || null;
     if (file && !uploadedFile) {
       // Transitioning from upload to identify
-      setButtonTransition('fadeOut');
+      setButtonTransition("fadeOut");
       setTimeout(() => {
         setUploadedFile(file);
         setUploadStatus({ type: null, message: "" });
         setResults(null);
-        setButtonTransition('fadeIn');
-        setTimeout(() => setButtonTransition('idle'), 200);
+        setButtonTransition("fadeIn");
+        setTimeout(() => setButtonTransition("idle"), 200);
       }, 200);
     } else if (file) {
       setUploadedFile(file);
@@ -200,16 +200,10 @@ export default function IdentifyPage() {
           message: `File \"${result.filename}\" analyzed successfully!`,
         });
         setResults(result.analysis);
-        setFullResults(result.raw_classifier_result.all_scores)
+        setFullResults(result.raw_classifier_result.all_scores);
         if (typeof window !== "undefined") {
-          localStorage.setItem(
-            "identify_results",
-            JSON.stringify(result.analysis)
-          );
-          localStorage.setItem(
-            "identify_full_results",
-            JSON.stringify(result.raw_classifier_result.all_scores)
-          );
+          localStorage.setItem("identify_results", JSON.stringify(result.analysis));
+          localStorage.setItem("identify_full_results", JSON.stringify(result.raw_classifier_result.all_scores));
         }
       } else {
         setUploadStatus({
@@ -232,15 +226,15 @@ export default function IdentifyPage() {
   // Handler for deleting uploaded file
   function handleDeleteFile() {
     // Transitioning from identify to upload
-    setButtonTransition('fadeOut');
+    setButtonTransition("fadeOut");
     setTimeout(() => {
       setUploadedFile(null);
       setUploadStatus({ type: null, message: "" });
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-      setButtonTransition('fadeIn');
-      setTimeout(() => setButtonTransition('idle'), 200);
+      setButtonTransition("fadeIn");
+      setTimeout(() => setButtonTransition("idle"), 200);
     }, 200);
   }
 
@@ -258,40 +252,46 @@ export default function IdentifyPage() {
       {/* Show header ONLY if not uploading and no results */}
       {!uploading && !results && (
         <div key={animationKey} className="mt-32 w-full max-w-4xl bg-transparent rounded-2xl p-10">
-          <h1 className="text-4xl font-bold text-[#F3F3FF] mb-8 text-center fade-in-up">
-            Identify the LLM
-          </h1>
+          <h1 className="text-4xl font-bold text-[#F3F3FF] mb-8 text-center fade-in-up">Identify the LLM</h1>
           <p className="text-base text-[#F3F3FF] mb-10 text-center max-w-3xl mx-auto leading-relaxed fade-in-delay-1">
             Prompt your LLM 14 times with the following text:
           </p>
           <p className="text-base text-[#F3F3FF] mb-10 text-center max-w-3xl mx-auto leading-relaxed fade-in-delay-1">
-            "Invent a new taste unknown to humans. Describe (in less than 800 words) how it feels, what foods or cuisines feature it, and how it could transform food culture and impact health. Speak like a professor and only use vocabularies, wordings, etc professors use.".
+            "Invent a new taste unknown to humans. Describe (in less than 800 words) how it feels, what foods or
+            cuisines feature it, and how it could transform food culture and impact health. Speak like a professor and
+            only use vocabularies, wordings, etc professors use.".
           </p>
           <p className="text-base text-[#F3F3FF] mb-10 text-center max-w-3xl mx-auto leading-relaxed fade-in-delay-1">
             Format the responses as a JSON array like in this example:
           </p>
-          [
-          "The ontological implications of a novel gastronomic experience are a subject of great fascination and inquiry. I propose to introduce a...",
-          <br />
-          "The ontological implications of a novel gastronomical sensation are a subject of great fascination in the realm of culinary science. I propose to introduce a new taste, which I shall term...",
-          <br />
-          ...
-          <br />
-          ]
+          <div className="bg-[#1a1a2e] rounded-lg p-6 mb-6 border border-[#3D3A6A] max-w-3xl mx-auto">
+            <pre className="text-[#26FF9A] text-sm overflow-x-auto whitespace-pre-wrap">
+              {`[
+  "The ontological implications of a novel gastronomic experience are a subject of great fascination and inquiry. I propose to introduce a...",
+  "The ontological implications of a novel gastronomical sensation are a subject of great fascination in the realm of culinary science. I propose to introduce a new taste, which I shall term...",
+  "..."
+]`}
+            </pre>
+          </div>
           <div className="flex flex-col items-center fade-in-delay-2">
             <button
               onClick={handleButtonClick}
-              className={`inline-block bg-[#2D2A5A] text-[#F3F3FF] px-10 py-6 rounded-xl text-xl font-semibold cursor-pointer mb-4 flex items-center gap-4 justify-center min-w-[200px] h-[88px] ${uploadedFile && buttonTransition === 'idle'
-                ? 'hover:outline hover:outline-2 hover:outline-[#F3F3FF] hover:scale-105 transition-all duration-200'
-                : !uploadedFile && buttonTransition === 'idle'
-                  ? 'hover:scale-105 transition-all duration-200'
-                  : ''
-                } ${buttonTransition === 'fadeOut' ? 'button-fade-out' :
-                  buttonTransition === 'fadeIn' ? 'button-fade-in' : ''
-                }`}
-              disabled={uploading || buttonTransition !== 'idle'}
+              className={`inline-block bg-[#2D2A5A] text-[#F3F3FF] px-10 py-6 rounded-xl text-xl font-semibold cursor-pointer mb-4 flex items-center gap-4 justify-center min-w-[200px] h-[88px] ${
+                uploadedFile && buttonTransition === "idle"
+                  ? "hover:outline hover:outline-2 hover:outline-[#F3F3FF] hover:scale-105 transition-all duration-200"
+                  : !uploadedFile && buttonTransition === "idle"
+                  ? "hover:scale-105 transition-all duration-200"
+                  : ""
+              } ${
+                buttonTransition === "fadeOut"
+                  ? "button-fade-out"
+                  : buttonTransition === "fadeIn"
+                  ? "button-fade-in"
+                  : ""
+              }`}
+              disabled={uploading || buttonTransition !== "idle"}
               style={{
-                transform: buttonTransition === 'idle' ? 'translateY(0)' : undefined
+                transform: buttonTransition === "idle" ? "translateY(0)" : undefined,
               }}
             >
               {!uploadedFile ? (
@@ -341,9 +341,9 @@ export default function IdentifyPage() {
 
             {/* Animated text + dots */}
             <div className="flex flex-col items-center gap-2">
-              <span className="text-lg font-semibold text-[#2D2A5A]"><h2 className="text-3xl font-bold text-[#F3F3FF] mb-8 text-center">
-                Identifying
-              </h2></span>
+              <span className="text-lg font-semibold text-[#2D2A5A]">
+                <h2 className="text-3xl font-bold text-[#F3F3FF] mb-8 text-center">Identifying</h2>
+              </span>
               <div className="flex gap-1">
                 {[0, 1, 2, 3, 4].map((i) => (
                   <div
@@ -371,7 +371,10 @@ export default function IdentifyPage() {
             {/* Results Table */}
             <div className="bg-[#050a1f] rounded-xl overflow-hidden border border-[#3D3A6A] fade-in-delay-2">
               {/* Table Header */}
-              <div className="grid bg-[#2D2A5A] border-b border-[#3D3A6A]" style={{ gridTemplateColumns: '1fr 2fr 1.5fr' }}>
+              <div
+                className="grid bg-[#2D2A5A] border-b border-[#3D3A6A]"
+                style={{ gridTemplateColumns: "1fr 2fr 1.5fr" }}
+              >
                 <div className="p-4 text-[#F3F3FF] font-bold text-lg">Model Family</div>
                 <div className="p-4 text-[#F3F3FF] font-bold text-lg">Model Name</div>
                 <div className="p-4 text-[#F3F3FF] font-bold text-lg text-center">Cosine Similarity Score</div>
@@ -381,31 +384,22 @@ export default function IdentifyPage() {
               {Object.entries(results)
                 .slice(0, 3)
                 .map(([name, score], index) => {
-                  const [family, modelName] = name.includes('_')
-                    ? name.split('_')
-                    : ['Unknown', name];
+                  const [family, modelName] = name.includes("_") ? name.split("_") : ["Unknown", name];
 
-                  console.log(modelName)
+                  console.log(modelName);
                   return (
                     <div
                       key={name}
-                      className={`grid bg-[#050a1f] ${index !== 2 ? 'border-b border-[#3D3A6A]' : ''}`}
-                      style={{ gridTemplateColumns: '1fr 2fr 1.5fr' }}
+                      className={`grid bg-[#050a1f] ${index !== 2 ? "border-b border-[#3D3A6A]" : ""}`}
+                      style={{ gridTemplateColumns: "1fr 2fr 1.5fr" }}
                     >
-                      <div className="p-4 text-[#F3F3FF] text-lg capitalize">
-                        {family}
-                      </div>
-                      <div className="p-4 text-[#F3F3FF] text-lg capitalize">
-                        {modelName}
-                      </div>
-                      {modelName !== "unknown" ?
+                      <div className="p-4 text-[#F3F3FF] text-lg capitalize">{family}</div>
+                      <div className="p-4 text-[#F3F3FF] text-lg capitalize">{modelName}</div>
+                      {modelName !== "unknown" ? (
                         <div className="p-4">
                           <ChartBar score={score} />
                         </div>
-                        
-                        :
-                        null
-                      }
+                      ) : null}
                     </div>
                   );
                 })}
@@ -487,13 +481,8 @@ function FilePreview({ file }: { file: File }) {
       cancelled = true;
     };
   }, [file]);
-  if (!content)
-    return <div className="text-[#aaa] italic">Loading preview...</div>;
-  return (
-    <pre style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
-      {content}
-    </pre>
-  );
+  if (!content) return <div className="text-[#aaa] italic">Loading preview...</div>;
+  return <pre style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{content}</pre>;
 }
 
 // File preview toggle component for JSON files
@@ -571,10 +560,11 @@ function IdentifyingDots() {
         {[1, 2, 3].map((dot) => (
           <span
             key={dot}
-            className={`text-3xl font-bold transition-all duration-200 ${dotCount >= dot
-              ? 'text-[#26FF9A] opacity-100 transform scale-110'
-              : 'text-[#2D2A5A] opacity-50 transform scale-90'
-              }`}
+            className={`text-3xl font-bold transition-all duration-200 ${
+              dotCount >= dot
+                ? "text-[#26FF9A] opacity-100 transform scale-110"
+                : "text-[#2D2A5A] opacity-50 transform scale-90"
+            }`}
           >
             •
           </span>
@@ -588,7 +578,7 @@ function IdentifyingDots() {
 function ChartBar({ score }: { score: number }) {
   // Gradient: 0% = #2E473C, 100% = #26FF9A
   function percentToGradientColor(p: number) {
-    console.log(p)
+    console.log(p);
     p = Math.max(0, Math.min(100, p));
     const c1 = [46, 71, 60];
     const c2 = [38, 255, 154];
@@ -622,9 +612,7 @@ function ChartBar({ score }: { score: number }) {
   return (
     <div className="flex flex-col items-center gap-2">
       {/* Score display */}
-      <span className="text-[#F3F3FF] text-lg font-bold">
-        0.{displayPercent}
-      </span>
+      <span className="text-[#F3F3FF] text-lg font-bold">0.{displayPercent}</span>
 
       {/* Progress bar */}
       <div className="w-full h-3 bg-[#2D2A5A] rounded-full relative overflow-hidden border border-[#3D3A6A]">
