@@ -83,11 +83,12 @@ export default function WikiIframePage() {
             </Button>
           </div>
         ) : (
-          <div className="flex-1 flex justify-center w-screen absolute bottom-0 h-[90vh]">
+
+          <div className="w-screen absolute left-0 flex-1 flex justify-center">
             <iframe
               src={XWIKI_URL + (mode === "llms" ? "/bin/view/XWiki/LLMClass" : "/bin/view/XWiki/LLMAppClass")}
               title="Create Wiki Page"
-              className="w-97/100 h-[90vh]"
+              className="w-97/100 h-[80vh]"
               id="createFrame"
               name="createFrame"
               onLoad={() => {
