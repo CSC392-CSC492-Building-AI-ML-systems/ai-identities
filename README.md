@@ -5,6 +5,9 @@ LLMs. The web application also contains a built-in wiki with curated LLM info. T
 contains production services, data collection tooling, experimental scripts, and a frontend
 for interacting with the classifier and wiki.
 
+Here is the link to the actual website:
+https://llmdetective.ca/
+
 Check out the demo video below for a walkthrough of our application's main features! 
 
 https://github.com/user-attachments/assets/320cb6bd-cb3b-4d38-a319-7ee638069f32
@@ -59,8 +62,3 @@ Each major folder should contain a `README.md` with detailed explanations of its
 * `response_classifier/README.md` — dataset, data collection scripts, classifier method experiment files, and config files
 * `web-gui-grabber/README.md` — ...
 * `xwiki/README.md` — how the wiki works and how we can populate it
-
-
-# License
-
-* **License:** ...
