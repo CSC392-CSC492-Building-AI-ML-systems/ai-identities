@@ -5,8 +5,9 @@ LLMs. The web application also contains a built-in wiki with curated LLM info. T
 contains production services, data collection tooling, experimental scripts, and a frontend
 for interacting with the classifier and wiki.
 
-Here is the link to the actual website:
-https://llmdetective.ca/
+**Deployed website link:** https://llmdetective.ca/
+
+**White paper:** [ai-identities_summer2025_white_paper.pdf](ai-identities_summer2025_white_paper.pdf)
 
 Check out the demo video below for a walkthrough of our application's main features! 
 
@@ -17,30 +18,24 @@ https://github.com/user-attachments/assets/320cb6bd-cb3b-4d38-a319-7ee638069f32
 1. [Repository structure](#repository-structure)
 2. [Quick start](#quick-start)
 3. [Where to find more detail](#where-to-find-more-detail)
-4. [License](#license)
 
 
 # Repository structure
 
 ```
 ├── classifier_service/       # Production classification backend
-├── frontend/                 # Add short description here
+├── frontend/                 # Web application frontend files
 ├── response_classifier/      # Classifier methods: data, scripts, results
-├── web-gui-grabber/          # Add short description here
-├── xwiki/                    # Add short description here
-├── node_modules/             # Add short description here
-├── package.json              # Add short description here
+├── xwiki/                    
+├── ai-identities_summer2025_white_paper.pdf  # White paper detailing the project and final web application              
 └── README.md                 # (this file)
 ```
 
 | Folder         | Description                                                                                                                               |
 | -------------- |-------------------------------------------------------------------------------------------------------------------------------------------|
 | `classifier_service/` | Production-ready classification service code. This is the core backend service that takes in responses and returns predicted LLM matches. |
-| `frontend/`    | Add short description here                                                                                                                |
-| `response_classifier/` | Data collection, analysis scripts, model experiments, configs, and results for classifier methods research.                               |
-| `web-gui-grabber/` | Add short description here                                                                                                                |
-| `xwiki/`       | Add short description here                                                                                                                |
-| `node_modules/` | Add short description here                                                                                                                |
+| `frontend/`    | Frontend files for the deployed web application (includes home page, LLM fingerprinting tool, and the LLM wiki)
+| `response_classifier/` | Data collection, analysis scripts, model experiments, configs, and results for classifier methods research.                               |                             
 
 Each of the folders above should contain its own `README.md` with more detailed explanation and instructions.
 
@@ -57,8 +52,6 @@ cd ai-identities
 
 Each major folder should contain a `README.md` with detailed explanations of its content. Start with:
 
-* `classifier_service/README.md` — 
-* `frontend/README.md` — 
+* `classifier_service/README.md` — classifier service used by the web application
+* `frontend/README.md` — web application frontend
 * `response_classifier/README.md` — dataset, data collection scripts, classifier method experiment files, and config files
-* `web-gui-grabber/README.md` — ...
-* `xwiki/README.md` — how the wiki works and how we can populate it
