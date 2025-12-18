@@ -5,8 +5,6 @@ LLMs. The web application also contains a built-in wiki with curated LLM info. T
 contains production services, data collection tooling, experimental scripts, and a frontend
 for interacting with the classifier and wiki.
 
-**Deployed website link:** https://llmdetective.ca/
-
 **White paper:** [ai-identities_summer2025_white_paper.pdf](ai-identities_summer2025_white_paper.pdf)
 
 Check out the demo video below for a walkthrough of our application's main features! 
